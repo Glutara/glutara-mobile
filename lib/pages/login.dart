@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:glutara_mobile/pages/login.dart';
+import 'package:glutara_mobile/pages/signup.dart';
 
-class SignUpPage extends StatefulWidget {
-  const SignUpPage({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  _SignUpPageState createState() => _SignUpPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
@@ -65,14 +65,14 @@ class _SignUpPageState extends State<SignUpPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  'Sign Up',
+                  'Log In',
                   textAlign:
                       TextAlign.center, // Align text to center horizontally
                   style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8.0),
                 Text(
-                  'Sign up now to take control of your glucose management',
+                  'Welcome back! Log in and stay connected to your glucose health journey',
                   textAlign:
                       TextAlign.center, // Align text to center horizontally
                   style: TextStyle(fontSize: 18.0, color: Colors.grey),
@@ -89,18 +89,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(height: 40.0),
-                    TextFormField(
-                      focusNode: _nameFocusNode,
-                      decoration: InputDecoration(
-                        labelText: 'Name',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
-                        border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
-                      ),
-                      onSaved: (value) => _name = value,
-                    ),
-                    SizedBox(height: 16.0),
+                    SizedBox(height: 100.0),
                     TextFormField(
                       focusNode: _emailFocusNode,
                       decoration: InputDecoration(
@@ -124,21 +113,9 @@ class _SignUpPageState extends State<SignUpPage> {
                       obscureText: true,
                       onSaved: (value) => _password = value,
                     ),
-                    SizedBox(height: 16.0),
-                    TextFormField(
-                      focusNode: _phoneFocusNode,
-                      decoration: InputDecoration(
-                        labelText: 'Phone',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
-                        border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
-                      ),
-                      keyboardType: TextInputType.phone,
-                      onSaved: (value) => _phone = value,
-                    ),
-                    SizedBox(height: 24.0),
+                    SizedBox(height: 100.0),
                     ElevatedButton(
-                      child: Text('Sign Up'),
+                      child: Text('Log In'),
                       onPressed: _submitForm,
                       style: ElevatedButton.styleFrom(
                           primary: Color(0xFF715C0C),
@@ -153,20 +130,22 @@ class _SignUpPageState extends State<SignUpPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LoginPage()),
+                                builder: (context) =>
+                                    SignUpPage()), // Assuming SignUpPage is another widget in your app
                           );
                         },
-                        child: Text.rich(
-                          TextSpan(
-                            text: "Already have an account? ",
-                            style: TextStyle(color: Colors.black, fontSize: 16),
-                            children: <TextSpan>[
+                        child: RichText(
+                          text: TextSpan(
+                            text: "Don’t have an account? ",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.normal),
+                            children: [
                               TextSpan(
-                                text: 'Log In',
+                                text: 'Sign Up',
                                 style: TextStyle(
                                     color: Color(0xFF715C0C),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16),
+                                    fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
