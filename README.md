@@ -1,16 +1,34 @@
-# glutara_mobile
+<div align="center"><img src = "assets/glutara.png" width = 20% height= 20%></div>
 
-A new Flutter project.
+<div align="center">
+An IOT-based system with non-invasive wearable Continuous Glucose Monitor (CGM) for diabetic people
+</div>
 
-## Getting Started
+## Table of Contents
 
-This project is a starting point for a Flutter application.
+- [App Overview](#app-overview)
+- [App Preview](#app-preview)
+- [Team](#team)
 
-A few resources to get you started if this is your first Flutter project:
+## App Overview
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Millions of individuals worldwide grapple with the relentless challenges of managing diabetes, a chronic condition that demands consistent monitoring and care. Despite the advancements in technology, the process remains burdensome, with traditional finger-pricking glucose monitoring causing discomfort and hindering regular monitoring. This issue is exacerbated for those leading busy lives, leaving little time for necessary health measures. The fear of potential health emergencies, particularly for individuals living alone, further compounds the need for a more accessible and painless solution. Glutara aims to revolutionize blood glucose monitoring by offering a seamless and affordable solution, addressing the fundamental challenges faced by those managing diabetes on a daily basis.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## App Preview
+
+<img src="/screenshot/splashscreen.jpg" alt="Splashscren" width="250" style="border: 1px solid black;">
+<img src="/screenshot/dashboard.jpg" alt="Dashboard" width="250" style="border: 1px solid black;">
+<img src="/screenshot/login.jpg" alt="Log In" width="250" style="border: 1px solid black;">
+<img src="/screenshot/signup.jpg" alt="Sign Up" width="250" style="border: 1px solid black;">
+
+-
+
+## Team
+
+Created and developed by:
+| Name | Role |
+| ------------------------------ | :------: |
+| Michael Leon Putra Widhi | Hustler |
+| Margaretha Olivia Haryono | Hipster |
+| Go Dillon Audris | Hacker |
+| Austin Gabriel Pardosi | Hacker |
