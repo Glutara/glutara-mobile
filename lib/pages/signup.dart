@@ -15,6 +15,8 @@ class _SignUpPageState extends State<SignUpPage> {
   final FocusNode _passwordFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
 
+  String? _selectedRole;
+
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -99,6 +101,38 @@ class _SignUpPageState extends State<SignUpPage> {
                         focusedBorder: _border(Color(0xFF715C0C)),
                       ),
                       onSaved: (value) => _name = value,
+                    ),
+                    SizedBox(height: 16.0),
+                    DropdownButtonFormField<String>(
+                      focusNode:
+                          _nameFocusNode, // You can still use the focus node if needed for form navigation
+                      decoration: InputDecoration(
+                        labelText: 'I am a',
+                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                        border: _border(Colors.grey),
+                        focusedBorder: _border(Color(0xFF715C0C)),
+                      ),
+                      value: _selectedRole,
+                      items: <String>[
+                        'Patient',
+                        'Doctor',
+                        'Volunteer',
+                        'Relation'
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        // Ensure the current state is updated
+                        setState(() {
+                          _selectedRole = newValue;
+                        });
+                      },
+                      onSaved: (String? newValue) {
+                        _selectedRole = newValue;
+                      },
                     ),
                     SizedBox(height: 16.0),
                     TextFormField(

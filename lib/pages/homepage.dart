@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Image.asset('assets/topbar-logo.png'),
-        backgroundColor: const Color(0xFFF5EDDF),
+        backgroundColor: const Color(0xFFFFFBFF),
         centerTitle: true,
         toolbarHeight: 60.0,
         elevation: 20,
