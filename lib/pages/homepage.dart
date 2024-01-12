@@ -71,6 +71,35 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.menu_book_outlined),
             label: 'Logbook',
           ),
+          IconButton(
+            icon: Icon(Icons.add),
+            color: Colors.white,
+            onPressed: () {
+              showModalBottomSheet<void>(
+                context: context,
+                builder: (BuildContext context) {
+                  return SizedBox(
+                    height: 200,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text('Modal BottomSheet'),
+                          ElevatedButton(
+                            child: Text('Close BottomSheet'),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
           NavigationDestination(
             selectedIcon: Icon(Icons.handshake),
             icon: Icon(Icons.handshake_outlined),
