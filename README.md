@@ -21,11 +21,9 @@ Millions of individuals worldwide grapple with the relentless challenges of mana
 <img src="/screenshot/login.jpg" alt="Log In" width="250" style="border: 1px solid black;">
 <img src="/screenshot/signup.jpg" alt="Sign Up" width="250" style="border: 1px solid black;">
 
--
-
 ## Team
 
-Created and developed by:
+Created and developed by AMN:
 | Name | Role |
 | ------------------------------ | :------: |
 | Michael Leon Putra Widhi | Hustler |
