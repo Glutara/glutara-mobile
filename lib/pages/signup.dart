@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:glutara_mobile/pages/login.dart';
+import 'login.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);

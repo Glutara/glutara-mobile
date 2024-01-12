@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:glutara_mobile/pages/signup.dart';
+import 'homepage.dart';
+import 'signup.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -19,6 +20,12 @@ class _LoginPageState extends State<LoginPage> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       // API pendaftaran atau logic lainnya bisa diimplementasikan di sini
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HomePage()), // Add your DashboardPage here
+      );
     }
   }
 
