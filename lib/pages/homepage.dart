@@ -37,15 +37,21 @@ class _HomePageState extends State<HomePage> {
         toolbarHeight: 60.0,
         elevation: 20,
         actions: <Widget>[
-          IconButton(
-            icon: showNotification
-                ? const Icon(Icons.notifications)
-                : const Icon(Icons.notifications_outlined),
-            onPressed: () {
-              setState(() {
-                showNotification = !showNotification;
-              });
-            },
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0), // Padding kanan
+            child: IconButton(
+              onPressed: () {
+                setState(() {
+                  showNotification = !showNotification;
+                });
+              },
+              icon: Icon(
+                showNotification
+                    ? Icons.notifications
+                    : Icons.notifications_outlined,
+                size: 30.0, // Sesuaikan dengan ukuran yang Anda inginkan
+              ),
+            ),
           ),
         ],
       ),
