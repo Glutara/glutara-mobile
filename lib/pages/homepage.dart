@@ -4,6 +4,10 @@ import 'logbook.dart';
 import 'relation.dart';
 import 'profile.dart';
 import 'notification.dart';
+import 'add-meal.dart';
+import 'add-exercise.dart';
+import 'add-medication.dart';
+import 'add-sleep.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -51,6 +55,150 @@ class _HomePageState extends State<HomePage> {
         index: currentPageIndex,
         children: _pages,
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xFFFF6B42),
+        foregroundColor: Colors.white,
+        shape: CircleBorder(eccentricity: 1),
+        child: Icon(Icons.add),
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(200.0), // Radius sudut kiri atas
+                topRight: Radius.circular(200.0), // Radius sudut kanan atas
+              ),
+            ),
+            builder: (context) {
+              return Container(
+                alignment: Alignment.center,
+                color: Color(0xFFFFF8F0),
+                height: 400,
+                child:
+                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      "Add Log Activity",
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Divider(
+                    color: Color(0xFF7D7667),
+                    thickness: 2.0,
+                  ),
+                  ListTile(
+                    leading: CircleAvatar(
+                      radius: 24,
+                      backgroundColor: Color(0xFFFEE086),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child:
+                            Icon(Icons.fastfood_outlined, color: Colors.black),
+                      ),
+                    ),
+                    title: Text(
+                      "Meal",
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.normal),
+                    ),
+                    subtitle: Text('Track your consumption',
+                        style:
+                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AddMealPage()));
+                    },
+                  ),
+                  ListTile(
+                    leading: CircleAvatar(
+                      radius: 24,
+                      backgroundColor: Color(0xFFFEE086),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child:
+                            Icon(Icons.vaccines_outlined, color: Colors.black),
+                      ),
+                    ),
+                    title: Text(
+                      "Medication",
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.normal),
+                    ),
+                    subtitle: Text('Record medication taken',
+                        style:
+                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AddMedicationPage()));
+                    },
+                  ),
+                  ListTile(
+                    leading: CircleAvatar(
+                      radius: 24,
+                      backgroundColor: Color(0xFFFEE086),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Icon(Icons.fitness_center_outlined,
+                            color: Colors.black),
+                      ),
+                    ),
+                    title: Text(
+                      "Exercise",
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.normal),
+                    ),
+                    subtitle: Text('Log your exercise activities',
+                        style:
+                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AddExercisePage()));
+                    },
+                  ),
+                  ListTile(
+                    leading: CircleAvatar(
+                      radius: 24,
+                      backgroundColor: Color(0xFFFEE086),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child:
+                            Icon(Icons.bedtime_outlined, color: Colors.black),
+                      ),
+                    ),
+                    title: Text(
+                      "Sleep",
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.normal),
+                    ),
+                    subtitle: Text('Track your sleep patterns',
+                        style:
+                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AddSleepPage()));
+                    },
+                  ),
+                ]),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: NavigationBar(
         backgroundColor: Color(0xFFF5EDDF),
         onDestinationSelected: (int index) {
@@ -70,35 +218,6 @@ class _HomePageState extends State<HomePage> {
             selectedIcon: Icon(Icons.menu_book),
             icon: Icon(Icons.menu_book_outlined),
             label: 'Logbook',
-          ),
-          IconButton(
-            icon: Icon(Icons.add),
-            color: Colors.white,
-            onPressed: () {
-              showModalBottomSheet<void>(
-                context: context,
-                builder: (BuildContext context) {
-                  return SizedBox(
-                    height: 200,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Text('Modal BottomSheet'),
-                          ElevatedButton(
-                            child: Text('Close BottomSheet'),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.handshake),
