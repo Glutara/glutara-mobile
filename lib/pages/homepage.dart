@@ -18,14 +18,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int currentPageIndex = 0;
-  bool isNotificationClicked = false;
+  bool showNotification = false;
 
   final List<Widget> _pages = [
     const DashboardPage(),
     const LogbookPage(),
     const RelationPage(),
     const ProfilePage(),
-    const NotificationPage()
   ];
 
   @override
@@ -33,28 +32,29 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Image.asset('assets/topbar-logo.png'),
-        backgroundColor: const Color(0xFFFFFBFF),
+        backgroundColor: const Color(0xFFF5EDDF),
         centerTitle: true,
         toolbarHeight: 60.0,
         elevation: 20,
         actions: <Widget>[
           IconButton(
-            icon: isNotificationClicked
+            icon: showNotification
                 ? const Icon(Icons.notifications)
                 : const Icon(Icons.notifications_outlined),
             onPressed: () {
               setState(() {
-                isNotificationClicked = !isNotificationClicked;
-                // Handle notification icon press and status change
+                showNotification = !showNotification;
               });
             },
           ),
         ],
       ),
-      body: IndexedStack(
-        index: currentPageIndex,
-        children: _pages,
-      ),
+      body: showNotification
+          ? NotificationPage()
+          : IndexedStack(
+              index: currentPageIndex,
+              children: _pages,
+            ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color(0xFFFF6B42),
         foregroundColor: Colors.white,
