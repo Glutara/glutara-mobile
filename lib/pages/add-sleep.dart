@@ -68,7 +68,6 @@ class _AddSleepPageState extends State<AddSleepPage> {
                     ? DateFormat('dd MMM yyyy HH:mm').format(selectedStartDate!)
                     : 'Select start time', // Tampilkan tanggal yang dipilih atau pesan 'Select start time'
               ),
-              readOnly: true,
               onTap: () async {
                 // Tampilkan date-time picker untuk tanggal awal
                 final selectedDate = await showDatePicker(
@@ -106,7 +105,6 @@ class _AddSleepPageState extends State<AddSleepPage> {
                     ? DateFormat('dd MMM yyyy HH:mm').format(selectedEndDate!)
                     : 'Select end time', // Tampilkan tanggal yang dipilih atau pesan 'Select end time'
               ),
-              readOnly: true,
               onTap: () async {
                 // Tampilkan date-time picker untuk tanggal akhir
                 final selectedDate = await showDatePicker(
