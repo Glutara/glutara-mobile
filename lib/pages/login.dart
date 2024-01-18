@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/auth.dart';
 import 'homepage.dart';
 import 'signup.dart';
 
@@ -16,17 +17,63 @@ class _LoginPageState extends State<LoginPage> {
   final FocusNode _passwordFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
 
-  void _submitForm() {
+  final AuthApi _authApi = AuthApi();
+
+  String? _email;
+  String? _password;
+
+  Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      // API pendaftaran atau logic lainnya bisa diimplementasikan di sini
 
+      //show snackbar to indicate loading
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      //   content: const Text('Processing Data'),
+      //   backgroundColor: Colors.green.shade300,
+      // ));
+
+      // try {
+      //   //Get response from ApiClient
+      //   dynamic res = await _authApi.login(
+      //     _email!,
+      //     _password!,
+      //   );
+      //   ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      //   // If there is no error, redirect to homepage
+      //   if (res['ErrorCode'] == null) {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text('Login successful!'),
+      //         backgroundColor: Colors.green,
+      //       ),
+      //     );
+      //     await Future.delayed(Duration(seconds: 2));
+      //     Navigator.pushReplacement(
+      //       context,
+      //       MaterialPageRoute(builder: (context) => HomePage()),
+      //     );
+      //   } else {
+      //     //if an error occurs, show snackbar with error message
+      //     showErrorSnackBar(res['Message']);
+      //   }
+      // } catch (e) {
+      //   showErrorSnackBar('An unexpected error occurred : ${e}a');
+      // }
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            builder: (context) => HomePage()), // Add your DashboardPage here
+        MaterialPageRoute(builder: (context) => HomePage()),
       );
     }
+  }
+
+  void showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error: $message'),
+        backgroundColor: Colors.red.shade300,
+      ),
+    );
   }
 
   @override
@@ -46,10 +93,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    String? _name;
-    String? _email;
-    String? _password;
-    String? _phone;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -63,25 +106,20 @@ class _LoginPageState extends State<LoginPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(
-                left: 30.0,
-                top: 20.0,
-                right: 30.0), // Add padding for the title section
+            padding: const EdgeInsets.only(left: 30.0, top: 20.0, right: 30.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Text(
                   'Log In',
-                  textAlign:
-                      TextAlign.center, // Align text to center horizontally
+                  textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8.0),
-                Text(
+                Text( 
                   'Welcome back! Log in and stay connected to your glucose health journey',
-                  textAlign:
-                      TextAlign.center, // Align text to center horizontally
+                  textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 18.0, color: Colors.grey),
                 ),
               ],
@@ -123,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: 100.0),
                     ElevatedButton(
                       child: Text('Log In'),
-                      onPressed: _submitForm,
+                      onPressed: _handleLogin,
                       style: ElevatedButton.styleFrom(
                           primary: Color(0xFF715C0C),
                           onPrimary: Colors.white,
@@ -137,8 +175,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    SignUpPage()), // Assuming SignUpPage is another widget in your app
+                                builder: (context) => SignUpPage()),
                           );
                         },
                         child: RichText(

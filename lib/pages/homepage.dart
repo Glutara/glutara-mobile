@@ -209,6 +209,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Color(0xFFF5EDDF),
         onDestinationSelected: (int index) {
           setState(() {
+            showNotification = false;
             currentPageIndex = index;
           });
         },
