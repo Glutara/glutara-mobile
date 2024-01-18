@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
+import 'add-reminder.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -173,7 +174,13 @@ class _SignUpPageState extends State<SignUpPage> {
                     SizedBox(height: 24.0),
                     ElevatedButton(
                       child: Text('Sign Up'),
-                      onPressed: _submitForm,
+                      onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AddReminderPage()),
+                          );
+                        },
                       style: ElevatedButton.styleFrom(
                           primary: Color(0xFF715C0C),
                           onPrimary: Colors.white,
