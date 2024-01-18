@@ -117,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8.0),
-                Text( 
+                Text(
                   'Welcome back! Log in and stay connected to your glucose health journey',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 18.0, color: Colors.grey),
@@ -160,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(height: 100.0),
                     ElevatedButton(
-                      child: Text('Log In'),
+                      child: Text('Log In', style: TextStyle(fontSize: 15.0)),
                       onPressed: _handleLogin,
                       style: ElevatedButton.styleFrom(
                           primary: Color(0xFF715C0C),
@@ -168,6 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                           minimumSize: Size(double.infinity, 36),
                           padding: EdgeInsets.symmetric(vertical: 12.0)),
                     ),
+                    SizedBox(height: 10.0),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: GestureDetector(
@@ -182,6 +183,7 @@ class _LoginPageState extends State<LoginPage> {
                           text: TextSpan(
                             text: "Don’t have an account? ",
                             style: TextStyle(
+                                fontSize: 17,
                                 color: Colors.black,
                                 fontWeight: FontWeight.normal),
                             children: [

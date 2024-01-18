@@ -187,6 +187,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           minimumSize: Size(double.infinity, 36),
                           padding: EdgeInsets.symmetric(vertical: 12.0)),
                     ),
+                    SizedBox(height: 10.0),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: GestureDetector(
@@ -200,7 +201,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: Text.rich(
                           TextSpan(
                             text: "Already have an account? ",
-                            style: TextStyle(color: Colors.black, fontSize: 16),
+                            style: TextStyle(color: Colors.black, fontSize: 17),
                             children: <TextSpan>[
                               TextSpan(
                                 text: 'Log In',

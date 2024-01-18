@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'add-meal.dart';
 import 'add-medication.dart';
 import 'add-sleep.dart';
@@ -13,13 +14,48 @@ class AddExercisePage extends StatefulWidget {
 class _AddExercisePageState extends State<AddExercisePage> {
   bool showNotification = false;
   int currentPageIndex = 0;
+  DateTime? _selectedDate;
+  TimeOfDay? _selectedStartTime;
+  TimeOfDay? _selectedEndTime;
+
+  void _onDatePicked(DateTime pickedDate) {
+    setState(() {
+      _selectedDate = pickedDate;
+    });
+  }
+
+  void _onStartTimePicked(TimeOfDay pickedTime) {
+    setState(() {
+      _selectedStartTime = pickedTime;
+    });
+  }
+
+  void _onEndTimePicked(TimeOfDay pickedTime) {
+    setState(() {
+      _selectedEndTime = pickedTime;
+    });
+  }
+
+  OutlineInputBorder _border(Color color) {
+    return OutlineInputBorder(
+      borderSide: BorderSide(color: color, width: 2.0),
+    );
+  }
+
+  String _formatTimeOfDay(TimeOfDay timeOfDay) {
+    final now = DateTime.now();
+    final dt = DateTime(
+        now.year, now.month, now.day, timeOfDay.hour, timeOfDay.minute);
+    final format = DateFormat.jm(); // Change the format as needed
+    return format.format(dt);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Image.asset('assets/topbar-logo.png'),
-        backgroundColor: const Color(0xFFF5EDDF),
+        backgroundColor: Colors.amber[50],
         centerTitle: true,
         toolbarHeight: 60.0,
         elevation: 20,
@@ -42,118 +78,153 @@ class _AddExercisePageState extends State<AddExercisePage> {
           ),
         ],
       ),
-      
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Exercise Name',
-                  border: OutlineInputBorder(),
+      body: Container(
+        child: Container(
+          color: Colors.orange[50],
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Add Exercise',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-              ),
-              SizedBox(height: 16.0),
-              DropdownButtonFormField(
-                decoration: InputDecoration(
-                  labelText: 'Intensity',
-                  border: OutlineInputBorder(),
+                SizedBox(height: 32.0),
+                TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Exercise Name',
+                    labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                    border: _border(Colors.grey),
+                    focusedBorder: _border(Color(0xFF715C0C)),
+                  ),
                 ),
-                items: ['Low', 'Medium', 'High']
-                    .map((label) => DropdownMenuItem(
-                          child: Text(label),
-                          value: label,
-                        ))
-                    .toList(),
-                onChanged: (value) {},
-              ),
-              SizedBox(height: 16.0),
-              GestureDetector(
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2101),
-                  );
-                  if (pickedDate != null) {
-                    // Format and set the date to your state
-                  }
-                },
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Date',
-                      border: OutlineInputBorder(),
-                      suffixIcon: Icon(Icons.calendar_today),
+                SizedBox(height: 16.0),
+                DropdownButtonFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Intensity',
+                    labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                    border: _border(Colors.grey),
+                    focusedBorder: _border(Color(0xFF715C0C)),
+                  ),
+                  items: ['Low', 'Medium', 'High']
+                      .map((label) => DropdownMenuItem(
+                            child: Text(label),
+                            value: label,
+                          ))
+                      .toList(),
+                  onChanged: (value) {},
+                ),
+                SizedBox(height: 16.0),
+                GestureDetector(
+                  onTap: () async {
+                    DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: _selectedDate ?? DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101),
+                    );
+                    if (pickedDate != null) {
+                      _onDatePicked(pickedDate);
+                    }
+                  },
+                  child: AbsorbPointer(
+                    child: TextFormField(
+                      controller: TextEditingController(
+                          text: _selectedDate != null
+                              ? DateFormat('EEEE, dd MMM yyyy')
+                                  .format(_selectedDate!)
+                              : ''),
+                      decoration: InputDecoration(
+                        labelText: 'Date',
+                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                        border: _border(Colors.grey),
+                        focusedBorder: _border(Color(0xFF715C0C)),
+                        suffixIcon: Icon(Icons.calendar_today),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: 16.0),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () async {
-                        TimeOfDay? pickedTime = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.now(),
-                        );
-                        if (pickedTime != null) {
-                          // Format and set the time to your state
-                        }
-                      },
-                      child: AbsorbPointer(
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Start Time',
-                            border: OutlineInputBorder(),
-                            suffixIcon: Icon(Icons.access_time),
+                SizedBox(height: 16.0),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () async {
+                          TimeOfDay? pickedTime = await showTimePicker(
+                            context: context,
+                            initialTime: _selectedStartTime ?? TimeOfDay.now(),
+                          );
+                          if (pickedTime != null) {
+                            _onStartTimePicked(pickedTime);
+                          }
+                        },
+                        child: AbsorbPointer(
+                          child: TextFormField(
+                            controller: TextEditingController(
+                                text: _selectedStartTime != null
+                                    ? _formatTimeOfDay(_selectedStartTime!)
+                                    : ''),
+                            decoration: InputDecoration(
+                              labelText: 'Start Time',
+                              border: _border(Colors.grey),
+                              focusedBorder: _border(Color(0xFF715C0C)),
+                              suffixIcon: Icon(Icons.access_time),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 16.0),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () async {
-                        TimeOfDay? pickedTime = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.now(),
-                        );
-                        if (pickedTime != null) {
-                          // Format and set the time to your state
-                        }
-                      },
-                      child: AbsorbPointer(
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'End Time',
-                            border: OutlineInputBorder(),
-                            suffixIcon: Icon(Icons.access_time),
+                    SizedBox(width: 16.0),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () async {
+                          TimeOfDay? pickedTime = await showTimePicker(
+                            context: context,
+                            initialTime: _selectedEndTime ?? TimeOfDay.now(),
+                          );
+                          if (pickedTime != null) {
+                            _onEndTimePicked(pickedTime);
+                          }
+                        },
+                        child: AbsorbPointer(
+                          child: TextFormField(
+                            controller: TextEditingController(
+                                text: _selectedEndTime != null
+                                    ? _formatTimeOfDay(_selectedEndTime!)
+                                    : ''),
+                            decoration: InputDecoration(
+                              labelText: 'End Time',
+                              border: _border(Colors.grey),
+                              focusedBorder: _border(Color(0xFF715C0C)),
+                              suffixIcon: Icon(Icons.access_time),
+                            ),
                           ),
                         ),
                       ),
                     ),
+                  ],
+                ),
+                SizedBox(height: 64.0),
+                Container(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    child: Text('Save', style: TextStyle(fontSize: 20.0)),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      primary: Color(0xFF715C0C),
+                    ),
+                    onPressed: () {
+                      // Code to save sleep data
+                    },
                   ),
-                ],
-              ),
-              SizedBox(height: 24.0),
-              ElevatedButton(
-                child: Text('Save'),
-                onPressed: () {
-                  // Code to save the exercise
-                },
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
-
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color(0xFFFF6B42),
         foregroundColor: Colors.white,

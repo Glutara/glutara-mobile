@@ -43,8 +43,9 @@ class _AddMealPageState extends State<AddMealPage> {
         ],
       ),
       // TODO: Implement body as design
-      body: Padding(
+      body: Container(
         padding: const EdgeInsets.all(16.0),
+        color: Colors.orange[50],
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -171,11 +172,12 @@ class _AddMealPageState extends State<AddMealPage> {
             ),
             SizedBox(height: 24),
             SizedBox(
-              width: double.infinity, // Ensure the button takes the full width
+              width: double.infinity,
               child: ElevatedButton(
                 child: const Text('Save'),
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.brown, // Set the background color
+                  primary: Color(0xFF715C0C), 
+                  foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(vertical: 16.0),
                 ),
                 onPressed: () {
