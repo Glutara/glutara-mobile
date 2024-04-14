@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../core/auth.dart';
 import 'homepage.dart';
 import 'signup.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -12,76 +13,65 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final FocusNode _nameFocusNode = FocusNode();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
-  final FocusNode _phoneFocusNode = FocusNode();
 
-  final AuthApi _authApi = AuthApi();
-
-  String? _email;
-  String? _password;
+  bool _isPasswordVisible = false;
 
   Future<void> _handleLogin() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
-      //show snackbar to indicate loading
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      //   content: const Text('Processing Data'),
-      //   backgroundColor: Colors.green.shade300,
-      // ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Logging in...'),
+      ),
+    );
 
-      // try {
-      //   //Get response from ApiClient
-      //   dynamic res = await _authApi.login(
-      //     _email!,
-      //     _password!,
-      //   );
-      //   ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    var response = await http.post(
+      Uri.parse(
+          'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/auth/login'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'email': _emailController.text,
+        'password': _passwordController.text,
+      }),
+    );
 
-      //   // If there is no error, redirect to homepage
-      //   if (res['ErrorCode'] == null) {
-      //     ScaffoldMessenger.of(context).showSnackBar(
-      //       SnackBar(
-      //         content: Text('Login successful!'),
-      //         backgroundColor: Colors.green,
-      //       ),
-      //     );
-      //     await Future.delayed(Duration(seconds: 2));
-      //     Navigator.pushReplacement(
-      //       context,
-      //       MaterialPageRoute(builder: (context) => HomePage()),
-      //     );
-      //   } else {
-      //     //if an error occurs, show snackbar with error message
-      //     showErrorSnackBar(res['Message']);
-      //   }
-      // } catch (e) {
-      //   showErrorSnackBar('An unexpected error occurred : ${e}a');
-      // }
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Login successful!'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2),
+        ),
+      );
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),
       );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text('Failed to login: ${json.decode(response.body)['message']}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
-  }
-
-  void showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Error: $message'),
-        backgroundColor: Colors.red.shade300,
-      ),
-    );
   }
 
   @override
   void dispose() {
-    _nameFocusNode.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
-    _phoneFocusNode.dispose();
     super.dispose();
   }
 
@@ -95,10 +85,6 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -136,6 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: <Widget>[
                     SizedBox(height: 100.0),
                     TextFormField(
+                      controller: _emailController,
                       focusNode: _emailFocusNode,
                       decoration: InputDecoration(
                         labelText: 'Email',
@@ -144,19 +131,43 @@ class _LoginPageState extends State<LoginPage> {
                         focusedBorder: _border(Color(0xFF715C0C)),
                       ),
                       keyboardType: TextInputType.emailAddress,
-                      onSaved: (value) => _email = value,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Email cannot be empty';
+                        }
+                        return null;
+                      },
                     ),
                     SizedBox(height: 16.0),
                     TextFormField(
+                      controller: _passwordController,
                       focusNode: _passwordFocusNode,
                       decoration: InputDecoration(
                         labelText: 'Password',
                         labelStyle: TextStyle(color: Color(0xFF715C0C)),
                         border: _border(Colors.grey),
                         focusedBorder: _border(Color(0xFF715C0C)),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Color(0xFF715C0C),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                        ),
                       ),
-                      obscureText: true,
-                      onSaved: (value) => _password = value,
+                      obscureText: !_isPasswordVisible,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Password cannot be empty';
+                        }
+                        return null;
+                      },
                     ),
                     SizedBox(height: 100.0),
                     ElevatedButton(
