@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
 import 'add-reminder.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -13,15 +16,83 @@ class _SignUpPageState extends State<SignUpPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _selectedRoleNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
 
+  String? _name;
+  String? _email;
+  String? _password;
+  String? _phone;
   String? _selectedRole;
 
-  void _submitForm() {
+  bool _obscurePassword = true;
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscurePassword = !_obscurePassword;
+    });
+  }
+
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      // API pendaftaran atau logic lainnya bisa diimplementasikan di sini
+
+      if (_name == null ||
+          _email == null ||
+          _password == null ||
+          _phone == null ||
+          _selectedRole == null) {
+        Fluttertoast.showToast(
+            msg: "Please fill all fields",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+
+        return;
+      }
+
+      var response = await http.post(
+        Uri.parse(
+            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/auth/register'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'name': _name!,
+          'email': _email!,
+          'password': _password!,
+          'phone': _phone!,
+          'role': _selectedRole!,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        Fluttertoast.showToast(
+            msg: "User registered successfully",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => AddReminderPage()),
+        );
+      } else {
+        Fluttertoast.showToast(
+            msg: "Failed to register user: ${response.body}",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
     }
   }
 
@@ -29,6 +100,7 @@ class _SignUpPageState extends State<SignUpPage> {
   void dispose() {
     _nameFocusNode.dispose();
     _emailFocusNode.dispose();
+    _selectedRoleNode.dispose();
     _passwordFocusNode.dispose();
     _phoneFocusNode.dispose();
     super.dispose();
@@ -42,10 +114,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    String? _name;
-    String? _email;
-    String? _password;
-    String? _phone;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -101,12 +169,12 @@ class _SignUpPageState extends State<SignUpPage> {
                         border: _border(Colors.grey),
                         focusedBorder: _border(Color(0xFF715C0C)),
                       ),
-                      onSaved: (value) => _name = value,
+                      onSaved: (value) => _name = value!,
                     ),
                     SizedBox(height: 16.0),
                     DropdownButtonFormField<String>(
                       focusNode:
-                          _nameFocusNode, // You can still use the focus node if needed for form navigation
+                          _selectedRoleNode, // You can still use the focus node if needed for form navigation
                       decoration: InputDecoration(
                         labelText: 'I am a',
                         labelStyle: TextStyle(color: Color(0xFF715C0C)),
@@ -128,11 +196,11 @@ class _SignUpPageState extends State<SignUpPage> {
                       onChanged: (String? newValue) {
                         // Ensure the current state is updated
                         setState(() {
-                          _selectedRole = newValue;
+                          _selectedRole = newValue!;
                         });
                       },
                       onSaved: (String? newValue) {
-                        _selectedRole = newValue;
+                        _selectedRole = newValue!;
                       },
                     ),
                     SizedBox(height: 16.0),
@@ -145,7 +213,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         focusedBorder: _border(Color(0xFF715C0C)),
                       ),
                       keyboardType: TextInputType.emailAddress,
-                      onSaved: (value) => _email = value,
+                      onSaved: (value) => _email = value!,
                     ),
                     SizedBox(height: 16.0),
                     TextFormField(
@@ -155,9 +223,18 @@ class _SignUpPageState extends State<SignUpPage> {
                         labelStyle: TextStyle(color: Color(0xFF715C0C)),
                         border: _border(Colors.grey),
                         focusedBorder: _border(Color(0xFF715C0C)),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: Color(0xFF715C0C),
+                          ),
+                          onPressed: _togglePasswordVisibility,
+                        ),
                       ),
-                      obscureText: true,
-                      onSaved: (value) => _password = value,
+                      obscureText: _obscurePassword,
+                      onSaved: (value) => _password = value!,
                     ),
                     SizedBox(height: 16.0),
                     TextFormField(
@@ -169,18 +246,12 @@ class _SignUpPageState extends State<SignUpPage> {
                         focusedBorder: _border(Color(0xFF715C0C)),
                       ),
                       keyboardType: TextInputType.phone,
-                      onSaved: (value) => _phone = value,
+                      onSaved: (value) => _phone = value!,
                     ),
                     SizedBox(height: 24.0),
                     ElevatedButton(
                       child: Text('Sign Up'),
-                      onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AddReminderPage()),
-                          );
-                        },
+                      onPressed: _submitForm,
                       style: ElevatedButton.styleFrom(
                           primary: Color(0xFF715C0C),
                           onPrimary: Colors.white,
