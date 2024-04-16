@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
 import 'login.dart';
 import 'homepage.dart';
@@ -38,18 +40,27 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
 
+    int roleValue = _selectedRole == 'Patient'
+        ? 0
+        : _selectedRole == 'Doctor'
+            ? 1
+            : _selectedRole == 'Volunteer'
+                ? 2
+                : 3;
+
     var response = await http.post(
       Uri.parse(
           'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/auth/register'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(<String, String>{
+      body: jsonEncode(<String, dynamic>{
+        'ID': 0,
         'name': _nameController.text,
         'email': _emailController.text,
         'password': _passwordController.text,
         'phone': _phoneController.text,
-        'role': _selectedRole!,
+        'role': roleValue,
       }),
     );
 

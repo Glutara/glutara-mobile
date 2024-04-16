@@ -31,35 +31,51 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
 
-    var response = await http.post(
-      Uri.parse(
-          'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/auth/login'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'email': _emailController.text,
-        'password': _passwordController.text,
-      }),
-    );
+    try {
+      var response = await http.post(
+        Uri.parse(
+            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/auth/login'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'email': _emailController.text,
+          'password': _passwordController.text,
+        }),
+      );
 
-    if (response.statusCode == 200) {
+      print("TESTING YOO");
+      print(response.body);
+
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      if (response.statusCode == 200) {
+        print("MASUK SINI");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Login successful!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } else {
+        print("ERROR");
+        final errorResponse = json.decode(response.body);
+        print(errorResponse);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Failed to login:  ${errorResponse['message'] ?? 'An error occurred'}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Login successful!'),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content:
-              Text('Failed to login: ${json.decode(response.body)['message']}'),
+          content: Text('User not found, check your email and password'),
           backgroundColor: Colors.red,
         ),
       );
