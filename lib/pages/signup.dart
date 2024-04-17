@@ -5,6 +5,7 @@ import 'login.dart';
 import 'homepage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -65,6 +66,11 @@ class _SignUpPageState extends State<SignUpPage> {
     );
 
     if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userID', data['ID'].toString());
+      await prefs.setInt(
+          'lastLoginTime', DateTime.now().millisecondsSinceEpoch);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('User registered successfully'),

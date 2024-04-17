@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '/pages/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'homepage.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -13,12 +15,37 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userID = prefs.getString('userID');
+    int? lastLoginTime = prefs.getInt('lastLoginTime');
+
+    if (userID != null && lastLoginTime != null) {
+      int currentTime = DateTime.now().millisecondsSinceEpoch;
+      // Check if user has login less than 24 hours
+      if (currentTime - lastLoginTime <= 86400000) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } else {
+        // Expired session
+        _redirectToLoginPage();
+      }
+    } else {
+      // No Login data
+      _redirectToLoginPage();
+    }
+  }
+
+  void _redirectToLoginPage() {
     Timer(
-      Duration(seconds: 5),
-      () => Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      ),
-    );
+        Duration(seconds: 5),
+        () => Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => LoginPage()),
+            ));
   }
 
   @override

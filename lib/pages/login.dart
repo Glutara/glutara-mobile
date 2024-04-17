@@ -3,6 +3,7 @@ import 'homepage.dart';
 import 'signup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -44,12 +45,12 @@ class _LoginPageState extends State<LoginPage> {
         }),
       );
 
-      print("TESTING YOO");
-      print(response.body);
-
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       if (response.statusCode == 200) {
-        print("MASUK SINI");
+        var data = jsonDecode(response.body);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userID', data['ID'].toString());
+        await prefs.setInt('lastLoginTime', DateTime.now().millisecondsSinceEpoch);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Login successful!'),
@@ -61,9 +62,7 @@ class _LoginPageState extends State<LoginPage> {
           MaterialPageRoute(builder: (context) => HomePage()),
         );
       } else {
-        print("ERROR");
         final errorResponse = json.decode(response.body);
-        print(errorResponse);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
