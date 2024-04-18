@@ -209,13 +209,13 @@ class _SignUpPageState extends State<SignUpPage> {
                         labelText: 'Password',
                         labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary), // Use theme color
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Theme.of(context).colorScheme.primary), // Use theme color
+                        focusedBorder: _border(Theme.of(context).colorScheme.primary),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePassword
                                 ? Icons.visibility_off
                                 : Icons.visibility,
-                            color: Theme.of(context).colorScheme.primary, // Use theme color
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           onPressed: _togglePasswordVisibility,
                         ),

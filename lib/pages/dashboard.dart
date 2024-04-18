@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
+import '../color_schemes.g.dart';
 
 final dummyData = [
   {'x': 00.00, 'y': 99},
@@ -97,7 +98,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     touchTooltipData: LineTouchTooltipData(
                       tooltipBgColor: Colors.white,
                       tooltipBorder:
-                          BorderSide(width: 2, color: Color(0xFFFF6B42)),
+                          BorderSide(width: 2, color: CustomColors.brandColor),
                       tooltipRoundedRadius: 20,
                       getTooltipItems: (List<LineBarSpot> touchedSpots) {
                         return touchedSpots.map((spot) {
@@ -142,7 +143,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     LineChartBarData(
                       spots: getSpots(),
                       isCurved: false,
-                      color: Color(0xFFFF6B42),
+                      color: CustomColors.brandColor,
                       barWidth: 2,
                       isStrokeCapRound: true,
                       dotData: FlDotData(show: false),
@@ -181,7 +182,7 @@ class _DashboardPageState extends State<DashboardPage> {
         Card(
           elevation: 2,
           margin: const EdgeInsets.all(16.0),
-          color: Color(0xFFFEE086), // Replace with your card's background color
+          color: Theme.of(context).colorScheme.primaryContainer,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(

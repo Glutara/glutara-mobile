@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+class CustomColors {
+  static const Color brandColor = Color(0xFFFF6B42);
+}
+
 const lightColorScheme = ColorScheme(
   brightness: Brightness.light,
   primary: Color(0xFF725C00),
