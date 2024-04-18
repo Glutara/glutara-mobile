@@ -4,6 +4,7 @@ import 'signup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../color_schemes.g.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -141,9 +142,9 @@ class _LoginPageState extends State<LoginPage> {
                       focusNode: _emailFocusNode,
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
+                        focusedBorder: _border(Theme.of(context).colorScheme.primary),
                       ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
@@ -159,15 +160,15 @@ class _LoginPageState extends State<LoginPage> {
                       focusNode: _passwordFocusNode,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
+                        focusedBorder: _border(Theme.of(context).colorScheme.primary),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _isPasswordVisible
                                 ? Icons.visibility
                                 : Icons.visibility_off,
-                            color: Color(0xFF715C0C),
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           onPressed: () {
                             setState(() {
@@ -189,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: Text('Log In', style: TextStyle(fontSize: 15.0)),
                       onPressed: _handleLogin,
                       style: ElevatedButton.styleFrom(
-                          primary: Color(0xFF715C0C),
+                          primary: Theme.of(context).colorScheme.primary,
                           onPrimary: Colors.white,
                           minimumSize: Size(double.infinity, 36),
                           padding: EdgeInsets.symmetric(vertical: 12.0)),
@@ -216,7 +217,7 @@ class _LoginPageState extends State<LoginPage> {
                               TextSpan(
                                 text: 'Sign Up',
                                 style: TextStyle(
-                                    color: Color(0xFF715C0C),
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.bold),
                               ),
                             ],

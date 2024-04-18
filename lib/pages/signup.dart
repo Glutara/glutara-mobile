@@ -1,11 +1,10 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:flutter/material.dart';
 import 'login.dart';
 import 'homepage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../color_schemes.g.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -44,10 +43,10 @@ class _SignUpPageState extends State<SignUpPage> {
     int roleValue = _selectedRole == 'Patient'
         ? 0
         : _selectedRole == 'Doctor'
-            ? 1
-            : _selectedRole == 'Volunteer'
-                ? 2
-                : 3;
+        ? 1
+        : _selectedRole == 'Volunteer'
+        ? 2
+        : 3;
 
     var response = await http.post(
       Uri.parse(
@@ -113,10 +112,6 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -157,9 +152,9 @@ class _SignUpPageState extends State<SignUpPage> {
                       controller: _nameController,
                       decoration: InputDecoration(
                         labelText: 'Name',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary), // Use theme color
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
+                        focusedBorder: _border(Theme.of(context).colorScheme.primary), // Use theme color
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -172,14 +167,13 @@ class _SignUpPageState extends State<SignUpPage> {
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         labelText: 'I am a',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary), // Use theme color
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
+                        focusedBorder: _border(Theme.of(context).colorScheme.primary), // Use theme color
                       ),
                       value: _selectedRole,
                       items: <String>[
                         'Patient',
-                        'Doctor',
                         'Volunteer',
                         'Relation'
                       ].map<DropdownMenuItem<String>>((String value) {
@@ -203,9 +197,9 @@ class _SignUpPageState extends State<SignUpPage> {
                       controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary), // Use theme color
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
+                        focusedBorder: _border(Theme.of(context).colorScheme.primary), // Use theme color
                       ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
@@ -220,15 +214,15 @@ class _SignUpPageState extends State<SignUpPage> {
                       controller: _passwordController,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary), // Use theme color
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
+                        focusedBorder: _border(Theme.of(context).colorScheme.primary), // Use theme color
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePassword
                                 ? Icons.visibility_off
                                 : Icons.visibility,
-                            color: Color(0xFF715C0C),
+                            color: Theme.of(context).colorScheme.primary, // Use theme color
                           ),
                           onPressed: _togglePasswordVisibility,
                         ),
@@ -246,9 +240,9 @@ class _SignUpPageState extends State<SignUpPage> {
                       controller: _phoneController,
                       decoration: InputDecoration(
                         labelText: 'Phone',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary), // Use theme color
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
+                        focusedBorder: _border(Theme.of(context).colorScheme.primary), // Use theme color
                       ),
                       keyboardType: TextInputType.phone,
                       validator: (value) {
@@ -263,10 +257,11 @@ class _SignUpPageState extends State<SignUpPage> {
                       child: Text('Sign Up'),
                       onPressed: _submitForm,
                       style: ElevatedButton.styleFrom(
-                          primary: Color(0xFF715C0C),
-                          onPrimary: Colors.white,
-                          minimumSize: Size(double.infinity, 36),
-                          padding: EdgeInsets.symmetric(vertical: 12.0)),
+                        primary: Theme.of(context).colorScheme.primary, // Use theme color
+                        onPrimary: Colors.white,
+                        minimumSize: Size(double.infinity, 36),
+                        padding: EdgeInsets.symmetric(vertical: 12.0),
+                      ),
                     ),
                     SizedBox(height: 10.0),
                     Padding(
@@ -276,7 +271,8 @@ class _SignUpPageState extends State<SignUpPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LoginPage()),
+                              builder: (context) => LoginPage(),
+                            ),
                           );
                         },
                         child: Text.rich(
@@ -287,9 +283,10 @@ class _SignUpPageState extends State<SignUpPage> {
                               TextSpan(
                                 text: 'Log In',
                                 style: TextStyle(
-                                    color: Color(0xFF715C0C),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16),
+                                  color: Theme.of(context).colorScheme.primary, // Use theme color
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                             ],
                           ),
