@@ -57,7 +57,7 @@ class NotificationPage extends StatelessWidget {
                 child: ListTile(
                   title: Text(
                     notification['title'] as String,
-                    style: const TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 18),
                   ),
                   subtitle: Text(
                     notification['description'] as String,

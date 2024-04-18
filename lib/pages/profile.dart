@@ -71,7 +71,7 @@ class ProfilePage extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.only(left: 16.0, top: 32.0),
           ),
-          _buildListTile(context, Icons.notifications_outlined, 'Notifications'),
+          _buildListTile(context, Icons.notifications_outlined, 'Reminders'),
           _buildListTile(context, Icons.dark_mode_outlined, 'Appearance'),
           _buildListTile(context, Icons.lock_outline, 'Privacy'),
           _buildListTile(context, Icons.cloud_outlined, 'Storage & Data'),
