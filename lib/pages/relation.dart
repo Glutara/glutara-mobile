@@ -7,27 +7,32 @@ class RelationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'My Relation',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-            icon: CircleAvatar(
-              backgroundColor:
-                  Color(0xFF715C0C), 
-              radius: 18,
-              child: Icon(Icons.add, color: Colors.white), 
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
+          child: AppBar(
+            title: const Text(
+              'My Relation',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            onPressed: () {
-              // TODO: Implement add relation action
-            },
+            actions: [
+              IconButton(
+                icon: CircleAvatar(
+                  backgroundColor: Color(0xFF715C0C),
+                  radius: 18,
+                  child: Icon(Icons.add, color: Colors.white),
+                ),
+                onPressed: () {
+                  // TODO: Implement add relation action
+                },
+              ),
+            ],
           ),
-        ],
+        ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0), 
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Expanded(
