@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:intl/intl.dart';
 
 class AddMedicationPage extends StatefulWidget {
   const AddMedicationPage({Key? key}) : super(key: key);
@@ -9,20 +10,14 @@ class AddMedicationPage extends StatefulWidget {
 }
 
 class _AddMedicationPageState extends State<AddMedicationPage> {
-  bool isPill = true;
-  String? pillName;
-  int? dose;
-  String? injectionType;
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
-  bool showNotification = false;
-  int currentPageIndex = 0;
-
-  void _onDateChanged(DateRangePickerSelectionChangedArgs args) {
-    setState(() {
-      selectedDate = args.value;
-    });
-  }
+  String saveFormattedDate = "";
+  final TextEditingController dateControllerInjection = TextEditingController();
+  final TextEditingController timeControllerInjection = TextEditingController();
+  final TextEditingController dateControllerPill = TextEditingController();
+  final TextEditingController timeControllerPill = TextEditingController();
+  DateTime? selectedStartDate;
 
   OutlineInputBorder _border(Color color) {
     return OutlineInputBorder(
@@ -30,147 +25,301 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
     );
   }
 
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: selectedTime,
-    );
-    if (picked != null && picked != selectedTime) {
-      setState(() {
-        selectedTime = picked;
-      });
-    }
-  }
-
-  // This function can be used to save the medication data
-  void _saveMedication() {
-    // Implement your save logic here
-    // You can use pillName, dose, injectionType, selectedDate, and selectedTime as needed
+  @override
+  void dispose() {
+    dateControllerInjection.dispose();
+    timeControllerInjection.dispose();
+    dateControllerPill.dispose();
+    timeControllerPill.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        title: Image.asset('assets/topbar-logo.png'),
-        backgroundColor: const Color(0xFFF5EDDF),
-        centerTitle: true,
-        toolbarHeight: 60.0,
-        elevation: 20,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(30.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                'Add Medication',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              ToggleButtons(
-                children: const [Text('Injection'), Text('Pill')],
-                isSelected: [!isPill, isPill],
-                onPressed: (int index) {
-                  setState(() {
-                    isPill = index != 0;
-                  });
-                },
-              ),
-              if (isPill) ...[
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Pill Name',
-                    labelStyle: TextStyle(color: Color(0xFF715C0C)),
+    return DefaultTabController(
+      length: 2,
+      initialIndex: 0,
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        appBar: AppBar(
+          title: Image.asset('assets/topbar-logo.png'),
+          backgroundColor: const Color(0xFFF5EDDF),
+          centerTitle: true,
+          toolbarHeight: 60.0,
+          elevation: 20,
+          bottom: TabBar(
+            tabs: [
+              Tab(text: 'Injection'),
+              Tab(text: 'Pill'),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            // The Injection tab content
+            Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Add Medication',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
-                  onChanged: (value) => pillName = value,
-                ),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Dose (mg)',
-                    labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                  SizedBox(height: 60.0),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: DropdownButtonFormField<String>(
+                          decoration: InputDecoration(
+                            labelText: 'Injection Type',
+                            labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                            border: _border(Colors.grey),
+                            focusedBorder: _border(Color(0xFF715C0C)),
+                          ),
+                          onChanged: (String? newValue) {
+                            // Handle change
+                          },
+                          items: [
+                            'Long-acting',
+                            'Medium-acting',
+                            'Short-acting'
+                          ]
+                              .map((String value) => DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  ))
+                              .toList(),
+                        ),
+                      ),
+                      SizedBox(width: 25.0),
+                      Expanded(
+                        flex: 2,
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Dose (unit)',
+                            labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                            border: _border(Colors.grey),
+                            focusedBorder: _border(Color(0xFF715C0C)),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  onChanged: (value) => dose = int.tryParse(value),
-                  keyboardType: TextInputType.number,
-                ),
-              ] else ...[
-                InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: 'Select Injection Type',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                  SizedBox(height: 25),
+                  TextFormField(
+                    controller: dateControllerInjection,
+                    decoration: InputDecoration(
+                      labelText: 'Date',
+                      labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                      border: _border(Colors.grey),
+                      focusedBorder: _border(Color(0xFF715C0C)),
+                      suffixIcon: Icon(Icons.calendar_today),
                     ),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: injectionType,
-                      isDense: true,
-                      isExpanded: true,
-                      hint: Text('Select Injection Type'),
-                      items: <String>[
-                        'Long-acting',
-                        'Rapid-acting',
-                        'Short-acting'
-                      ].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
+                    readOnly: true,
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2101));
+                      if (pickedDate != null) {
+                        // Format the date for saving
+                        saveFormattedDate =
+                            DateFormat('dd-MM-yyyy').format(pickedDate);
+
+                        // Format the date for displaying
+                        String displayFormattedDate =
+                            DateFormat('EEEE, MMMM dd yyyy').format(pickedDate);
+
                         setState(() {
-                          injectionType = newValue;
+                          dateControllerInjection.text = displayFormattedDate;
                         });
+                      }
+                    },
+                  ),
+                  SizedBox(height: 25),
+                  Expanded(
+                    child: TextFormField(
+                      controller: timeControllerInjection,
+                      decoration: InputDecoration(
+                        labelText: 'Time',
+                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                        border: _border(Colors.grey),
+                        focusedBorder: _border(Color(0xFF715C0C)),
+                        suffixIcon: Icon(Icons.watch_later_outlined),
+                      ),
+                      readOnly: true,
+                      onTap: () async {
+                        final TimeOfDay? pickedStartTime = await showTimePicker(
+                          context: context,
+                          initialTime: selectedStartDate != null
+                              ? TimeOfDay.fromDateTime(selectedStartDate!)
+                              : TimeOfDay.now(),
+                        );
+                        if (pickedStartTime != null) {
+                          DateTime tempSelectedStartDate = DateTime(
+                            DateTime.now().year,
+                            DateTime.now().month,
+                            DateTime.now().day,
+                            pickedStartTime.hour,
+                            pickedStartTime.minute,
+                          );
+                          setState(() {
+                            selectedStartDate = tempSelectedStartDate;
+                            timeControllerInjection.text = DateFormat('HH:mm')
+                                .format(tempSelectedStartDate);
+                          });
+                        }
                       },
                     ),
                   ),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Dose (unit)'),
-                  onChanged: (value) => dose = int.tryParse(value),
-                  keyboardType: TextInputType.number,
-                ),
-              ],
-              SfDateRangePicker(
-                onSelectionChanged: _onDateChanged,
-                selectionMode: DateRangePickerSelectionMode.single,
-                initialSelectedDate: selectedDate,
-                monthCellStyle: DateRangePickerMonthCellStyle(
-                  textStyle: TextStyle(color: Colors.black),
-                  todayTextStyle: TextStyle(color: Colors.black),
-                ),
-                headerStyle: DateRangePickerHeaderStyle(
-                  textAlign: TextAlign.center,
-                  textStyle: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                selectionColor: Colors.amber,
-                todayHighlightColor: Colors.amber,
-              ),
-              TextButton(
-                onPressed: () => _selectTime(context),
-                child: Row(
-                  children: <Widget>[
-                    Icon(Icons.access_time, color: Colors.black),
-                    SizedBox(width: 8),
-                    Text(
-                      'Select Time: ${selectedTime.format(context)}',
-                      style: TextStyle(fontSize: 16, color: Colors.black),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      child: const Text('Save'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Color(0xFF715C0C),
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                      ),
+                      onPressed: () {
+                        // TODO: Implement save functionality
+                      },
                     ),
-                  ],
-                ),
-                style: TextButton.styleFrom(
-                  primary: Colors.black,
-                  backgroundColor: Colors.amber,
-                  onSurface: Colors.grey,
-                ),
+                  ),
+                  SizedBox(height: 25),
+                ],
               ),
-            ],
-          ),
+            ),
+            // The Pill tab content
+            Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Add Medication',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 60.0),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Pill Name',
+                            labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                            border: _border(Colors.grey),
+                            focusedBorder: _border(Color(0xFF715C0C)),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 25.0),
+                      Expanded(
+                        flex: 2,
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Dose (mg)',
+                            labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                            border: _border(Colors.grey),
+                            focusedBorder: _border(Color(0xFF715C0C)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 25),
+                  TextFormField(
+                    controller: dateControllerPill,
+                    decoration: InputDecoration(
+                      labelText: 'Date',
+                      labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                      border: _border(Colors.grey),
+                      focusedBorder: _border(Color(0xFF715C0C)),
+                      suffixIcon: Icon(Icons.calendar_today),
+                    ),
+                    readOnly: true,
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2101));
+                      if (pickedDate != null) {
+                        // Format the date for saving
+                        saveFormattedDate =
+                            DateFormat('dd-MM-yyyy').format(pickedDate);
+
+                        // Format the date for displaying
+                        String displayFormattedDate =
+                            DateFormat('EEEE, MMMM dd yyyy').format(pickedDate);
+
+                        setState(() {
+                          dateControllerPill.text = displayFormattedDate;
+                        });
+                      }
+                    },
+                  ),
+                  SizedBox(height: 25),
+                  Expanded(
+                    child: TextFormField(
+                      controller: timeControllerPill,
+                      decoration: InputDecoration(
+                        labelText: 'Time',
+                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                        border: _border(Colors.grey),
+                        focusedBorder: _border(Color(0xFF715C0C)),
+                        suffixIcon: Icon(Icons.watch_later_outlined),
+                      ),
+                      readOnly: true,
+                      onTap: () async {
+                        final TimeOfDay? pickedStartTime = await showTimePicker(
+                          context: context,
+                          initialTime: selectedStartDate != null
+                              ? TimeOfDay.fromDateTime(selectedStartDate!)
+                              : TimeOfDay.now(),
+                        );
+                        if (pickedStartTime != null) {
+                          DateTime tempSelectedStartDate = DateTime(
+                            DateTime.now().year,
+                            DateTime.now().month,
+                            DateTime.now().day,
+                            pickedStartTime.hour,
+                            pickedStartTime.minute,
+                          );
+                          setState(() {
+                            selectedStartDate = tempSelectedStartDate;
+                            timeControllerPill.text = DateFormat('HH:mm')
+                                .format(tempSelectedStartDate);
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      child: const Text('Save'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Color(0xFF715C0C),
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                      ),
+                      onPressed: () {
+                        // TODO: Implement save functionality
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 25),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

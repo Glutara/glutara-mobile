@@ -9,7 +9,6 @@ class AddReminderPage extends StatefulWidget {
 
 class _AddReminderPageState extends State<AddReminderPage> {
   TimeOfDay _selectedTime = TimeOfDay(hour: 12, minute: 0);
-  TextEditingController _labelController = TextEditingController();
   TextEditingController _noteController = TextEditingController();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -18,15 +17,6 @@ class _AddReminderPageState extends State<AddReminderPage> {
   @override
   void initState() {
     super.initState();
-    var initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    var initSetttings = InitializationSettings(
-      android: initializationSettingsAndroid,
-    );
-
-    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
   }
 
   List<DropdownMenuItem<String>> get _dropdownMenuItems {
@@ -44,8 +34,6 @@ class _AddReminderPageState extends State<AddReminderPage> {
   // }
 
   Future<void> scheduleNotification() async {
-    var scheduledNotificationDateTime = DateTime.now().add(Duration(
-        seconds: 5)); // This should be replaced with your time calculation
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'your channel id',
       'your channel name',

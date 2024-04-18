@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '/pages/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -40,8 +42,7 @@ class ProfilePage extends StatelessWidget {
                     children: const [
                       Text(
                         'Selina Anita',
-                        style: TextStyle(
-                            fontSize: 20),
+                        style: TextStyle(fontSize: 20),
                       ),
                       Text(
                         '+6282336571102',
@@ -99,9 +100,80 @@ class ProfilePage extends StatelessWidget {
         'Logout',
         style: TextStyle(color: Colors.red),
       ),
-      onTap: () {
-        // TODO: Implement logout action
+      onTap: () async {
+        bool confirmLogout = await _showLogoutDialog(context);
+
+        if (confirmLogout) {
+          // Clear user session data from shared preferences or any other persistent storage
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.remove('userID');
+          await prefs.remove('lastLoginTime');
+
+          // Navigate to LoginPage and remove all routes below from the stack
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => LoginPage()),
+            (Route<dynamic> route) => false,
+          );
+        }
       },
     );
+  }
+
+  Future<bool> _showLogoutDialog(BuildContext context) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ), // Makes the corners rounded
+              child: Container(
+                padding: EdgeInsets.all(20.0),
+                constraints: BoxConstraints(
+                    minHeight: 200.0), // Set a minimum height for the dialog
+                child: Column(
+                  mainAxisSize: MainAxisSize
+                      .min, // Ensures the space is only as big as its children need
+                  children: <Widget>[
+                    SizedBox(height: 20), // Spacing at the top
+                    Text(
+                      'Confirm Logout',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                    SizedBox(height: 20), // Spacing between text and buttons
+                    Text(
+                      'Are you sure you want to logout?',
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                    SizedBox(height: 20), // Spacing between text and buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(fontSize: 18.0),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: Text(
+                            'Logout',
+                            style: TextStyle(fontSize: 18.0),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ) ??
+        false;
   }
 }
