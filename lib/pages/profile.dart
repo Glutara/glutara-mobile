@@ -24,7 +24,7 @@ class ProfilePage extends StatelessWidget {
       body: ListView(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -41,7 +41,7 @@ class ProfilePage extends StatelessWidget {
                       Text(
                         'Selina Anita',
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                            fontSize: 20),
                       ),
                       Text(
                         '+6282336571102',
@@ -56,13 +56,13 @@ class ProfilePage extends StatelessWidget {
                   },
                   child: const Text('Edit'),
                   style: TextButton.styleFrom(
-                    backgroundColor: Color(0xFF715C0C),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     primary: Colors.white,
                     minimumSize: Size(50, 30),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
                   ),
                 ),
               ],
@@ -70,13 +70,6 @@ class ProfilePage extends StatelessWidget {
           ),
           const Padding(
             padding: EdgeInsets.only(left: 16.0, top: 32.0),
-            child: Text(
-              'General',
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF544514)),
-            ),
           ),
           _buildListTile(context, Icons.notifications_outlined, 'Notifications'),
           _buildListTile(context, Icons.dark_mode_outlined, 'Appearance'),
@@ -91,7 +84,7 @@ class ProfilePage extends StatelessWidget {
 
   ListTile _buildListTile(BuildContext context, IconData icon, String title) {
     return ListTile(
-      leading: Icon(icon, color: Color(0xFF544514)),
+      leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
       title: Text(title),
       onTap: () {
         // TODO: Implement navigation or action for each ListTile
