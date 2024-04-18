@@ -8,6 +8,7 @@ import 'add-meal.dart';
 import 'add-exercise.dart';
 import 'add-medication.dart';
 import 'add-sleep.dart';
+import '../color_schemes.g.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -32,13 +33,12 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Image.asset('assets/topbar-logo.png'),
-        backgroundColor: const Color(0xFFF5EDDF),
         centerTitle: true,
         toolbarHeight: 60.0,
         elevation: 20,
         actions: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(right: 16.0), // Padding kanan
+            padding: const EdgeInsets.only(right: 16.0),
             child: IconButton(
               onPressed: () {
                 setState(() {
@@ -49,7 +49,7 @@ class _HomePageState extends State<HomePage> {
                 showNotification
                     ? Icons.notifications
                     : Icons.notifications_outlined,
-                size: 30.0, // Sesuaikan dengan ukuran yang Anda inginkan
+                size: 30.0,
               ),
             ),
           ),
@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
               children: _pages,
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xFFFF6B42),
+        backgroundColor: CustomColors.brandColor,
         foregroundColor: Colors.white,
         shape: CircleBorder(eccentricity: 1),
         child: Icon(Icons.add),
@@ -71,8 +71,8 @@ class _HomePageState extends State<HomePage> {
             context: context,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(200.0), // Radius sudut kiri atas
-                topRight: Radius.circular(200.0), // Radius sudut kanan atas
+                topLeft: Radius.circular(200.0),
+                topRight: Radius.circular(200.0),
               ),
             ),
             builder: (context) {
@@ -91,17 +91,17 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   Divider(
-                    color: Color(0xFF7D7667),
+                    color: Theme.of(context).colorScheme.outline,
                     thickness: 2.0,
                   ),
                   ListTile(
                     leading: CircleAvatar(
                       radius: 24,
-                      backgroundColor: Color(0xFFFEE086),
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                       child: Align(
                         alignment: Alignment.center,
                         child:
-                            Icon(Icons.fastfood_outlined, color: Colors.black),
+                            Icon(Icons.fastfood_outlined, color: Theme.of(context).colorScheme.onPrimaryContainer),
                       ),
                     ),
                     title: Text(
@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     subtitle: Text('Track your consumption',
                         style:
-                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
+                            TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -123,11 +123,11 @@ class _HomePageState extends State<HomePage> {
                   ListTile(
                     leading: CircleAvatar(
                       radius: 24,
-                      backgroundColor: Color(0xFFFEE086),
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                       child: Align(
                         alignment: Alignment.center,
                         child:
-                            Icon(Icons.vaccines_outlined, color: Colors.black),
+                            Icon(Icons.vaccines_outlined, color: Theme.of(context).colorScheme.onPrimaryContainer),
                       ),
                     ),
                     title: Text(
@@ -137,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     subtitle: Text('Record medication taken',
                         style:
-                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
+                            TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -149,11 +149,11 @@ class _HomePageState extends State<HomePage> {
                   ListTile(
                     leading: CircleAvatar(
                       radius: 24,
-                      backgroundColor: Color(0xFFFEE086),
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                       child: Align(
                         alignment: Alignment.center,
                         child: Icon(Icons.fitness_center_outlined,
-                            color: Colors.black),
+                            color: Theme.of(context).colorScheme.onPrimaryContainer),
                       ),
                     ),
                     title: Text(
@@ -163,7 +163,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     subtitle: Text('Log your exercise activities',
                         style:
-                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
+                            TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -175,11 +175,11 @@ class _HomePageState extends State<HomePage> {
                   ListTile(
                     leading: CircleAvatar(
                       radius: 24,
-                      backgroundColor: Color(0xFFFEE086),
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                       child: Align(
                         alignment: Alignment.center,
                         child:
-                            Icon(Icons.bedtime_outlined, color: Colors.black),
+                            Icon(Icons.bedtime_outlined, color: Theme.of(context).colorScheme.onPrimaryContainer),
                       ),
                     ),
                     title: Text(
@@ -189,7 +189,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     subtitle: Text('Track your sleep patterns',
                         style:
-                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
+                            TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -206,14 +206,14 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: NavigationBar(
-        backgroundColor: Color(0xFFF5EDDF),
+        backgroundColor: Theme.of(context).colorScheme.surface,
         onDestinationSelected: (int index) {
           setState(() {
             showNotification = false;
             currentPageIndex = index;
           });
         },
-        indicatorColor: Color(0xFFF1E1BB),
+        indicatorColor: Theme.of(context).colorScheme.secondaryContainer,
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(

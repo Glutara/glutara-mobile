@@ -6,19 +6,19 @@ final List<Map<String, dynamic>> logs = [
     'entries': [
       {
         'time': '12.00',
-        'icon': Icons.nights_stay,
+        'icon': Icons.bedtime_outlined,
         'activity': 'Sleep',
         'detail': '1h 30m'
       },
       {
         'time': '10.00',
-        'icon': Icons.directions_run,
+        'icon': Icons.fitness_center_outlined,
         'activity': 'Exercise',
         'detail': 'Light intensity, 30 min'
       },
       {
         'time': '08.00',
-        'icon': Icons.breakfast_dining,
+        'icon': Icons.fastfood_outlined,
         'activity': 'Breakfast',
         'detail': '230 Calories'
       },
@@ -29,19 +29,19 @@ final List<Map<String, dynamic>> logs = [
     'entries': [
       {
         'time': '12.00',
-        'icon': Icons.nights_stay,
+        'icon': Icons.bedtime_outlined,
         'activity': 'Sleep',
         'detail': '1h 30m'
       },
       {
         'time': '10.00',
-        'icon': Icons.directions_run,
+        'icon': Icons.fitness_center_outlined,
         'activity': 'Exercise',
         'detail': 'Light intensity, 30 min'
       },
       {
         'time': '08.00',
-        'icon': Icons.breakfast_dining,
+        'icon': Icons.fastfood_outlined,
         'activity': 'Breakfast',
         'detail': '230 Calories'
       },
@@ -102,8 +102,8 @@ class LogbookPage extends StatelessWidget {
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     child: ListTile(
                       leading: CircleAvatar(
-                        backgroundColor: Colors.amber,
-                        child: Icon(entry['icon'], color: Colors.white),
+                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                        child: Icon(entry['icon'], color: Theme.of(context).colorScheme.onPrimaryContainer),
                       ),
                       title: Text(entry['activity']),
                       subtitle: Text(entry['detail']),

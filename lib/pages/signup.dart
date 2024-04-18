@@ -42,7 +42,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
     int roleValue = _selectedRole == 'Patient'
         ? 0
-        : _selectedRole == 'Doctor'
+        : _selectedRole == 'Relation'
         ? 1
         : _selectedRole == 'Volunteer'
         ? 2
@@ -167,8 +167,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       value: _selectedRole,
                       items: <String>[
                         'Patient',
-                        'Volunteer',
-                        'Relation'
+                        'Relation',
+                        'Volunteer'
                       ].map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
