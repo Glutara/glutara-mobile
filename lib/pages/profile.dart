@@ -78,12 +78,12 @@ class ProfilePage extends StatelessWidget {
                   color: Color(0xFF544514)),
             ),
           ),
-          _buildListTile(
-              context, Icons.notifications_outlined, 'Notifications'),
+          _buildListTile(context, Icons.notifications_outlined, 'Notifications'),
           _buildListTile(context, Icons.dark_mode_outlined, 'Appearance'),
           _buildListTile(context, Icons.lock_outline, 'Privacy'),
           _buildListTile(context, Icons.cloud_outlined, 'Storage & Data'),
           _buildListTile(context, Icons.info_outline, 'About'),
+          _buildLogoutListTile(context), // Add Logout option
         ],
       ),
     );
@@ -95,6 +95,19 @@ class ProfilePage extends StatelessWidget {
       title: Text(title),
       onTap: () {
         // TODO: Implement navigation or action for each ListTile
+      },
+    );
+  }
+
+  ListTile _buildLogoutListTile(BuildContext context) {
+    return ListTile(
+      leading: Icon(Icons.logout, color: Colors.red),
+      title: Text(
+        'Logout',
+        style: TextStyle(color: Colors.red),
+      ),
+      onTap: () {
+        // TODO: Implement logout action
       },
     );
   }

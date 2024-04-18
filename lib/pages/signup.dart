@@ -70,13 +70,6 @@ class _SignUpPageState extends State<SignUpPage> {
       await prefs.setString('userID', data['ID'].toString());
       await prefs.setInt(
           'lastLoginTime', DateTime.now().millisecondsSinceEpoch);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('User registered successfully'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
-        ),
-      );
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),

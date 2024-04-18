@@ -52,12 +52,6 @@ class _LoginPageState extends State<LoginPage> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('userID', data['ID'].toString());
         await prefs.setInt('lastLoginTime', DateTime.now().millisecondsSinceEpoch);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Login successful!'),
-            backgroundColor: Colors.green,
-          ),
-        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
