@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'add-with-phone.dart';
 
-class AddWithQRCodePage extends StatelessWidget {
+class GenerateOTPPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +17,7 @@ class AddWithQRCodePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              'Add Relation with QR Code',
+              'OTP Verification Code',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 24,
@@ -27,32 +26,21 @@ class AddWithQRCodePage extends StatelessWidget {
             ),
             SizedBox(height: 15),
             Text(
-              'Let your relation scan this QR Code to share your glucose level tracking with them',
+              '429310',
               style: TextStyle(
-                fontSize: 16
+                  fontSize: 60,
+                  fontWeight: FontWeight.bold
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20),
-            Image.asset(
-              'assets/qrcode.png',
-              width: 250,
-              height: 250,
-            ),
-            SizedBox(height: 50),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AddWithPhonePage()),
-                );
-              },
-              child: Text(
-                  'Add with phone number',
-                  style: TextStyle(fontSize: 16.0)
+            SizedBox(height: 15),
+            Text(
+              'Let your relation to input this OTP into their app. Please note that the code expires in 5 minutes.',
+              style: TextStyle(
+                  fontSize: 16
               ),
-            )
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),
