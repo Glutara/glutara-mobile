@@ -1,71 +1,92 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class RelationPage extends StatelessWidget {
+class RelationPage extends StatefulWidget {
   const RelationPage({Key? key}) : super(key: key);
+
+  @override
+  _RelationPageState createState() => _RelationPageState();
+}
+
+class _RelationPageState extends State<RelationPage> {
+  static const _initialCameraPosition = CameraPosition(
+    target: LatLng(
+        37.7749, -122.4194), // This is a dummy position for San Francisco
+    zoom: 14,
+  );
+
+  Set<Marker> _markers = {};
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Dummy markers data
+    _markers.add(
+      Marker(
+        markerId: MarkerId('m1'),
+        position: LatLng(37.7749, -122.4194),
+        infoWindow: InfoWindow(title: 'Dummy Location 1'),
+      ),
+    );
+    _markers.add(
+      Marker(
+        markerId: MarkerId('m2'),
+        position: LatLng(37.7769, -122.4174),
+        infoWindow: InfoWindow(title: 'Dummy Location 2'),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
-          child: AppBar(
-            title: const Text(
-              'My Relation',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            actions: [
-              IconButton(
-                icon: CircleAvatar(
-                  backgroundColor: Color(0xFF715C0C),
-                  radius: 18,
-                  child: Icon(Icons.add, color: Colors.white),
-                ),
-                onPressed: () {
-                  // TODO: Implement add relation action
-                },
-              ),
+      appBar: AppBar(
+        title: const Text(
+          'My Relation',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              // TODO: Implement add relation action
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListView(
+            shrinkWrap: true,
+            children: const [
+              _RelationTile(name: 'Jonas', phoneNumber: '081396301513'),
+              _RelationTile(name: 'Thomas', phoneNumber: '081396301513'),
+              _RelationTile(name: 'Irene', phoneNumber: '081396301513'),
             ],
           ),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                children: const [
-                  _RelationTile(name: 'Jonas'),
-                  _RelationTile(name: 'Thomas'),
-                  _RelationTile(name: 'Irene'),
-                ],
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              'Search From Map',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            // Make sure GoogleMap is wrapped with an Expanded widget
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16.0),
+              child: GoogleMap(
+                initialCameraPosition: _initialCameraPosition,
+                markers: _markers,
+                onMapCreated: (GoogleMapController controller) {
+                  // TODO: Implement additional map configuration if needed
+                },
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Search From Map',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(30.0),
-                child: GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(37.77483, -122.41942), // Example coordinates
-                    zoom: 14.0,
-                  ),
-                  // Set other map properties if needed
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -73,25 +94,22 @@ class RelationPage extends StatelessWidget {
 
 class _RelationTile extends StatelessWidget {
   final String name;
+  final String phoneNumber;
 
-  const _RelationTile({Key? key, required this.name}) : super(key: key);
+  const _RelationTile({Key? key, required this.name, required this.phoneNumber})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       child: ListTile(
         title: Text(name),
-        trailing: Wrap(
-          spacing: 12, // space between two icons
-          children: <Widget>[
-            const Icon(Icons
-                .call_outlined), // Dummy icon, replace with actions as needed
-            const Icon(Icons
-                .chat_outlined), // Dummy icon, replace with actions as needed
-          ],
+        trailing: IconButton(
+          icon: const Icon(Icons.call_outlined), onPressed: () {  },
         ),
       ),
     );
   }
+
 }
