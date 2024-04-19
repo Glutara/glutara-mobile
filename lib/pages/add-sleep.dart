@@ -54,9 +54,7 @@ class _AddSleepPageState extends State<AddSleepPage> {
                 controller: startTimeController,
                 decoration: InputDecoration(
                   labelText: 'Start Time',
-                  labelStyle: TextStyle(color: Color(0xFF715C0C)),
                   border: _border(Colors.grey),
-                  focusedBorder: _border(Color(0xFF715C0C)),
                   prefixIcon: Icon(Icons.watch_later_outlined),
                   hintText: selectedStartDate != null
                       ? DateFormat('dd MMM yyyy HH:mm')
@@ -99,9 +97,7 @@ class _AddSleepPageState extends State<AddSleepPage> {
                 controller: endTimeController,
                 decoration: InputDecoration(
                   labelText: 'End Time',
-                  labelStyle: TextStyle(color: Color(0xFF715C0C)),
                   border: _border(Colors.grey),
-                  focusedBorder: _border(Color(0xFF715C0C)),
                   prefixIcon: Icon(Icons.watch_later_outlined),
                   hintText: selectedEndDate != null
                       ? DateFormat('dd MMM yyyy HH:mm').format(selectedEndDate!)
@@ -145,7 +141,7 @@ class _AddSleepPageState extends State<AddSleepPage> {
                   child: Text('Save', style: TextStyle(fontSize: 20.0)),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    primary: Color(0xFF715C0C),
+                    primary: Theme.of(context).colorScheme.primary,
                   ),
                   onPressed: () {
                     // Code to save sleep data

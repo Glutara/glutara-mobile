@@ -60,7 +60,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
         tileColor: Colors.orange[50],
         leading: CircleAvatar(
           radius: 24,
-          backgroundColor: Color(0xFFFEE086),
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           child: Align(
             alignment: Alignment.center,
             child: Icon(Icons.vaccines_outlined, color: Colors.black),
@@ -128,7 +128,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
           _showAddReminderModal();
         },
         child: Icon(Icons.add),
-        backgroundColor: Colors.amber,
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
     );
   }
@@ -177,7 +177,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                         style: TextStyle(
                           fontSize: 56.0,
                           fontWeight: FontWeight.bold,
-                          color: Colors.amber,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                     ),
@@ -219,7 +219,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                           },
                           child: Text('OK'),
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.amber,
+                            primary: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ],

@@ -190,9 +190,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary), // Use theme color
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Theme.of(context).colorScheme.primary), // Use theme color
                       ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
@@ -207,9 +205,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       controller: _passwordController,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary), // Use theme color
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Theme.of(context).colorScheme.primary),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePassword
@@ -233,9 +229,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       controller: _phoneController,
                       decoration: InputDecoration(
                         labelText: 'Phone',
-                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary), // Use theme color
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Theme.of(context).colorScheme.primary), // Use theme color
                       ),
                       keyboardType: TextInputType.phone,
                       validator: (value) {
@@ -250,7 +244,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       child: Text('Sign Up'),
                       onPressed: _submitForm,
                       style: ElevatedButton.styleFrom(
-                        primary: Theme.of(context).colorScheme.primary, // Use theme color
+                        primary: Theme.of(context).colorScheme.primary,
                         onPrimary: Colors.white,
                         minimumSize: Size(double.infinity, 36),
                         padding: EdgeInsets.symmetric(vertical: 12.0),
@@ -276,7 +270,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               TextSpan(
                                 text: 'Log In',
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary, // Use theme color
+                                  color: Theme.of(context).colorScheme.primary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),

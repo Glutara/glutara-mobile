@@ -73,9 +73,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                         child: DropdownButtonFormField<String>(
                           decoration: InputDecoration(
                             labelText: 'Injection Type',
-                            labelStyle: TextStyle(color: Color(0xFF715C0C)),
                             border: _border(Colors.grey),
-                            focusedBorder: _border(Color(0xFF715C0C)),
                           ),
                           onChanged: (String? newValue) {
                             // Handle change
@@ -99,9 +97,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'Dose (unit)',
-                            labelStyle: TextStyle(color: Color(0xFF715C0C)),
                             border: _border(Colors.grey),
-                            focusedBorder: _border(Color(0xFF715C0C)),
                           ),
                         ),
                       ),
@@ -112,9 +108,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                     controller: dateControllerInjection,
                     decoration: InputDecoration(
                       labelText: 'Date',
-                      labelStyle: TextStyle(color: Color(0xFF715C0C)),
                       border: _border(Colors.grey),
-                      focusedBorder: _border(Color(0xFF715C0C)),
                       suffixIcon: Icon(Icons.calendar_today),
                     ),
                     readOnly: true,
@@ -145,9 +139,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                       controller: timeControllerInjection,
                       decoration: InputDecoration(
                         labelText: 'Time',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
                         suffixIcon: Icon(Icons.watch_later_outlined),
                       ),
                       readOnly: true,
@@ -180,7 +172,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                     child: ElevatedButton(
                       child: const Text('Save'),
                       style: ElevatedButton.styleFrom(
-                        primary: Color(0xFF715C0C),
+                        primary: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                         padding: EdgeInsets.symmetric(vertical: 16.0),
                       ),
@@ -211,9 +203,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                         child: TextFormField(
                           decoration: InputDecoration(
                             labelText: 'Pill Name',
-                            labelStyle: TextStyle(color: Color(0xFF715C0C)),
                             border: _border(Colors.grey),
-                            focusedBorder: _border(Color(0xFF715C0C)),
                           ),
                         ),
                       ),
@@ -224,9 +214,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'Dose (mg)',
-                            labelStyle: TextStyle(color: Color(0xFF715C0C)),
                             border: _border(Colors.grey),
-                            focusedBorder: _border(Color(0xFF715C0C)),
                           ),
                         ),
                       ),
@@ -237,9 +225,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                     controller: dateControllerPill,
                     decoration: InputDecoration(
                       labelText: 'Date',
-                      labelStyle: TextStyle(color: Color(0xFF715C0C)),
                       border: _border(Colors.grey),
-                      focusedBorder: _border(Color(0xFF715C0C)),
                       suffixIcon: Icon(Icons.calendar_today),
                     ),
                     readOnly: true,
@@ -270,9 +256,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                       controller: timeControllerPill,
                       decoration: InputDecoration(
                         labelText: 'Time',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
                         suffixIcon: Icon(Icons.watch_later_outlined),
                       ),
                       readOnly: true,
@@ -305,7 +289,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                     child: ElevatedButton(
                       child: const Text('Save'),
                       style: ElevatedButton.styleFrom(
-                        primary: Color(0xFF715C0C),
+                        primary: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                         padding: EdgeInsets.symmetric(vertical: 16.0),
                       ),

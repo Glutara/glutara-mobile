@@ -54,18 +54,14 @@ class _AddExercisePageState extends State<AddExercisePage> {
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Exercise Name',
-                  labelStyle: TextStyle(color: Color(0xFF715C0C)),
                   border: _border(Colors.grey),
-                  focusedBorder: _border(Color(0xFF715C0C)),
                 ),
               ),
               SizedBox(height: 25.0),
               DropdownButtonFormField(
                 decoration: InputDecoration(
                   labelText: 'Intensity',
-                  labelStyle: TextStyle(color: Color(0xFF715C0C)),
                   border: _border(Colors.grey),
-                  focusedBorder: _border(Color(0xFF715C0C)),
                 ),
                 items: ['Low', 'Medium', 'High']
                     .map((label) => DropdownMenuItem(
@@ -114,9 +110,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
                       controller: startTimeController,
                       decoration: InputDecoration(
                         labelText: 'Start Time',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
                         suffixIcon: Icon(Icons.access_time),
                       ),
                       readOnly: true,
@@ -150,9 +144,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
                       controller: endTimeController,
                       decoration: InputDecoration(
                         labelText: 'End Time',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
                         suffixIcon: Icon(Icons.access_time),
                       ),
                       readOnly: true,
@@ -190,7 +182,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
                   child: Text('Save', style: TextStyle(fontSize: 20.0)),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    primary: Color(0xFF715C0C),
+                    primary: Theme.of(context).colorScheme.primary,
                   ),
                   onPressed: () {
                     // Code to save sleep data

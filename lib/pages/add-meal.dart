@@ -61,9 +61,7 @@ class _AddMealPageState extends State<AddMealPage> {
                     child: TextFormField(
                       decoration: InputDecoration(
                         labelText: 'Meal Name',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
                       ),
                     ),
                   ),
@@ -74,9 +72,7 @@ class _AddMealPageState extends State<AddMealPage> {
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: 'Calories',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
                       ),
                     ),
                   ),
@@ -86,9 +82,7 @@ class _AddMealPageState extends State<AddMealPage> {
               DropdownButtonFormField<String>(
                 decoration: InputDecoration(
                   labelText: 'Meal Type',
-                  labelStyle: TextStyle(color: Color(0xFF715C0C)),
                   border: _border(Colors.grey),
-                  focusedBorder: _border(Color(0xFF715C0C)),
                 ),
                 items: ['Breakfast', 'Lunch', 'Dinner']
                     .map((String value) => DropdownMenuItem<String>(
@@ -105,9 +99,7 @@ class _AddMealPageState extends State<AddMealPage> {
                 controller: dateController,
                 decoration: InputDecoration(
                   labelText: 'Date',
-                  labelStyle: TextStyle(color: Color(0xFF715C0C)),
                   border: _border(Colors.grey),
-                  focusedBorder: _border(Color(0xFF715C0C)),
                   suffixIcon: Icon(Icons.calendar_today),
                 ),
                 readOnly: true,
@@ -141,9 +133,7 @@ class _AddMealPageState extends State<AddMealPage> {
                       controller: startTimeController,
                       decoration: InputDecoration(
                         labelText: 'Start Time',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
                         suffixIcon: Icon(Icons.watch_later_outlined),
                       ),
                       readOnly: true,
@@ -177,9 +167,7 @@ class _AddMealPageState extends State<AddMealPage> {
                       controller: endTimeController,
                       decoration: InputDecoration(
                         labelText: 'End Time',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
                         suffixIcon: Icon(Icons.watch_later_outlined),
                       ),
                       readOnly: true,
@@ -215,7 +203,7 @@ class _AddMealPageState extends State<AddMealPage> {
                 child: ElevatedButton(
                   child: const Text('Save'),
                   style: ElevatedButton.styleFrom(
-                    primary: Color(0xFF715C0C),
+                    primary: Theme.of(context).colorScheme.primary,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16.0),
                   ),

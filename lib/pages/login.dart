@@ -136,9 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                       focusNode: _emailFocusNode,
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-                        border: _border(Colors.grey),
-                        focusedBorder: _border(Theme.of(context).colorScheme.primary),
+                        border: _border(Colors.grey)
                       ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
@@ -154,9 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                       focusNode: _passwordFocusNode,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Theme.of(context).colorScheme.primary),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _isPasswordVisible
