@@ -61,7 +61,7 @@ class NotificationPage extends StatelessWidget {
                   ),
                   subtitle: Text(
                     notification['description'] as String,
-                    style: const TextStyle(fontSize: 12)),
+                    style: const TextStyle(fontSize: 13)),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,

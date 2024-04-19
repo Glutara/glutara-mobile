@@ -73,6 +73,7 @@ class ProfilePage extends StatelessWidget {
             padding: EdgeInsets.only(left: 16.0, top: 32.0),
           ),
           _buildListTile(context, Icons.notifications_outlined, 'Reminders'),
+          _buildListTile(context, Icons.badge_outlined, 'Change Role'),
           _buildListTile(context, Icons.dark_mode_outlined, 'Appearance'),
           _buildListTile(context, Icons.lock_outline, 'Privacy'),
           _buildListTile(context, Icons.cloud_outlined, 'Storage & Data'),
@@ -140,7 +141,7 @@ class ProfilePage extends StatelessWidget {
                       'Confirm Logout',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
+                        fontSize: 22.0,
                       ),
                     ),
                     SizedBox(height: 20), // Spacing between text and buttons
