@@ -36,7 +36,6 @@ class _AddExercisePageState extends State<AddExercisePage> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Image.asset('assets/topbar-logo.png'),
-        backgroundColor: Colors.amber[50],
         centerTitle: true,
         toolbarHeight: 60.0,
         elevation: 20,
@@ -145,7 +144,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
                       },
                     ),
                   ),
-                  SizedBox(width: 25.0),
+                  SizedBox(width: 25),
                   Expanded(
                     child: TextFormField(
                       controller: endTimeController,
@@ -174,14 +173,13 @@ class _AddExercisePageState extends State<AddExercisePage> {
                           );
                           setState(() {
                             selectedEndDate = tempSelectedEndDate;
-                            endTimeController.text = DateFormat('HH:mm')
-                                .format(tempSelectedEndDate);
+                            endTimeController.text =
+                                DateFormat('HH:mm').format(tempSelectedEndDate);
                           });
                         }
                       },
                     ),
                   ),
-                  SizedBox(width: 25.0),
                 ],
               ),
               SizedBox(height: 60.0),

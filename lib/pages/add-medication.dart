@@ -43,7 +43,6 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Image.asset('assets/topbar-logo.png'),
-          backgroundColor: const Color(0xFFF5EDDF),
           centerTitle: true,
           toolbarHeight: 60.0,
           elevation: 20,

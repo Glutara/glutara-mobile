@@ -39,7 +39,6 @@ class _AddMealPageState extends State<AddMealPage> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Image.asset('assets/topbar-logo.png'),
-        backgroundColor: Colors.amber[50],
         centerTitle: true,
         toolbarHeight: 60.0,
         elevation: 20,
