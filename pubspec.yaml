@@ -47,6 +47,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   fluttertoast: ^8.2.5
   shared_preferences: ^2.2.3
+  logger: ^2.2.0
 
 dev_dependencies:
   flutter_test:
