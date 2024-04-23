@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:glutara_mobile/utils/format_utils.dart';
 import 'package:glutara_mobile/utils/validators.dart';
 import 'package:intl/intl.dart';
@@ -104,7 +105,15 @@ class _AddMealPageState extends State<AddMealPage> {
       );
 
       if (response.statusCode == 200) {
-        Navigator.pop(context);
+        Fluttertoast.showToast(
+                msg: "Meal log saved successfully!",
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.green,
+                textColor: Colors.white,
+                fontSize: 16.0)
+            .then((value) => Navigator.pop(context));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

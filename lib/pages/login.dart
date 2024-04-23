@@ -51,7 +51,8 @@ class _LoginPageState extends State<LoginPage> {
         var data = jsonDecode(response.body);
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setInt('userID', data['ID']);
-        await prefs.setInt('lastLoginTime', DateTime.now().millisecondsSinceEpoch);
+        await prefs.setInt(
+            'lastLoginTime', DateTime.now().millisecondsSinceEpoch);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
@@ -135,9 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                       controller: _emailController,
                       focusNode: _emailFocusNode,
                       decoration: InputDecoration(
-                        labelText: 'Email',
-                        border: _border(Colors.grey)
-                      ),
+                          labelText: 'Email', border: _border(Colors.grey)),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -207,7 +206,8 @@ class _LoginPageState extends State<LoginPage> {
                               TextSpan(
                                 text: 'Sign Up',
                                 style: TextStyle(
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.bold),
                               ),
                             ],
