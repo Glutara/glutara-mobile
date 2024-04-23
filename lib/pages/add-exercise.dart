@@ -68,7 +68,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
     try {
       var response = await http.post(
         Uri.parse(
-            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/${userID}/exercises'),
+            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/exercises'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

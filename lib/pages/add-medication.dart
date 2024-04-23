@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:glutara_mobile/utils/format_utils.dart';
 import 'package:glutara_mobile/utils/validators.dart';
+import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:intl/intl.dart';
@@ -26,6 +30,11 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
   final TextEditingController dateControllerPill = TextEditingController();
   final TextEditingController timeControllerPill = TextEditingController();
   DateTime? selectedStartDate;
+  String? selectedInjectionType;
+
+  var logger = Logger(
+    printer: PrettyPrinter(),
+  );
 
   OutlineInputBorder _border(Color color) {
     return OutlineInputBorder(
@@ -33,15 +42,68 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
     );
   }
 
-  Future<void> _handleSave(GlobalKey<FormState> _formKey) async {
+  Future<void> _handleSave(
+      GlobalKey<FormState> _formKey, bool isInjection) async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? userID = prefs.getInt('userID');
+    int medicationType = isInjection ? 0 : 1;
+    String? category =
+        isInjection ? selectedInjectionType : nameControllerPill.text;
+    String dose = medicationType == 0
+        ? doseUnitController.text
+        : doseMgControllerPill.text;
 
-    try {} catch (error) {
+    logger.d(jsonEncode(<String, dynamic>{
+      "UserID": userID,
+      "MedicationID": 1,
+      "Type": medicationType,
+      "Category": category,
+      "Dose": int.tryParse(dose) ?? 0,
+      "Date": DateFormat('yyyy-MM-dd')
+              .format(DateFormat('dd-MM-yyyy').parseLoose(saveFormattedDate)) +
+          "T00:00:00Z",
+      "Time": FormatUtils.combineDateWithTime(
+          DateFormat('dd-MM-yyyy').parseLoose(saveFormattedDate),
+          TimeOfDay.fromDateTime(selectedStartDate!)),
+    }));
+
+    try {
+      var response = await http.post(
+        Uri.parse(
+            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/medications'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          "UserID": userID,
+          "MedicationID": 1,
+          "Type": medicationType,
+          "Category": category,
+          "Dose": int.tryParse(dose) ?? 0,
+          "Date": DateFormat('yyyy-MM-dd').format(
+                  DateFormat('dd-MM-yyyy').parseLoose(saveFormattedDate)) +
+              "T00:00:00Z",
+          "Time": FormatUtils.combineDateWithTime(
+              DateFormat('dd-MM-yyyy').parseLoose(saveFormattedDate),
+              TimeOfDay.fromDateTime(selectedStartDate!)),
+        }),
+      );
+      
+      if (response.statusCode == 200) {
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.body),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('An error occurred: $error'),
@@ -105,8 +167,11 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                                 labelText: 'Injection Type',
                                 border: _border(Colors.grey),
                               ),
+                              value: selectedInjectionType,
                               onChanged: (String? newValue) {
-                                // Handle change
+                                setState(() {
+                                  selectedInjectionType = newValue;
+                                });
                               },
                               items: [
                                 'Long-acting',
@@ -220,7 +285,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                             primary: Theme.of(context).colorScheme.primary,
                           ),
                           onPressed: () {
-                            _handleSave(_formKeyInjection);
+                            _handleSave(_formKeyInjection, true);
                           },
                         ),
                       ),
@@ -355,7 +420,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                             primary: Theme.of(context).colorScheme.primary,
                           ),
                           onPressed: () {
-                            _handleSave(_formKeyPill);
+                            _handleSave(_formKeyPill, false);
                           },
                         ),
                       ),
