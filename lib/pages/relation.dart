@@ -4,13 +4,13 @@ import 'add-with-phone.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class RelationPage extends StatelessWidget {
-  const RelationPage({Key? key}) : super(key: key);
+  const RelationPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
+        preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Padding(
           padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
           child: AppBar(
@@ -23,7 +23,7 @@ class RelationPage extends StatelessWidget {
                 icon: CircleAvatar(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   radius: 24,
-                  child: Icon(Icons.add, color: Colors.white),
+                  child: const Icon(Icons.add, color: Colors.white),
                 ),
                 onPressed: () {
                   _showAddConnectionDialog(context);
@@ -57,7 +57,7 @@ class RelationPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(
+          title: const Text(
               'Add Connection',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -68,11 +68,11 @@ class RelationPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Choose how you would like to connect',
                 style: TextStyle(fontSize: 16.0)
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
@@ -81,12 +81,12 @@ class RelationPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => AddWithQRCodePage()),
                   );
                 },
-                child: Text(
+                child: const Text(
                     'With QR code',
                     style: TextStyle(fontSize: 16.0)
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
@@ -95,7 +95,7 @@ class RelationPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => AddWithPhonePage()),
                   );
                 },
-                child: Text(
+                child: const Text(
                     'With phone number',
                     style: TextStyle(fontSize: 16.0)
               ),
@@ -112,7 +112,7 @@ class _RelationTile extends StatelessWidget {
   final String name;
   final String phone;
 
-  const _RelationTile({Key? key, required this.name, required this.phone}) : super(key: key);
+  const _RelationTile({super.key, required this.name, required this.phone});
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +123,7 @@ class _RelationTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               radius: 24,
               backgroundImage: AssetImage('assets/default-avatar.jpeg'),
             ),
@@ -134,24 +134,24 @@ class _RelationTile extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(bottom: 4),
+                    padding: const EdgeInsets.only(bottom: 4),
                     child: Text(
                       name,
-                      style: TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ),
                   Text(
                     phone,
-                    style: TextStyle(fontSize: 13, color: Colors.grey),
+                    style: const TextStyle(fontSize: 13, color: Colors.grey),
                   ),
                 ],
               ),
             ),
-            Wrap(
+            const Wrap(
               spacing: 12,
               children: <Widget>[
-                const Icon(Icons.call_outlined),
-                const Icon(Icons.chat_outlined),
+                Icon(Icons.call_outlined),
+                Icon(Icons.chat_outlined),
               ],
             ),
           ],

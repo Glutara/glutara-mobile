@@ -1,15 +1,17 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import '/pages/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
+        preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Padding(
           padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
           child: AppBar(
@@ -35,11 +37,11 @@ class ProfilePage extends StatelessWidget {
                   backgroundImage: AssetImage('assets/default-avatar.jpeg'),
                 ),
                 const SizedBox(width: 16),
-                Expanded(
+                const Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
+                    children: [
                       Text(
                         'Selina Anita',
                         style: TextStyle(fontSize: 20),
@@ -55,16 +57,15 @@ class ProfilePage extends StatelessWidget {
                   onPressed: () {
                     // TODO: Implement edit profile action
                   },
-                  child: const Text('Edit'),
                   style: TextButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    primary: Colors.white,
-                    minimumSize: Size(50, 30),
+                    foregroundColor: Colors.white, backgroundColor: Theme.of(context).colorScheme.primary,
+                    minimumSize: const Size(50, 30),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
                   ),
+                  child: const Text('Edit'),
                 ),
               ],
             ),
@@ -101,8 +102,8 @@ class ProfilePage extends StatelessWidget {
 
   ListTile _buildLogoutListTile(BuildContext context) {
     return ListTile(
-      leading: Icon(Icons.logout, color: Colors.red),
-      title: Text(
+      leading: const Icon(Icons.logout, color: Colors.red),
+      title: const Text(
         'Logout',
         style: TextStyle(color: Colors.red),
       ),
@@ -134,8 +135,8 @@ class ProfilePage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20.0),
               ), // Makes the corners rounded
               child: Container(
-                padding: EdgeInsets.all(20.0),
-                constraints: BoxConstraints(
+                padding: const EdgeInsets.all(20.0),
+                constraints: const BoxConstraints(
                     minHeight: 200.0), // Set a minimum height for the dialog
                 child: Column(
                   mainAxisSize: MainAxisSize

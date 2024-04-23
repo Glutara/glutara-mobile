@@ -6,7 +6,7 @@ class FormatUtils {
     if (dateStr == null) return null;
     try {
       DateTime date = DateFormat('dd-MM-yyyy').parseLoose(dateStr);
-      return DateFormat("yyyy-MM-dd'T'00:00:00Z").format(date) + 'Z';
+      return '${DateFormat("yyyy-MM-dd'T'00:00:00Z").format(date)}Z';
     } catch (error) {
       return null;
     }
@@ -20,6 +20,6 @@ class FormatUtils {
     if (date == null || time == null) return null;
     DateTime combinedDateTime =
         DateTime(date.year, date.month, date.day, time.hour, time.minute);
-    return DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(combinedDateTime) + 'Z';
+    return '${DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(combinedDateTime)}Z';
   }
 }
