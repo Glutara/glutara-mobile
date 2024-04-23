@@ -1,5 +1,11 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:glutara_mobile/utils/format_utils.dart';
+import 'package:glutara_mobile/utils/validators.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:logger/logger.dart';
 
 class AddSleepPage extends StatefulWidget {
   const AddSleepPage({Key? key}) : super(key: key);
@@ -11,10 +17,16 @@ class AddSleepPage extends StatefulWidget {
 class _AddSleepPageState extends State<AddSleepPage> {
   bool showNotification = false;
   int currentPageIndex = 0;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
+  String saveFormattedDate = "";
   TextEditingController startTimeController = TextEditingController();
   TextEditingController endTimeController = TextEditingController();
+
+  var logger = Logger(
+    printer: PrettyPrinter(),
+  );
 
   @override
   void dispose() {
@@ -27,6 +39,60 @@ class _AddSleepPageState extends State<AddSleepPage> {
     return OutlineInputBorder(
       borderSide: BorderSide(color: color, width: 2.0),
     );
+  }
+
+  Future<void> _handleSave() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? userID = prefs.getInt('userID');
+
+    logger.d(jsonEncode(<String, dynamic>{
+      "UserID": userID,
+      "SleepID": 0,
+      "StartTime": FormatUtils.combineDateWithTime(
+          selectedStartDate, TimeOfDay.fromDateTime(selectedStartDate!)),
+      "EndTime": FormatUtils.combineDateWithTime(
+          selectedStartDate, TimeOfDay.fromDateTime(selectedEndDate!)),
+    }));
+
+    try {
+      var response = await http.post(
+        Uri.parse(
+            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/${userID}/sleeps'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          "UserID": userID,
+          "SleepID": 0,
+          "StartTime": FormatUtils.combineDateWithTime(
+              selectedStartDate, TimeOfDay.fromDateTime(selectedStartDate!)),
+          "EndTime": FormatUtils.combineDateWithTime(
+              selectedStartDate, TimeOfDay.fromDateTime(selectedEndDate!)),
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.body),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred: $error'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -42,113 +108,122 @@ class _AddSleepPageState extends State<AddSleepPage> {
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(30.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                'Add Sleep',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 60.0),
-              TextFormField(
-                controller: startTimeController,
-                decoration: InputDecoration(
-                  labelText: 'Start Time',
-                  border: _border(Colors.grey),
-                  prefixIcon: Icon(Icons.watch_later_outlined),
-                  hintText: selectedStartDate != null
-                      ? DateFormat('dd MMM yyyy HH:mm')
-                          .format(selectedStartDate!)
-                      : 'Select start time', // Tampilkan tanggal yang dipilih atau pesan 'Select start time'
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Add Sleep',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                onTap: () async {
-                  final DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: selectedStartDate ?? DateTime.now(),
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2101),
-                  );
-                  if (pickedDate != null) {
-                    final TimeOfDay? pickedTime = await showTimePicker(
-                      context: context,
-                      initialTime: selectedStartDate != null
-                          ? TimeOfDay.fromDateTime(selectedStartDate!)
-                          : TimeOfDay.now(),
-                    );
-                    if (pickedTime != null) {
-                      setState(() {
-                        selectedStartDate = DateTime(
-                          pickedDate.year,
-                          pickedDate.month,
-                          pickedDate.day,
-                          pickedTime.hour,
-                          pickedTime.minute,
-                        );
-                        startTimeController.text =
-                            DateFormat('dd MMM yyyy HH:mm')
-                                .format(selectedStartDate!);
-                      });
-                    }
-                  }
-                },
-              ),
-              SizedBox(height: 25.0),
-              TextFormField(
-                controller: endTimeController,
-                decoration: InputDecoration(
-                  labelText: 'End Time',
-                  border: _border(Colors.grey),
-                  prefixIcon: Icon(Icons.watch_later_outlined),
-                  hintText: selectedEndDate != null
-                      ? DateFormat('dd MMM yyyy HH:mm').format(selectedEndDate!)
-                      : 'Select end time', // Tampilkan tanggal yang dipilih atau pesan 'Select end time'
-                ),
-                onTap: () async {
-                  final DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: selectedEndDate ?? DateTime.now(),
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2101),
-                  );
-                  if (pickedDate != null) {
-                    final TimeOfDay? pickedTime = await showTimePicker(
-                      context: context,
-                      initialTime: selectedEndDate != null
-                          ? TimeOfDay.fromDateTime(selectedEndDate!)
-                          : TimeOfDay.now(),
-                    );
-                    if (pickedTime != null) {
-                      setState(() {
-                        selectedEndDate = DateTime(
-                          pickedDate.year,
-                          pickedDate.month,
-                          pickedDate.day,
-                          pickedTime.hour,
-                          pickedTime.minute,
-                        );
-                        endTimeController.text = DateFormat('dd MMM yyyy HH:mm')
-                            .format(selectedEndDate!);
-                      });
-                    }
-                  }
-                },
-              ),
-              SizedBox(height: 60.0),
-              Container(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  child: Text('Save', style: TextStyle(fontSize: 20.0)),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    primary: Theme.of(context).colorScheme.primary,
+                SizedBox(height: 60.0),
+                TextFormField(
+                  controller: startTimeController,
+                  decoration: InputDecoration(
+                    labelText: 'Start Time',
+                    border: _border(Colors.grey),
+                    prefixIcon: Icon(Icons.watch_later_outlined),
+                    hintText: selectedStartDate != null
+                        ? DateFormat('dd MMM yyyy HH:mm')
+                            .format(selectedStartDate!)
+                        : 'Select start time', // Tampilkan tanggal yang dipilih atau pesan 'Select start time'
                   ),
-                  onPressed: () {
-                    // Code to save sleep data
+                  validator: Validators.notEmptyValidator,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  onTap: () async {
+                    final DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: selectedStartDate ?? DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101),
+                    );
+                    if (pickedDate != null) {
+                      final TimeOfDay? pickedTime = await showTimePicker(
+                        context: context,
+                        initialTime: selectedStartDate != null
+                            ? TimeOfDay.fromDateTime(selectedStartDate!)
+                            : TimeOfDay.now(),
+                      );
+                      if (pickedTime != null) {
+                        setState(() {
+                          selectedStartDate = DateTime(
+                            pickedDate.year,
+                            pickedDate.month,
+                            pickedDate.day,
+                            pickedTime.hour,
+                            pickedTime.minute,
+                          );
+                          startTimeController.text =
+                              DateFormat('dd MMM yyyy HH:mm')
+                                  .format(selectedStartDate!);
+                        });
+                      }
+                    }
                   },
                 ),
-              ),
-            ],
+                SizedBox(height: 25.0),
+                TextFormField(
+                  controller: endTimeController,
+                  decoration: InputDecoration(
+                    labelText: 'End Time',
+                    border: _border(Colors.grey),
+                    prefixIcon: Icon(Icons.watch_later_outlined),
+                    hintText: selectedEndDate != null
+                        ? DateFormat('dd MMM yyyy HH:mm')
+                            .format(selectedEndDate!)
+                        : 'Select end time', // Tampilkan tanggal yang dipilih atau pesan 'Select end time'
+                  ),
+                  validator: Validators.notEmptyValidator,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  onTap: () async {
+                    final DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: selectedEndDate ?? DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101),
+                    );
+                    if (pickedDate != null) {
+                      final TimeOfDay? pickedTime = await showTimePicker(
+                        context: context,
+                        initialTime: selectedEndDate != null
+                            ? TimeOfDay.fromDateTime(selectedEndDate!)
+                            : TimeOfDay.now(),
+                      );
+                      if (pickedTime != null) {
+                        setState(() {
+                          selectedEndDate = DateTime(
+                            pickedDate.year,
+                            pickedDate.month,
+                            pickedDate.day,
+                            pickedTime.hour,
+                            pickedTime.minute,
+                          );
+                          endTimeController.text =
+                              DateFormat('dd MMM yyyy HH:mm')
+                                  .format(selectedEndDate!);
+                        });
+                      }
+                    }
+                  },
+                ),
+                SizedBox(height: 60.0),
+                Container(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    child: Text('Save', style: TextStyle(fontSize: 20.0)),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      primary: Theme.of(context).colorScheme.primary,
+                    ),
+                    onPressed: () {
+                      _handleSave();
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -283,9 +283,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
                       primary: Theme.of(context).colorScheme.primary,
                     ),
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _handleSave();
-                      }
+                      _handleSave();
                     },
                   ),
                 ),

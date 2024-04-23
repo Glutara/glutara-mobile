@@ -316,9 +316,7 @@ class _AddMealPageState extends State<AddMealPage> {
                       padding: EdgeInsets.symmetric(vertical: 16.0),
                     ),
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _handleSave();
-                      }
+                      _handleSave();
                     },
                   ),
                 ),
