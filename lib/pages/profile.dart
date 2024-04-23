@@ -26,7 +26,7 @@ class ProfilePage extends StatelessWidget {
       body: ListView(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -69,16 +69,21 @@ class ProfilePage extends StatelessWidget {
               ],
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.only(left: 16.0, top: 32.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
+              children: [
+                _buildListTile(
+                    context, Icons.notifications_outlined, 'Reminders'),
+                _buildListTile(context, Icons.badge_outlined, 'Change Role'),
+                _buildListTile(context, Icons.dark_mode_outlined, 'Appearance'),
+                _buildListTile(context, Icons.lock_outline, 'Privacy'),
+                _buildListTile(context, Icons.cloud_outlined, 'Storage & Data'),
+                _buildListTile(context, Icons.info_outline, 'About'),
+                _buildLogoutListTile(context),
+              ],
+            ),
           ),
-          _buildListTile(context, Icons.notifications_outlined, 'Reminders'),
-          _buildListTile(context, Icons.badge_outlined, 'Change Role'),
-          _buildListTile(context, Icons.dark_mode_outlined, 'Appearance'),
-          _buildListTile(context, Icons.lock_outline, 'Privacy'),
-          _buildListTile(context, Icons.cloud_outlined, 'Storage & Data'),
-          _buildListTile(context, Icons.info_outline, 'About'),
-          _buildLogoutListTile(context), // Add Logout option
         ],
       ),
     );
