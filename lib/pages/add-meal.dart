@@ -83,12 +83,12 @@ class _AddMealPageState extends State<AddMealPage> {
     try {
       var response = await http.post(
         Uri.parse(
-            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/4/meals'),
+            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/${userID}/meals'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, dynamic>{
-          "UserID": 4,
+          "UserID": userID,
           "MealID": 1,
           "Name": mealController.text,
           "Calories": int.tryParse(caloriesController.text) ?? 0,
