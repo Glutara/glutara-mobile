@@ -74,7 +74,7 @@ class _SignUpPageState extends State<SignUpPage> {
           'lastLoginTime', DateTime.now().millisecondsSinceEpoch);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -113,8 +113,8 @@ class _SignUpPageState extends State<SignUpPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 30.0, top: 20.0, right: 30.0),
+          const Padding(
+            padding: EdgeInsets.only(left: 30.0, top: 20.0, right: 30.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -142,7 +142,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(height: 40.0),
+                    const SizedBox(height: 40.0),
                     TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
@@ -158,7 +158,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         labelText: 'I am a',
@@ -187,7 +187,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         _selectedRole = newValue!;
                       },
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     TextFormField(
                       controller: _emailController,
                       decoration: InputDecoration(
@@ -202,7 +202,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     TextFormField(
                       controller: _passwordController,
                       decoration: InputDecoration(
@@ -226,7 +226,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     TextFormField(
                       controller: _phoneController,
                       decoration: InputDecoration(
@@ -241,18 +241,18 @@ class _SignUpPageState extends State<SignUpPage> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 24.0),
+                    const SizedBox(height: 24.0),
                     ElevatedButton(
-                      child: Text('Sign Up'),
+                      child: const Text('Sign Up'),
                       onPressed: _submitForm,
                       style: ElevatedButton.styleFrom(
                         primary: Theme.of(context).colorScheme.primary,
                         onPrimary: Colors.white,
-                        minimumSize: Size(double.infinity, 36),
-                        padding: EdgeInsets.symmetric(vertical: 12.0),
+                        minimumSize: const Size(double.infinity, 36),
+                        padding: const EdgeInsets.symmetric(vertical: 12.0),
                       ),
                     ),
-                    SizedBox(height: 10.0),
+                    const SizedBox(height: 10.0),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: GestureDetector(
@@ -260,14 +260,14 @@ class _SignUpPageState extends State<SignUpPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => LoginPage(),
+                              builder: (context) => const LoginPage(),
                             ),
                           );
                         },
                         child: Text.rich(
                           TextSpan(
                             text: "Already have an account? ",
-                            style: TextStyle(color: Colors.black, fontSize: 17),
+                            style: const TextStyle(color: Colors.black, fontSize: 17),
                             children: <TextSpan>[
                               TextSpan(
                                 text: 'Log In',

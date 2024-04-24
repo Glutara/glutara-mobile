@@ -116,23 +116,23 @@ class _AddSleepPageState extends State<AddSleepPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(30.0),
+          padding: const EdgeInsets.all(30.0),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   'Add Sleep',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 60.0),
+                const SizedBox(height: 60.0),
                 TextFormField(
                   controller: startTimeController,
                   decoration: InputDecoration(
                     labelText: 'Start Time',
                     border: _border(Colors.grey),
-                    prefixIcon: Icon(Icons.watch_later_outlined),
+                    prefixIcon: const Icon(Icons.watch_later_outlined),
                     hintText: selectedStartDate != null
                         ? DateFormat('dd MMM yyyy HH:mm')
                             .format(selectedStartDate!)
@@ -171,13 +171,13 @@ class _AddSleepPageState extends State<AddSleepPage> {
                     }
                   },
                 ),
-                SizedBox(height: 25.0),
+                const SizedBox(height: 25.0),
                 TextFormField(
                   controller: endTimeController,
                   decoration: InputDecoration(
                     labelText: 'End Time',
                     border: _border(Colors.grey),
-                    prefixIcon: Icon(Icons.watch_later_outlined),
+                    prefixIcon: const Icon(Icons.watch_later_outlined),
                     hintText: selectedEndDate != null
                         ? DateFormat('dd MMM yyyy HH:mm')
                             .format(selectedEndDate!)
@@ -216,12 +216,12 @@ class _AddSleepPageState extends State<AddSleepPage> {
                     }
                   },
                 ),
-                SizedBox(height: 60.0),
+                const SizedBox(height: 60.0),
                 Container(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    child: Text('Save', style: TextStyle(fontSize: 20.0)),
+                    child: const Text('Save', style: TextStyle(fontSize: 20.0)),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       primary: Theme.of(context).colorScheme.primary,

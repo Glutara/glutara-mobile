@@ -143,7 +143,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
           centerTitle: true,
           toolbarHeight: 60.0,
           elevation: 20,
-          bottom: TabBar(
+          bottom: const TabBar(
             tabs: [
               Tab(text: 'Injection'),
               Tab(text: 'Pill'),
@@ -161,12 +161,12 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Add Medication',
                         style: TextStyle(
                             fontSize: 24, fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 60.0),
+                      const SizedBox(height: 60.0),
                       Row(
                         children: [
                           Expanded(
@@ -197,7 +197,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                                   AutovalidateMode.onUserInteraction,
                             ),
                           ),
-                          SizedBox(width: 25.0),
+                          const SizedBox(width: 25.0),
                           Expanded(
                             flex: 2,
                             child: TextFormField(
@@ -214,13 +214,13 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 25),
+                      const SizedBox(height: 25),
                       TextFormField(
                         controller: dateControllerInjection,
                         decoration: InputDecoration(
                           labelText: 'Date',
                           border: _border(Colors.grey),
-                          suffixIcon: Icon(Icons.calendar_today),
+                          suffixIcon: const Icon(Icons.calendar_today),
                         ),
                         readOnly: true,
                         onTap: () async {
@@ -248,13 +248,13 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                         validator: Validators.notEmptyValidator,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                       ),
-                      SizedBox(height: 25),
+                      const SizedBox(height: 25),
                       TextFormField(
                         controller: timeControllerInjection,
                         decoration: InputDecoration(
                           labelText: 'Time',
                           border: _border(Colors.grey),
-                          suffixIcon: Icon(Icons.watch_later_outlined),
+                          suffixIcon: const Icon(Icons.watch_later_outlined),
                         ),
                         readOnly: true,
                         onTap: () async {
@@ -283,12 +283,12 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                         validator: Validators.notEmptyValidator,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                       ),
-                      SizedBox(height: 60.0),
+                      const SizedBox(height: 60.0),
                       Container(
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
-                          child: Text('Save', style: TextStyle(fontSize: 20.0)),
+                          child: const Text('Save', style: TextStyle(fontSize: 20.0)),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             primary: Theme.of(context).colorScheme.primary,
@@ -312,12 +312,12 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Add Medication',
                         style: TextStyle(
                             fontSize: 24, fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 60.0),
+                      const SizedBox(height: 60.0),
                       Row(
                         children: [
                           Expanded(
@@ -333,7 +333,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                                   AutovalidateMode.onUserInteraction,
                             ),
                           ),
-                          SizedBox(width: 25.0),
+                          const SizedBox(width: 25.0),
                           Expanded(
                             flex: 2,
                             child: TextFormField(
@@ -350,13 +350,13 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 25),
+                      const SizedBox(height: 25),
                       TextFormField(
                         controller: dateControllerPill,
                         decoration: InputDecoration(
                           labelText: 'Date',
                           border: _border(Colors.grey),
-                          suffixIcon: Icon(Icons.calendar_today),
+                          suffixIcon: const Icon(Icons.calendar_today),
                         ),
                         readOnly: true,
                         onTap: () async {
@@ -383,13 +383,13 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                         validator: Validators.notEmptyValidator,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                       ),
-                      SizedBox(height: 25),
+                      const SizedBox(height: 25),
                       TextFormField(
                         controller: timeControllerPill,
                         decoration: InputDecoration(
                           labelText: 'Time',
                           border: _border(Colors.grey),
-                          suffixIcon: Icon(Icons.watch_later_outlined),
+                          suffixIcon: const Icon(Icons.watch_later_outlined),
                         ),
                         readOnly: true,
                         onTap: () async {
@@ -418,12 +418,12 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                         validator: Validators.notEmptyValidator,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                       ),
-                      SizedBox(height: 60.0),
+                      const SizedBox(height: 60.0),
                       Container(
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
-                          child: Text('Save', style: TextStyle(fontSize: 20.0)),
+                          child: const Text('Save', style: TextStyle(fontSize: 20.0)),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             primary: Theme.of(context).colorScheme.primary,

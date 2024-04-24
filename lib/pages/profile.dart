@@ -118,7 +118,7 @@ class ProfilePage extends StatelessWidget {
 
           // Navigate to LoginPage and remove all routes below from the stack
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => LoginPage()),
+            MaterialPageRoute(builder: (context) => const LoginPage()),
             (Route<dynamic> route) => false,
           );
         }
@@ -142,33 +142,33 @@ class ProfilePage extends StatelessWidget {
                   mainAxisSize: MainAxisSize
                       .min, // Ensures the space is only as big as its children need
                   children: <Widget>[
-                    SizedBox(height: 20), // Spacing at the top
-                    Text(
+                    const SizedBox(height: 20), // Spacing at the top
+                    const Text(
                       'Confirm Logout',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 22.0,
                       ),
                     ),
-                    SizedBox(height: 20), // Spacing between text and buttons
-                    Text(
+                    const SizedBox(height: 20), // Spacing between text and buttons
+                    const Text(
                       'Are you sure you want to logout?',
                       style: TextStyle(fontSize: 18.0),
                     ),
-                    SizedBox(height: 20), // Spacing between text and buttons
+                    const SizedBox(height: 20), // Spacing between text and buttons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         TextButton(
                           onPressed: () => Navigator.of(context).pop(false),
-                          child: Text(
+                          child: const Text(
                             'Cancel',
                             style: TextStyle(fontSize: 18.0),
                           ),
                         ),
                         TextButton(
                           onPressed: () => Navigator.of(context).pop(true),
-                          child: Text(
+                          child: const Text(
                             'Logout',
                             style: TextStyle(fontSize: 18.0),
                           ),

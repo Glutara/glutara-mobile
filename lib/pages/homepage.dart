@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: showNotification
-          ? NotificationPage()
+          ? const NotificationPage()
           : IndexedStack(
               index: currentPageIndex,
               children: _pages,
@@ -64,12 +64,12 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: CustomColors.brandColor,
         foregroundColor: Colors.white,
-        shape: CircleBorder(eccentricity: 1),
-        child: Icon(Icons.add),
+        shape: const CircleBorder(eccentricity: 1),
+        child: const Icon(Icons.add),
         onPressed: () {
           showModalBottomSheet(
             context: context,
-            shape: RoundedRectangleBorder(
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(200.0),
                 topRight: Radius.circular(200.0),
@@ -78,12 +78,12 @@ class _HomePageState extends State<HomePage> {
             builder: (context) {
               return Container(
                 alignment: Alignment.center,
-                color: Color(0xFFFFF8F0),
+                color: const Color(0xFFFFF8F0),
                 height: 400,
                 child:
                     Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 8),
                     child: Text(
                       "Add Log Activity",
                       style:
@@ -104,7 +104,7 @@ class _HomePageState extends State<HomePage> {
                             Icon(Icons.fastfood_outlined, color: Theme.of(context).colorScheme.onPrimaryContainer),
                       ),
                     ),
-                    title: Text(
+                    title: const Text(
                       "Meal",
                       style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.normal),
@@ -117,7 +117,7 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => AddMealPage()));
+                              builder: (context) => const AddMealPage()));
                     },
                   ),
                   ListTile(
@@ -130,7 +130,7 @@ class _HomePageState extends State<HomePage> {
                             Icon(Icons.vaccines_outlined, color: Theme.of(context).colorScheme.onPrimaryContainer),
                       ),
                     ),
-                    title: Text(
+                    title: const Text(
                       "Medication",
                       style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.normal),
@@ -143,7 +143,7 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => AddMedicationPage()));
+                              builder: (context) => const AddMedicationPage()));
                     },
                   ),
                   ListTile(
@@ -156,7 +156,7 @@ class _HomePageState extends State<HomePage> {
                             color: Theme.of(context).colorScheme.onPrimaryContainer),
                       ),
                     ),
-                    title: Text(
+                    title: const Text(
                       "Exercise",
                       style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.normal),
@@ -169,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => AddExercisePage()));
+                              builder: (context) => const AddExercisePage()));
                     },
                   ),
                   ListTile(
@@ -182,7 +182,7 @@ class _HomePageState extends State<HomePage> {
                             Icon(Icons.bedtime_outlined, color: Theme.of(context).colorScheme.onPrimaryContainer),
                       ),
                     ),
-                    title: Text(
+                    title: const Text(
                       "Sleep",
                       style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.normal),
@@ -195,7 +195,7 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => AddSleepPage()));
+                              builder: (context) => const AddSleepPage()));
                     },
                   ),
                 ]),

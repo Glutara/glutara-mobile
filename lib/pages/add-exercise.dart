@@ -128,17 +128,17 @@ class _AddExercisePageState extends State<AddExercisePage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(30.0),
+          padding: const EdgeInsets.all(30.0),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   'Add Exercise',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 60.0),
+                const SizedBox(height: 60.0),
                 TextFormField(
                   controller: nameController,
                   decoration: InputDecoration(
@@ -148,7 +148,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
                   validator: Validators.notEmptyValidator,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
-                SizedBox(height: 25.0),
+                const SizedBox(height: 25.0),
                 DropdownButtonFormField<int>(
                   decoration: InputDecoration(
                     labelText: 'Intensity',
@@ -171,10 +171,10 @@ class _AddExercisePageState extends State<AddExercisePage> {
                   },
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
-                SizedBox(height: 25.0),
+                const SizedBox(height: 25.0),
                 TextFormField(
                   controller: dateController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Date',
                     border: OutlineInputBorder(),
                     suffixIcon: Icon(Icons.calendar_today),
@@ -204,7 +204,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
                     }
                   },
                 ),
-                SizedBox(height: 25.0),
+                const SizedBox(height: 25.0),
                 Row(
                   children: <Widget>[
                     Expanded(
@@ -213,7 +213,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
                         decoration: InputDecoration(
                           labelText: 'Start Time',
                           border: _border(Colors.grey),
-                          suffixIcon: Icon(Icons.access_time),
+                          suffixIcon: const Icon(Icons.access_time),
                         ),
                         validator: Validators.notEmptyValidator,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -243,14 +243,14 @@ class _AddExercisePageState extends State<AddExercisePage> {
                         },
                       ),
                     ),
-                    SizedBox(width: 25),
+                    const SizedBox(width: 25),
                     Expanded(
                       child: TextFormField(
                         controller: endTimeController,
                         decoration: InputDecoration(
                           labelText: 'End Time',
                           border: _border(Colors.grey),
-                          suffixIcon: Icon(Icons.access_time),
+                          suffixIcon: const Icon(Icons.access_time),
                         ),
                         validator: Validators.notEmptyValidator,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -281,12 +281,12 @@ class _AddExercisePageState extends State<AddExercisePage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 60.0),
+                const SizedBox(height: 60.0),
                 Container(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    child: Text('Save', style: TextStyle(fontSize: 20.0)),
+                    child: const Text('Save', style: TextStyle(fontSize: 20.0)),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       primary: Theme.of(context).colorScheme.primary,

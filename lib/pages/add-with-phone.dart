@@ -27,7 +27,7 @@ class AddWithPhonePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Add Relation with Phone',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -35,22 +35,20 @@ class AddWithPhonePage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 15),
-            Text(
+            const SizedBox(height: 15),
+            const Text(
               'Add your relation name and phone number to share your glucose level tracking with them',
               style: TextStyle(
                   fontSize: 16
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             TextFormField(
               controller: _nameController,
               decoration: InputDecoration(
                 labelText: 'Relation\'s name',
-                labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary), // Use theme color
                 border: _border(Colors.grey),
-                focusedBorder: _border(Theme.of(context).colorScheme.primary), // Use theme color
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -59,7 +57,7 @@ class AddWithPhonePage extends StatelessWidget {
                 return null;
               },
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextFormField(
               controller: _phoneController,
               decoration: InputDecoration(
@@ -74,9 +72,9 @@ class AddWithPhonePage extends StatelessWidget {
                 return null;
               },
             ),
-            SizedBox(height: 30.0),
+            const SizedBox(height: 30.0),
             ElevatedButton(
-              child: Text(
+              child: const Text(
                   'Generate OTP',
                   style: TextStyle(fontSize: 16.0)
               ),
@@ -84,7 +82,7 @@ class AddWithPhonePage extends StatelessWidget {
                 if (_nameController.text.isEmpty || _phoneController.text.isEmpty) {
                   // Show error message if any of the fields is empty
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Please fill in all fields')),
+                    const SnackBar(content: Text('Please fill in all fields')),
                   );
                 } else {
                   // Navigate to the next page if both fields are filled
@@ -97,11 +95,11 @@ class AddWithPhonePage extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 primary: Theme.of(context).colorScheme.primary,
                 onPrimary: Colors.white,
-                minimumSize: Size(double.infinity, 36),
-                padding: EdgeInsets.symmetric(vertical: 12.0),
+                minimumSize: const Size(double.infinity, 36),
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
               ),
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -110,7 +108,7 @@ class AddWithPhonePage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => AddWithQRCodePage()),
                 );
               },
-              child: Text(
+              child: const Text(
                   'Add with QR code',
                   style: TextStyle(fontSize: 16.0)
               ),

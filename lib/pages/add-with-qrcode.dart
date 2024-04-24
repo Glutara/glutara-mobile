@@ -17,7 +17,7 @@ class AddWithQRCodePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Add Relation with QR Code',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -25,21 +25,21 @@ class AddWithQRCodePage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 15),
-            Text(
+            const SizedBox(height: 15),
+            const Text(
               'Let your relation scan this QR Code to share your glucose level tracking with them',
               style: TextStyle(
                 fontSize: 16
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Image.asset(
               'assets/qrcode.png',
               width: 250,
               height: 250,
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -48,7 +48,7 @@ class AddWithQRCodePage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => AddWithPhonePage()),
                 );
               },
-              child: Text(
+              child: const Text(
                   'Add with phone number',
                   style: TextStyle(fontSize: 16.0)
               ),

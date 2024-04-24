@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
             'lastLoginTime', DateTime.now().millisecondsSinceEpoch);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => const HomePage()),
         );
       } else {
         final errorResponse = json.decode(response.body);
@@ -69,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('User not found, check your email and password'),
           backgroundColor: Colors.red,
         ),
@@ -102,8 +102,8 @@ class _LoginPageState extends State<LoginPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 30.0, top: 20.0, right: 30.0),
+          const Padding(
+            padding: EdgeInsets.only(left: 30.0, top: 20.0, right: 30.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -131,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(height: 100.0),
+                    const SizedBox(height: 100.0),
                     TextFormField(
                       controller: _emailController,
                       focusNode: _emailFocusNode,
@@ -145,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     TextFormField(
                       controller: _passwordController,
                       focusNode: _passwordFocusNode,
@@ -174,17 +174,17 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 100.0),
+                    const SizedBox(height: 100.0),
                     ElevatedButton(
-                      child: Text('Log In', style: TextStyle(fontSize: 15.0)),
+                      child: const Text('Log In', style: TextStyle(fontSize: 15.0)),
                       onPressed: _handleLogin,
                       style: ElevatedButton.styleFrom(
                           primary: Theme.of(context).colorScheme.primary,
                           onPrimary: Colors.white,
-                          minimumSize: Size(double.infinity, 36),
-                          padding: EdgeInsets.symmetric(vertical: 12.0)),
+                          minimumSize: const Size(double.infinity, 36),
+                          padding: const EdgeInsets.symmetric(vertical: 12.0)),
                     ),
-                    SizedBox(height: 10.0),
+                    const SizedBox(height: 10.0),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: GestureDetector(
@@ -192,13 +192,13 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => SignUpPage()),
+                                builder: (context) => const SignUpPage()),
                           );
                         },
                         child: RichText(
                           text: TextSpan(
                             text: "Don’t have an account? ",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 17,
                                 color: Colors.black,
                                 fontWeight: FontWeight.normal),

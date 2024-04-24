@@ -68,10 +68,10 @@ class _DashboardPageState extends State<DashboardPage> {
     setState(() {
       if (increment) {
         if (selectedDate.isBefore(DateTime.now())) {
-          selectedDate = selectedDate.add(Duration(days: 1));
+          selectedDate = selectedDate.add(const Duration(days: 1));
         }
       } else {
-        selectedDate = selectedDate.subtract(Duration(days: 1));
+        selectedDate = selectedDate.subtract(const Duration(days: 1));
       }
     });
   }
@@ -125,7 +125,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     touchTooltipData: LineTouchTooltipData(
                       tooltipBgColor: Colors.white,
                       tooltipBorder:
-                          BorderSide(width: 2, color: CustomColors.brandColor),
+                          const BorderSide(width: 2, color: CustomColors.brandColor),
                       tooltipRoundedRadius: 20,
                       getTooltipItems: (List<LineBarSpot> touchedSpots) {
                         return touchedSpots.map((spot) {
@@ -139,13 +139,13 @@ class _DashboardPageState extends State<DashboardPage> {
                       },
                     ),
                   ),
-                  gridData: FlGridData(show: true, verticalInterval: 3.0),
-                  titlesData: FlTitlesData(
+                  gridData: const FlGridData(show: true, verticalInterval: 3.0),
+                  titlesData: const FlTitlesData(
                     show: true,
-                    rightTitles: const AxisTitles(
+                    rightTitles: AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),
-                    topTitles: const AxisTitles(
+                    topTitles: AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),
                     bottomTitles: AxisTitles(
@@ -173,7 +173,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       color: CustomColors.brandColor,
                       barWidth: 4,
                       isStrokeCapRound: true,
-                      dotData: FlDotData(show: false),
+                      dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
                         gradient: LinearGradient(
@@ -236,12 +236,12 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 Text(
                   currentData['averageGlucose'],
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
+                const Text(
                   'Your glucose levels are quite good and relatively stable.',
                 ),
               ],
@@ -284,7 +284,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               )
             : null,
-        padding: EdgeInsets.symmetric(vertical: 8.0), // Add padding if needed
+        padding: const EdgeInsets.symmetric(vertical: 8.0), // Add padding if needed
         child: Text(
           text,
           style: TextStyle(
@@ -326,7 +326,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   Text(
                     value,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
                       color: Colors.black,
                     ),

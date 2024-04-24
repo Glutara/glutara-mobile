@@ -150,11 +150,11 @@ class _AddMealPageState extends State<AddMealPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   'Add Meal',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 60.0),
+                const SizedBox(height: 60.0),
                 Row(
                   children: [
                     Expanded(
@@ -169,7 +169,7 @@ class _AddMealPageState extends State<AddMealPage> {
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                       ),
                     ),
-                    SizedBox(width: 25.0),
+                    const SizedBox(width: 25.0),
                     Expanded(
                       flex: 2,
                       child: TextFormField(
@@ -185,7 +185,7 @@ class _AddMealPageState extends State<AddMealPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 25),
+                const SizedBox(height: 25),
                 DropdownButtonFormField<int>(
                   decoration: InputDecoration(
                     labelText: 'Meal Type',
@@ -208,13 +208,13 @@ class _AddMealPageState extends State<AddMealPage> {
                   },
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
-                SizedBox(height: 25),
+                const SizedBox(height: 25),
                 TextFormField(
                   controller: dateController,
                   decoration: InputDecoration(
                     labelText: 'Date',
                     border: _border(Colors.grey),
-                    suffixIcon: Icon(Icons.calendar_today),
+                    suffixIcon: const Icon(Icons.calendar_today),
                   ),
                   validator: Validators.notEmptyValidator,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -237,7 +237,7 @@ class _AddMealPageState extends State<AddMealPage> {
                     }
                   },
                 ),
-                SizedBox(height: 25),
+                const SizedBox(height: 25),
                 Row(
                   children: <Widget>[
                     Expanded(
@@ -246,7 +246,7 @@ class _AddMealPageState extends State<AddMealPage> {
                         decoration: InputDecoration(
                           labelText: 'Start Time',
                           border: _border(Colors.grey),
-                          suffixIcon: Icon(Icons.watch_later_outlined),
+                          suffixIcon: const Icon(Icons.watch_later_outlined),
                         ),
                         validator: Validators.notEmptyValidator,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -276,14 +276,14 @@ class _AddMealPageState extends State<AddMealPage> {
                         },
                       ),
                     ),
-                    SizedBox(width: 25),
+                    const SizedBox(width: 25),
                     Expanded(
                       child: TextFormField(
                         controller: endTimeController,
                         decoration: InputDecoration(
                           labelText: 'End Time',
                           border: _border(Colors.grey),
-                          suffixIcon: Icon(Icons.watch_later_outlined),
+                          suffixIcon: const Icon(Icons.watch_later_outlined),
                         ),
                         validator: Validators.notEmptyValidator,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -322,14 +322,14 @@ class _AddMealPageState extends State<AddMealPage> {
                     style: ElevatedButton.styleFrom(
                       primary: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 16.0),
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
                     ),
                     onPressed: () {
                       _handleSave();
                     },
                   ),
                 ),
-                SizedBox(height: 25),
+                const SizedBox(height: 25),
               ],
             ),
           ),
