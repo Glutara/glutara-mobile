@@ -8,7 +8,9 @@ import 'add-meal.dart';
 import 'add-exercise.dart';
 import 'add-medication.dart';
 import 'add-sleep.dart';
+import 'scan-food.dart';
 import '../color_schemes.g.dart';
+import 'package:camera/camera.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -32,7 +34,22 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset('assets/topbar-logo.png'),
+        leading: IconButton(
+          onPressed: () async {
+            await availableCameras().then((value) => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => ScanFoodPage(cameras: value))));
+          },
+          icon: Icon(
+            Icons.document_scanner_outlined,
+            size: 30.0,
+          ),
+        ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/topbar-logo.png'),
+          ],
+        ),
         centerTitle: true,
         toolbarHeight: 60.0,
         elevation: 20,
@@ -78,7 +95,7 @@ class _HomePageState extends State<HomePage> {
             builder: (context) {
               return Container(
                 alignment: Alignment.center,
-                color: const Color(0xFFFFF8F0),
+                color: Theme.of(context).colorScheme.background,
                 height: 400,
                 child:
                     Column(mainAxisSize: MainAxisSize.min, children: <Widget>[

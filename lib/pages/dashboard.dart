@@ -123,7 +123,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 LineChartData(
                   lineTouchData: LineTouchData(
                     touchTooltipData: LineTouchTooltipData(
-                      tooltipBgColor: Colors.white,
+                      tooltipBgColor: Theme.of(context).colorScheme.onPrimary,
                       tooltipBorder:
                           const BorderSide(width: 2, color: CustomColors.brandColor),
                       tooltipRoundedRadius: 20,
@@ -208,7 +208,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return Column(
       children: [
         Container(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.onSecondary,
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -289,7 +289,7 @@ class _DashboardPageState extends State<DashboardPage> {
           text,
           style: TextStyle(
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: isSelected ? Theme.of(context).primaryColor : Colors.black,
+            color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary,
           ),
         ),
       ),
@@ -319,14 +319,14 @@ class _DashboardPageState extends State<DashboardPage> {
                     title,
                     style: TextStyle(
                       color: Colors
-                          .grey[800], // Adjust the color to match your design
+                          .grey[800],
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     value,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       color: Colors.black,
                     ),
