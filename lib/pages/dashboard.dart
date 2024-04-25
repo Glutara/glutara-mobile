@@ -131,8 +131,8 @@ class _DashboardPageState extends State<DashboardPage> {
                         return touchedSpots.map((spot) {
                           return LineTooltipItem(
                             '${spot.y} mg/dL',
-                            const TextStyle(
-                                color: Colors.black,
+                            TextStyle(
+                                color: Theme.of(context).colorScheme.onBackground,
                                 fontWeight: FontWeight.bold),
                           );
                         }).toList();
@@ -318,8 +318,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   Text(
                     title,
                     style: TextStyle(
-                      color: Colors
-                          .grey[800],
+                      color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -328,7 +327,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     value,
                     style: TextStyle(
                       fontSize: 18,
-                      color: Colors.black,
+                      color: Theme.of(context).colorScheme.onBackground,
                     ),
                   ),
                 ],
