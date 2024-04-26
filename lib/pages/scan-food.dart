@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'scan-food-detail.dart';
@@ -132,7 +133,7 @@ class _ScanFoodPageState extends State<ScanFoodPage> {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.12,
+        height: MediaQuery.of(context).size.height * 0.15,
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           color: Colors.black,
@@ -167,10 +168,34 @@ class _ScanFoodPageState extends State<ScanFoodPage> {
                 icon: const Icon(Icons.circle, color: Colors.white),
               ),
             ),
-            const Spacer(),
+            Expanded(
+              child: IconButton(
+                onPressed: () {
+                  _getImageFromGallery();
+                },
+                iconSize: 30,
+                icon: const Icon(
+                  Icons.photo,
+                  color: Colors.white,
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _getImageFromGallery() async {
+    final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ScanFoodDetailPage(picture: XFile(pickedFile.path)),
+        ),
+      );
+    }
   }
 }
