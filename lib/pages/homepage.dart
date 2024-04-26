@@ -34,14 +34,19 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () async {
-            await availableCameras().then((value) => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => ScanFoodPage(cameras: value))));
-          },
-          icon: Icon(
-            Icons.document_scanner_outlined,
-            size: 30.0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16.0),
+          child: IconButton(
+            onPressed: () async {
+              await availableCameras().then((value) => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => ScanFoodPage(cameras: value))));
+            },
+            icon: Icon(
+              Icons.document_scanner_outlined,
+              size: 30.0,
+            ),
           ),
         ),
         title: Row(
@@ -114,11 +119,14 @@ class _HomePageState extends State<HomePage> {
                   ListTile(
                     leading: CircleAvatar(
                       radius: 24,
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.primaryContainer,
                       child: Align(
                         alignment: Alignment.center,
-                        child:
-                            Icon(Icons.fastfood_outlined, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                        child: Icon(Icons.fastfood_outlined,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer),
                       ),
                     ),
                     title: const Text(
@@ -127,8 +135,11 @@ class _HomePageState extends State<HomePage> {
                           fontSize: 18, fontWeight: FontWeight.normal),
                     ),
                     subtitle: Text('Track your consumption',
-                        style:
-                            TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant)),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -140,11 +151,14 @@ class _HomePageState extends State<HomePage> {
                   ListTile(
                     leading: CircleAvatar(
                       radius: 24,
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.primaryContainer,
                       child: Align(
                         alignment: Alignment.center,
-                        child:
-                            Icon(Icons.vaccines_outlined, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                        child: Icon(Icons.vaccines_outlined,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer),
                       ),
                     ),
                     title: const Text(
@@ -153,8 +167,11 @@ class _HomePageState extends State<HomePage> {
                           fontSize: 18, fontWeight: FontWeight.normal),
                     ),
                     subtitle: Text('Record medication taken',
-                        style:
-                            TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant)),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -166,11 +183,14 @@ class _HomePageState extends State<HomePage> {
                   ListTile(
                     leading: CircleAvatar(
                       radius: 24,
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.primaryContainer,
                       child: Align(
                         alignment: Alignment.center,
                         child: Icon(Icons.fitness_center_outlined,
-                            color: Theme.of(context).colorScheme.onPrimaryContainer),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer),
                       ),
                     ),
                     title: const Text(
@@ -179,8 +199,11 @@ class _HomePageState extends State<HomePage> {
                           fontSize: 18, fontWeight: FontWeight.normal),
                     ),
                     subtitle: Text('Log your exercise activities',
-                        style:
-                            TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant)),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -192,11 +215,14 @@ class _HomePageState extends State<HomePage> {
                   ListTile(
                     leading: CircleAvatar(
                       radius: 24,
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.primaryContainer,
                       child: Align(
                         alignment: Alignment.center,
-                        child:
-                            Icon(Icons.bedtime_outlined, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                        child: Icon(Icons.bedtime_outlined,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer),
                       ),
                     ),
                     title: const Text(
@@ -205,8 +231,11 @@ class _HomePageState extends State<HomePage> {
                           fontSize: 18, fontWeight: FontWeight.normal),
                     ),
                     subtitle: Text('Track your sleep patterns',
-                        style:
-                            TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant)),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
