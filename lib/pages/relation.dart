@@ -1,10 +1,109 @@
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 import 'add-with-qrcode.dart';
 import 'add-with-phone.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class RelationPage extends StatelessWidget {
-  const RelationPage({super.key});
+class RelationPage extends StatefulWidget {
+  const RelationPage({Key? key}) : super(key: key);
+
+  @override
+  _RelationPageState createState() => _RelationPageState();
+}
+
+class _RelationPageState extends State<RelationPage> {
+  late GoogleMapController mapController;
+  final Location _location = Location();
+  LatLng _initialPosition = LatLng(-6.890670, 107.607060);
+  final Set<Marker> _markers = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserLocation();
+    _addInitialMarker();
+  }
+
+  void _addInitialMarker() {
+    _markers.add(Marker(
+      markerId: MarkerId('marker1'),
+      icon: BitmapDescriptor.defaultMarker,
+      position: LatLng(-6.900670, 107.627060),
+      infoWindow: InfoWindow(
+        title: 'Marker 1',
+        snippet: 'Label for Marker 1',
+      ),
+    ));
+    _markers.add(Marker(
+      markerId: MarkerId('marker2'),
+      icon: BitmapDescriptor.defaultMarker,
+      position: LatLng(-6.930670, 107.617060),
+      infoWindow: InfoWindow(
+        title: 'Marker 2',
+        snippet: 'Label for Marker 2',
+      ),
+    ));
+  }
+
+  Future<void> _getUserLocation() async {
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+    _serviceEnabled = await _location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await _location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await _location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await _location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _locationData = await _location.getLocation();
+    setState(() {
+      _initialPosition = LatLng(_locationData.latitude ?? -6.890670,
+          _locationData.longitude ?? 107.607060);
+
+      _markers.add(
+        Marker(
+          markerId: MarkerId("currentLocation"),
+          position: _initialPosition,
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+        ),
+      );
+    });
+
+    _location.onLocationChanged.listen((LocationData currentLocation) {
+      setState(() {
+        _initialPosition = LatLng(
+          currentLocation.latitude ?? -6.890670,
+          currentLocation.longitude ?? 107.607060,
+        );
+        _markers.removeWhere(
+            (marker) => marker.markerId == MarkerId("currentLocation"));
+        _markers.add(
+          Marker(
+            markerId: MarkerId("currentLocation"),
+            position: _initialPosition,
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueAzure),
+          ),
+        );
+      });
+    });
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +145,29 @@ class RelationPage extends StatelessWidget {
                 ],
               ),
             ),
+            Container(
+              alignment: Alignment.centerLeft,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
+              child: const Text('Search From Map',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
+            ),
+            Container(
+              height: 300,
+              margin: const EdgeInsets.symmetric(horizontal: 8.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: GoogleMap(
+                  onMapCreated: _onMapCreated,
+                  initialCameraPosition:
+                      CameraPosition(target: _initialPosition, zoom: 13),
+                  markers: _markers,
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -57,34 +179,29 @@ class RelationPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text(
-              'Add Connection',
+          title: const Text('Add Connection',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize:  20.0,
-              )
-          ),
+                fontSize: 20.0,
+              )),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Choose how you would like to connect',
-                style: TextStyle(fontSize: 16.0)
-              ),
+              const Text('Choose how you would like to connect',
+                  style: TextStyle(fontSize: 16.0)),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AddWithQRCodePage()),
+                    MaterialPageRoute(
+                        builder: (context) => AddWithQRCodePage()),
                   );
                 },
-                child: const Text(
-                    'With QR code',
-                    style: TextStyle(fontSize: 16.0)
-                ),
+                child: const Text('With QR code',
+                    style: TextStyle(fontSize: 16.0)),
               ),
               const SizedBox(height: 8),
               TextButton(
@@ -95,10 +212,8 @@ class RelationPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => AddWithPhonePage()),
                   );
                 },
-                child: const Text(
-                    'With phone number',
-                    style: TextStyle(fontSize: 16.0)
-              ),
+                child: const Text('With phone number',
+                    style: TextStyle(fontSize: 16.0)),
               ),
             ],
           ),

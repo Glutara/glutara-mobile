@@ -30,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
       // Check if user has login less than 24 hours
       if (currentTime - lastLoginTime <= 86400000) {
         Timer(
-            const Duration(seconds: 2),
+            const Duration(seconds: 5),
             () => Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => const HomePage()),
                 ));
@@ -46,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void _redirectToLoginPage() {
     Timer(
-        const Duration(seconds: 2),
+        const Duration(seconds: 5),
         () => Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const LoginPage()),
             ));
