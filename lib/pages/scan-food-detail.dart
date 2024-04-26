@@ -17,7 +17,7 @@ class ScanFoodDetailPage extends StatelessWidget {
         elevation: 20,
       ),
       body: Padding(
-        padding: const EdgeInsets.only(top: 16),
+        padding: const EdgeInsets.only(top: 24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -31,6 +31,7 @@ class ScanFoodDetailPage extends StatelessWidget {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),
+            const SizedBox(height: 6),
             _buildNutritionTable(context),
           ],
         ),
@@ -49,7 +50,7 @@ class ScanFoodDetailPage extends StatelessWidget {
   Widget _buildNutritionTable(BuildContext context) {
     return Card(
       elevation: 4,
-      margin: const EdgeInsets.all(18),
+      margin: const EdgeInsets.symmetric(vertical: 18, horizontal: 50),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -62,7 +63,7 @@ class ScanFoodDetailPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 10),
             _buildNutritionRow('Calories', '300', 'cal'),
             _buildNutritionRow('Carbs', '20', 'gr'),
             _buildNutritionRow('Protein', '10', 'gr'),
@@ -77,7 +78,7 @@ class ScanFoodDetailPage extends StatelessWidget {
 
   Widget _buildNutritionRow(String label, String value, String unit) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center, // Aligns items along the Y-axis (vertically)
