@@ -1,4 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,27 +32,52 @@ class _ScanFoodPageState extends State<ScanFoodPage> {
     initCamera(widget.cameras![0]);
   }
 
-  Future takePicture() async {
+  Future<void> takePicture() async {
     if (!_cameraController.value.isInitialized) {
-      return null;
+      return;
     }
     if (_cameraController.value.isTakingPicture) {
-      return null;
+      return;
     }
     try {
       await _cameraController.setFlashMode(FlashMode.off);
-      XFile picture = await _cameraController.takePicture();
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ScanFoodDetailPage(
-                picture: picture,
-              )
-          )
-      );
+      final XFile picture = await _cameraController.takePicture();
+      await sendImageToService(picture);
     } on CameraException catch (e) {
       debugPrint('Error occured while taking picture: $e');
-      return null;
+    }
+  }
+
+  Future<void> sendImageToService(XFile image) async {
+    // Replace with your actual API endpoint URL
+    final String url = "https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/1/scan";
+    final Uri uri = Uri.parse(url);
+
+    final http.MultipartRequest request = http.MultipartRequest('POST', uri);
+    final http.MultipartFile multipartFile = await http.MultipartFile.fromPath(
+      'image',
+      image.path,
+    );
+    request.files.add(multipartFile);
+
+    final http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      final String responseString = await response.stream.transform(utf8.decoder).first;
+      debugPrint('API Response: $responseString');
+      final Map<String, dynamic> responseJson = jsonDecode(responseString);
+      // Use the responseJson data in your ScanFoodDetailPage
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ScanFoodDetailPage(
+            picture: image,
+            foodData: responseJson,
+          ),
+        ),
+      );
+    } else {
+      // Handle API errors here
+      debugPrint('Error: ${response.reasonPhrase}');
     }
   }
 
@@ -190,12 +218,8 @@ class _ScanFoodPageState extends State<ScanFoodPage> {
     final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ScanFoodDetailPage(picture: XFile(pickedFile.path)),
-        ),
-      );
+      final XFile picture = await XFile(pickedFile.path);
+      await sendImageToService(picture);
     }
   }
 }

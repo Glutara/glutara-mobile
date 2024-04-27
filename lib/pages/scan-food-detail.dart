@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 
 class ScanFoodDetailPage extends StatelessWidget {
-  const ScanFoodDetailPage({Key? key, required this.picture}) : super(key: key);
+  const ScanFoodDetailPage({Key? key, required this.picture, required this.foodData}) : super(key: key);
 
   final XFile picture;
+  final Map<String, dynamic> foodData;
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +25,7 @@ class ScanFoodDetailPage extends StatelessWidget {
           children: [
             _buildSquareImage(),
             const SizedBox(height: 16),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'Spaghetti',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-            ),
+            _buildFoodNameWidget(),
             const SizedBox(height: 6),
             _buildNutritionTable(context),
           ],
@@ -44,6 +39,17 @@ class ScanFoodDetailPage extends StatelessWidget {
       width: 300,
       height: 350,
       child: Image.file(File(picture.path), fit: BoxFit.cover),
+    );
+  }
+
+  Widget _buildFoodNameWidget() {
+    final String foodName = foodData['foodname'] ?? 'Unknown Food';
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Text(
+        foodName,
+        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      ),
     );
   }
 
@@ -64,12 +70,36 @@ class ScanFoodDetailPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            _buildNutritionRow('Calories', '300', 'cal'),
-            _buildNutritionRow('Carbs', '20', 'gr'),
-            _buildNutritionRow('Protein', '10', 'gr'),
-            _buildNutritionRow('Fat', '13', 'gr'),
-            _buildNutritionRow('Fiber', '2', 'gr'),
-            _buildNutritionRow('Glucose', '2', 'gr'),
+            _buildNutritionRow(
+              'Calories',
+              foodData['calories']?.toString() ?? '-',
+              'cal',
+            ),
+            _buildNutritionRow(
+              'Carbs',
+              foodData['carbs']?.toString() ?? '-',
+              'gr',
+            ),
+            _buildNutritionRow(
+              'Protein',
+              foodData['protein']?.toString() ?? '-',
+              'gr',
+            ),
+            _buildNutritionRow(
+              'Fat',
+              foodData['fat']?.toString() ?? '-',
+              'gr',
+            ),
+            _buildNutritionRow(
+              'Fiber',
+              foodData['fiber']?.toString() ?? '-',
+              'gr',
+            ),
+            _buildNutritionRow(
+              'Glucose',
+              foodData['glucose']?.toString() ?? '-',
+              'gr',
+            ),
           ],
         ),
       ),
