@@ -51,6 +51,9 @@ class _LoginPageState extends State<LoginPage> {
         var data = jsonDecode(response.body);
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setInt('userID', data['ID']);
+        await prefs.setString('name', data['Name']);
+        await prefs.setString('phone', data['Phone']);
+        await prefs.setInt('role', data['Role']);
         await prefs.setInt(
             'lastLoginTime', DateTime.now().millisecondsSinceEpoch);
         Navigator.pushReplacement(
@@ -176,7 +179,8 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 100.0),
                     ElevatedButton(
-                      child: const Text('Log In', style: TextStyle(fontSize: 15.0)),
+                      child: const Text('Log In',
+                          style: TextStyle(fontSize: 15.0)),
                       onPressed: _handleLogin,
                       style: ElevatedButton.styleFrom(
                           primary: Theme.of(context).colorScheme.primary,

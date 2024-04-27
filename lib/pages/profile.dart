@@ -7,6 +7,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
+  Future<Map<String, String>> _getUserData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String name = prefs.getString('name') ?? 'No Name';
+    String phone = prefs.getString('phone') ?? 'No Phone';
+    return {'name': name, 'phone': phone};
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,48 +34,64 @@ class ProfilePage extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const CircleAvatar(
-                  radius: 30,
-                  backgroundImage: AssetImage('assets/default-avatar.jpeg'),
-                ),
-                const SizedBox(width: 16),
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
+          FutureBuilder<Map<String, String>>(
+            future: _getUserData(),
+            builder: (BuildContext context,
+                AsyncSnapshot<Map<String, String>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.done &&
+                  snapshot.hasData) {
+                return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        'Selina Anita',
-                        style: TextStyle(fontSize: 20),
+                      const CircleAvatar(
+                        radius: 30,
+                        backgroundImage:
+                            AssetImage('assets/default-avatar.jpeg'),
                       ),
-                      Text(
-                        '+6282336571102',
-                        style: TextStyle(color: Colors.grey),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              snapshot.data!['name']!,
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                            Text(
+                              snapshot.data!['phone']!,
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // TODO: Implement edit profile action
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          minimumSize: const Size(50, 30),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 25, vertical: 10),
+                        ),
+                        child: const Text('Edit'),
                       ),
                     ],
                   ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    // TODO: Implement edit profile action
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Theme.of(context).colorScheme.primary,
-                    minimumSize: const Size(50, 30),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-                  ),
-                  child: const Text('Edit'),
-                ),
-              ],
-            ),
+                );
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -150,12 +173,14 @@ class ProfilePage extends StatelessWidget {
                         fontSize: 22.0,
                       ),
                     ),
-                    const SizedBox(height: 20), // Spacing between text and buttons
+                    const SizedBox(
+                        height: 20), // Spacing between text and buttons
                     const Text(
                       'Are you sure you want to logout?',
                       style: TextStyle(fontSize: 18.0),
                     ),
-                    const SizedBox(height: 20), // Spacing between text and buttons
+                    const SizedBox(
+                        height: 20), // Spacing between text and buttons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [

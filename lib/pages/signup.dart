@@ -45,10 +45,10 @@ class _SignUpPageState extends State<SignUpPage> {
     int roleValue = _selectedRole == 'Patient'
         ? 0
         : _selectedRole == 'Relation'
-        ? 1
-        : _selectedRole == 'Volunteer'
-        ? 2
-        : 3;
+            ? 1
+            : _selectedRole == 'Volunteer'
+                ? 2
+                : 3;
 
     var response = await http.post(
       Uri.parse(
@@ -70,6 +70,9 @@ class _SignUpPageState extends State<SignUpPage> {
       var data = jsonDecode(response.body);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('userID', data['ID'].toString());
+      await prefs.setString('name', data['Name']);
+      await prefs.setString('phone', data['Phone']);
+      await prefs.setInt('role', data['Role']);
       await prefs.setInt(
           'lastLoginTime', DateTime.now().millisecondsSinceEpoch);
       Navigator.pushReplacement(
@@ -147,9 +150,14 @@ class _SignUpPageState extends State<SignUpPage> {
                       controller: _nameController,
                       decoration: InputDecoration(
                         labelText: 'Name',
-                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary), // Use theme color
+                        labelStyle: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary), // Use theme color
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Theme.of(context).colorScheme.primary), // Use theme color
+                        focusedBorder: _border(Theme.of(context)
+                            .colorScheme
+                            .primary), // Use theme color
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -162,16 +170,18 @@ class _SignUpPageState extends State<SignUpPage> {
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         labelText: 'I am a',
-                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary), // Use theme color
+                        labelStyle: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary), // Use theme color
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Theme.of(context).colorScheme.primary), // Use theme color
+                        focusedBorder: _border(Theme.of(context)
+                            .colorScheme
+                            .primary), // Use theme color
                       ),
                       value: _selectedRole,
-                      items: <String>[
-                        'Patient',
-                        'Relation',
-                        'Volunteer'
-                      ].map<DropdownMenuItem<String>>((String value) {
+                      items: <String>['Patient', 'Relation', 'Volunteer']
+                          .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
@@ -267,7 +277,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: Text.rich(
                           TextSpan(
                             text: "Already have an account? ",
-                            style: const TextStyle(color: Colors.black, fontSize: 17),
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 17),
                             children: <TextSpan>[
                               TextSpan(
                                 text: 'Log In',
