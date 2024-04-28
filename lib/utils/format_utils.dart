@@ -22,4 +22,15 @@ class FormatUtils {
         DateTime(date.year, date.month, date.day, time.hour, time.minute);
     return '${DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(combinedDateTime)}Z';
   }
+
+  static String? formatDateToReadable(String isoDate) {
+    if (isoDate == null) return "";
+    try {
+      DateTime dateTime = DateTime.parse(isoDate);
+      DateFormat formatter = DateFormat('EEEE, MMMM d yyyy', 'en_US');
+      return formatter.format(dateTime);
+    } catch (error) {
+      return '';
+    }
+  }
 }

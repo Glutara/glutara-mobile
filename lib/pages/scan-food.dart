@@ -49,8 +49,8 @@ class _ScanFoodPageState extends State<ScanFoodPage> {
   }
 
   Future<void> sendImageToService(XFile image) async {
-    // Replace with your actual API endpoint URL
-    final String url = "https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/1/scan";
+    final String url =
+        "https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/1/scan";
     final Uri uri = Uri.parse(url);
 
     final http.MultipartRequest request = http.MultipartRequest('POST', uri);
@@ -60,24 +60,65 @@ class _ScanFoodPageState extends State<ScanFoodPage> {
     );
     request.files.add(multipartFile);
 
-    final http.StreamedResponse response = await request.send();
-    if (response.statusCode == 200) {
-      final String responseString = await response.stream.transform(utf8.decoder).first;
-      debugPrint('API Response: $responseString');
-      final Map<String, dynamic> responseJson = jsonDecode(responseString);
-      // Use the responseJson data in your ScanFoodDetailPage
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ScanFoodDetailPage(
-            picture: image,
-            foodData: responseJson,
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.transparent,
+        content: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+            color: Colors.white,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                CircularProgressIndicator(),
+                SizedBox(height: 10),
+                Center(
+                  child: Text(
+                    "Uploading image and analyzing nutritional information...",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      );
-    } else {
-      // Handle API errors here
-      debugPrint('Error: ${response.reasonPhrase}');
+      ),
+    );
+
+    try {
+      final http.StreamedResponse response = await request.send();
+      if (response.statusCode == 200) {
+        final String responseString =
+            await response.stream.transform(utf8.decoder).first;
+        debugPrint('API Response: $responseString');
+        final Map<String, dynamic> responseJson = jsonDecode(responseString);
+        // Use the responseJson data in your ScanFoodDetailPage
+        Navigator.pop(context);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ScanFoodDetailPage(
+              picture: image,
+              foodData: responseJson,
+            ),
+          ),
+        );
+      } else {
+        // Handle API errors here
+        Navigator.pop(context);
+        debugPrint('Error: ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      Navigator.pop(context);
+
+      debugPrint('Error sending image: $error');
     }
   }
 
@@ -118,9 +159,9 @@ class _ScanFoodPageState extends State<ScanFoodPage> {
       child: _cameraController.value.isInitialized
           ? CameraPreview(_cameraController)
           : Container(
-        color: Colors.black,
-        child: const Center(child: CircularProgressIndicator()),
-      ),
+              color: Colors.black,
+              child: const Center(child: CircularProgressIndicator()),
+            ),
     );
   }
 
@@ -215,7 +256,8 @@ class _ScanFoodPageState extends State<ScanFoodPage> {
   }
 
   Future<void> _getImageFromGallery() async {
-    final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().getImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       final XFile picture = await XFile(pickedFile.path);

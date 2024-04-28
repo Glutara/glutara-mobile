@@ -50,6 +50,7 @@ dependencies:
   fluttertoast: ^8.2.5
   shared_preferences: ^2.2.3
   logger: ^2.2.0
+  flutter_spinkit: ^5.2.1
 
 dev_dependencies:
   flutter_test:
