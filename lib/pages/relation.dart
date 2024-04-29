@@ -117,11 +117,7 @@ class _RelationPageState extends State<RelationPage> {
           children: [
             Expanded(
               child: ListView(
-                children: const [
-                  _RelationTile(name: 'Jonas', phone: '+6282338741009'),
-                  _RelationTile(name: 'Thomas', phone: '+6281395328431'),
-                  _RelationTile(name: 'Irene', phone: '+6285391410588'),
-                ],
+                children: _buildRelationTiles(context),
               ),
             ),
             _buildMapSection(context),
@@ -129,6 +125,25 @@ class _RelationPageState extends State<RelationPage> {
         ),
       ),
     );
+  }
+
+  List<Widget> _buildRelationTiles(BuildContext context) {
+    if (widget.userRole == 0) {
+      return [
+        _TileForPatient(name: 'Jonas', phone: '082338741009'),
+        _TileForPatient(name: 'Thomas', phone: '081395328431'),
+        _TileForPatient(name: 'Irene', phone: '085391410588'),
+      ];
+    } else if (widget.userRole == 1) {
+      return [
+        _TileForRelation(name: 'Jonas', phone: '082338741009', glucose: '108'),
+        _TileForRelation(name: 'Thomas', phone: '081395328431', glucose: '112'),
+      ];
+    } else {
+      return [
+        _TileForVolunteer(name: 'Thomas', phone: '081395328431'),
+      ];
+    }
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
@@ -265,11 +280,128 @@ class _RelationPageState extends State<RelationPage> {
   }
 }
 
-class _RelationTile extends StatelessWidget {
+class _TileForPatient extends StatelessWidget {
   final String name;
   final String phone;
 
-  const _RelationTile({super.key, required this.name, required this.phone});
+  const _TileForPatient({super.key, required this.name, required this.phone});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const CircleAvatar(
+              radius: 24,
+              backgroundImage: AssetImage('assets/default-avatar.jpeg'),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      name,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  Text(
+                    phone,
+                    style: const TextStyle(fontSize: 13, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+            const Wrap(
+              spacing: 12,
+              children: <Widget>[
+                Icon(Icons.call_outlined),
+                Icon(Icons.chat_outlined),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TileForRelation extends StatelessWidget {
+  final String name;
+  final String phone;
+  final String glucose;
+
+  const _TileForRelation({super.key, required this.name, required this.phone, required this.glucose});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const CircleAvatar(
+              radius: 24,
+              backgroundImage: AssetImage('assets/default-avatar.jpeg'),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      name,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  Text(
+                    phone,
+                    style: const TextStyle(fontSize: 13, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    glucose.toString(),
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+                  ),
+                  const Text(
+                    'mg/dL',
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TileForVolunteer extends StatelessWidget {
+  final String name;
+  final String phone;
+
+  const _TileForVolunteer({super.key, required this.name, required this.phone});
 
   @override
   Widget build(BuildContext context) {
