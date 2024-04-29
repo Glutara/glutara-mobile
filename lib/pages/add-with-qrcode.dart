@@ -149,7 +149,7 @@ class _CameraPageState extends State<_CameraPage> {
             ),
             SizedBox(height: 8),
             Text(
-              'Scan the QR Code shown in the patient\'s screen to connect and start tracking their glucose levels',
+              'Scan the QR Code shown in the patient\'s screen to connect and start tracking their glucose level',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.white,
