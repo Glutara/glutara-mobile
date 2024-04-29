@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'add-with-qrcode.dart';
 import 'generate-otp.dart';
+import 'package:camera/camera.dart';
 
 class AddWithPhonePage extends StatelessWidget {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
+  final int userRole;
+
+  AddWithPhonePage({Key? key, required this.userRole}) : super(key: key);
 
   OutlineInputBorder _border(Color color) {
     return OutlineInputBorder(
@@ -101,11 +105,11 @@ class AddWithPhonePage extends StatelessWidget {
             ),
             const SizedBox(height: 50),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.pop(context);
-                Navigator.push(
+                await availableCameras().then((value) => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AddWithQRCodePage()),
+                  MaterialPageRoute(builder: (context) => AddWithQRCodePage(userRole: userRole, cameras: value))),
                 );
               },
               child: const Text(

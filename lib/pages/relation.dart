@@ -3,6 +3,7 @@ import 'package:location/location.dart';
 import 'add-with-qrcode.dart';
 import 'add-with-phone.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:camera/camera.dart';
 
 class RelationPage extends StatefulWidget {
   final int userRole;
@@ -249,12 +250,12 @@ class _RelationPageState extends State<RelationPage> {
                   style: TextStyle(fontSize: 16.0)),
               const SizedBox(height: 16),
               TextButton(
-                onPressed: () {
+                onPressed: () async {
                   Navigator.pop(context);
-                  Navigator.push(
+                  await availableCameras().then((value) => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => AddWithQRCodePage()),
+                        builder: (context) => AddWithQRCodePage(userRole: widget.userRole, cameras: value))),
                   );
                 },
                 child: const Text('With QR code',
@@ -266,7 +267,7 @@ class _RelationPageState extends State<RelationPage> {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AddWithPhonePage()),
+                    MaterialPageRoute(builder: (context) => AddWithPhonePage(userRole: widget.userRole)),
                   );
                 },
                 child: const Text('With phone number',

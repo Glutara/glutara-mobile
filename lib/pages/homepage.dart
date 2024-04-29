@@ -9,6 +9,8 @@ import 'add-exercise.dart';
 import 'add-medication.dart';
 import 'add-sleep.dart';
 import 'scan-food.dart';
+import 'add-with-qrcode.dart';
+import 'add-with-phone.dart';
 import '../color_schemes.g.dart';
 import 'package:camera/camera.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -307,7 +309,51 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _showRelationActionSheet() {
-    // Define the action for relation role
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add Connection',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20.0,
+              )),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Choose how you would like to connect',
+                  style: TextStyle(fontSize: 16.0)),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await availableCameras().then((value) => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddWithQRCodePage(userRole: userRole, cameras: value))),
+                  );
+                },
+                child: const Text('With QR code',
+                    style: TextStyle(fontSize: 16.0)),
+              ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddWithPhonePage(userRole: userRole)),
+                  );
+                },
+                child: const Text('With phone number',
+                    style: TextStyle(fontSize: 16.0)),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   NavigationBar _buildBottomNavigationBar() {
