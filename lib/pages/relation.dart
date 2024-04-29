@@ -5,7 +5,9 @@ import 'add-with-phone.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class RelationPage extends StatefulWidget {
-  const RelationPage({Key? key}) : super(key: key);
+  final int userRole;
+
+  const RelationPage({Key? key, required this.userRole}) : super(key: key);
 
   @override
   _RelationPageState createState() => _RelationPageState();
@@ -14,7 +16,7 @@ class RelationPage extends StatefulWidget {
 class _RelationPageState extends State<RelationPage> {
   late GoogleMapController mapController;
   final Location _location = Location();
-  LatLng _initialPosition = LatLng(-6.890670, 107.607060);
+  LatLng _initialPosition = const LatLng(-6.890670, 107.607060);
   final Set<Marker> _markers = {};
 
   @override
@@ -25,7 +27,7 @@ class _RelationPageState extends State<RelationPage> {
   }
 
   void _addInitialMarker() {
-    _markers.add(Marker(
+    _markers.add(const Marker(
       markerId: MarkerId('marker1'),
       icon: BitmapDescriptor.defaultMarker,
       position: LatLng(-6.900670, 107.627060),
@@ -34,7 +36,7 @@ class _RelationPageState extends State<RelationPage> {
         snippet: 'Label for Marker 1',
       ),
     ));
-    _markers.add(Marker(
+    _markers.add(const Marker(
       markerId: MarkerId('marker2'),
       icon: BitmapDescriptor.defaultMarker,
       position: LatLng(-6.930670, 107.617060),
@@ -73,7 +75,7 @@ class _RelationPageState extends State<RelationPage> {
 
       _markers.add(
         Marker(
-          markerId: MarkerId("currentLocation"),
+          markerId: const MarkerId("currentLocation"),
           position: _initialPosition,
           icon:
               BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
@@ -88,10 +90,10 @@ class _RelationPageState extends State<RelationPage> {
           currentLocation.longitude ?? 107.607060,
         );
         _markers.removeWhere(
-            (marker) => marker.markerId == MarkerId("currentLocation"));
+            (marker) => marker.markerId == const MarkerId("currentLocation"));
         _markers.add(
           Marker(
-            markerId: MarkerId("currentLocation"),
+            markerId: const MarkerId("currentLocation"),
             position: _initialPosition,
             icon: BitmapDescriptor.defaultMarkerWithHue(
                 BitmapDescriptor.hueAzure),
@@ -108,30 +110,7 @@ class _RelationPageState extends State<RelationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
-          child: AppBar(
-            title: const Text(
-              'My Relation',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            actions: [
-              IconButton(
-                icon: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  radius: 24,
-                  child: const Icon(Icons.add, color: Colors.white),
-                ),
-                onPressed: () {
-                  _showAddConnectionDialog(context);
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
+      appBar: _buildAppBar(context),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -145,33 +124,96 @@ class _RelationPageState extends State<RelationPage> {
                 ],
               ),
             ),
-            Container(
-              alignment: Alignment.centerLeft,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
-              child: const Text('Search From Map',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
-            ),
-            Container(
-              height: 300,
-              margin: const EdgeInsets.symmetric(horizontal: 8.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12.0),
-                child: GoogleMap(
-                  onMapCreated: _onMapCreated,
-                  initialCameraPosition:
-                      CameraPosition(target: _initialPosition, zoom: 13),
-                  markers: _markers,
-                ),
-              ),
-            ),
+            _buildMapSection(context),
           ],
         ),
       ),
     );
+  }
+
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    String titleText = '';
+    bool showCircleIconButton = true;
+
+    switch (widget.userRole) {
+      case 0:
+        titleText = 'My Relation';
+        break;
+      case 1:
+        titleText = 'Track My Relation';
+        showCircleIconButton = false;
+        break;
+      case 2:
+        titleText = 'Patient Around Me';
+        showCircleIconButton = false;
+        break;
+      default:
+        titleText = 'My Relation';
+        break;
+    }
+
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(kToolbarHeight),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
+        child: AppBar(
+          title: Text(
+            titleText,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          actions: [
+            if (showCircleIconButton)
+              IconButton(
+                icon: CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  radius: 24,
+                  child: const Icon(Icons.add, color: Colors.white),
+                ),
+                onPressed: () {
+                  _showAddConnectionDialog(context);
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMapSection(BuildContext context) {
+    if (widget.userRole == 1) {
+      // Hide map section for relation role
+      return SizedBox();
+    } else {
+      // Show map section for other roles
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
+            child: const Text(
+              'Search From Map',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+            ),
+          ),
+          Container(
+            height: 300,
+            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.0),
+              child: GoogleMap(
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: CameraPosition(target: _initialPosition, zoom: 13),
+                markers: _markers,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
   }
 
   void _showAddConnectionDialog(BuildContext context) {

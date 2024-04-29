@@ -113,10 +113,10 @@ class _HomePageState extends State<HomePage> {
         ? const NotificationPage()
         : IndexedStack(
       index: currentPageIndex,
-      children: const [
+      children: [
         DashboardPage(),
         LogbookPage(),
-        RelationPage(),
+        RelationPage(userRole: userRole),
         ProfilePage(),
       ],
     );
