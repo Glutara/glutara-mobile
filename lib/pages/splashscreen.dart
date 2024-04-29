@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    int? userID = prefs.getInt('userID');
+    String? userID = prefs.getString('userID');
     int? lastLoginTime = prefs.getInt('lastLoginTime');
 
     if (userID != null && lastLoginTime != null) {

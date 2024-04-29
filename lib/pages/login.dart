@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setInt('userID', data['ID']);
+        await prefs.setString('userID', data['ID'].toString());
         await prefs.setString('name', data['Name']);
         await prefs.setString('phone', data['Phone']);
         await prefs.setInt('role', data['Role']);
