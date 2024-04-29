@@ -8,8 +8,7 @@ class AddReminderPage extends StatefulWidget {
 }
 
 class _AddReminderPageState extends State<AddReminderPage> {
-  TimeOfDay _selectedTime = TimeOfDay(hour: 12, minute: 0);
-  TextEditingController _labelController = TextEditingController();
+  TimeOfDay _selectedTime = const TimeOfDay(hour: 12, minute: 0);
   TextEditingController _noteController = TextEditingController();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -18,15 +17,6 @@ class _AddReminderPageState extends State<AddReminderPage> {
   @override
   void initState() {
     super.initState();
-    var initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    var initSetttings = InitializationSettings(
-      android: initializationSettingsAndroid,
-    );
-
-    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
   }
 
   List<DropdownMenuItem<String>> get _dropdownMenuItems {
@@ -44,9 +34,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
   // }
 
   Future<void> scheduleNotification() async {
-    var scheduledNotificationDateTime = DateTime.now().add(Duration(
-        seconds: 5)); // This should be replaced with your time calculation
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
       'your channel id',
       'your channel name',
       importance: Importance.max,
@@ -72,15 +60,15 @@ class _AddReminderPageState extends State<AddReminderPage> {
         tileColor: Colors.orange[50],
         leading: CircleAvatar(
           radius: 24,
-          backgroundColor: Color(0xFFFEE086),
-          child: Align(
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          child: const Align(
             alignment: Alignment.center,
             child: Icon(Icons.vaccines_outlined, color: Colors.black),
           ),
         ),
         title: Text(label),
         subtitle: Text(time),
-        trailing: Icon(Icons.delete), // Update with your own icon
+        trailing: const Icon(Icons.delete), // Update with your own icon
       ),
     );
   }
@@ -93,7 +81,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
         backgroundColor: Colors.white, // Set the AppBar background color
         elevation: 0, // Remove shadow
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black), // Change color
+          icon: const Icon(Icons.arrow_back, color: Colors.black), // Change color
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
@@ -103,10 +91,10 @@ class _AddReminderPageState extends State<AddReminderPage> {
       body: SafeArea(
         child: Padding(
           padding:
-              EdgeInsets.symmetric(horizontal: 16.0), // Add horizontal padding
+              const EdgeInsets.symmetric(horizontal: 16.0), // Add horizontal padding
           child: ListView(
             children: <Widget>[
-              Center(
+              const Center(
                 child: Text(
                   'Add Reminder',
                   style: TextStyle(
@@ -115,8 +103,8 @@ class _AddReminderPageState extends State<AddReminderPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 8.0), // Spacing between title and description
-              Center(
+              const SizedBox(height: 8.0), // Spacing between title and description
+              const Center(
                 child: Text(
                   'Elevate your well-being effortlessly with timely reminder and notifications for a healthier you.',
                   textAlign: TextAlign.center,
@@ -126,7 +114,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 24.0),
+              const SizedBox(height: 24.0),
               // ... Your other widgets ...
               _buildReminderItem('Take 500g of Metformin', '12:00'),
               _buildReminderItem('Take 500g of Metformin', '12:00'),
@@ -139,8 +127,8 @@ class _AddReminderPageState extends State<AddReminderPage> {
         onPressed: () {
           _showAddReminderModal();
         },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.amber,
+        child: const Icon(Icons.add),
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
     );
   }
@@ -164,14 +152,14 @@ class _AddReminderPageState extends State<AddReminderPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Text(
+                    const Text(
                       'Select time',
                       style: TextStyle(
                         fontSize: 18.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     GestureDetector(
                       onTap: () async {
                         final TimeOfDay? picked = await showTimePicker(
@@ -189,13 +177,13 @@ class _AddReminderPageState extends State<AddReminderPage> {
                         style: TextStyle(
                           fontSize: 56.0,
                           fontWeight: FontWeight.bold,
-                          color: Colors.amber,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                     ),
                     DropdownButtonFormField<String>(
                       value: _selectedLabel,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Label',
                         border: OutlineInputBorder(),
                       ),
@@ -206,32 +194,32 @@ class _AddReminderPageState extends State<AddReminderPage> {
                         });
                       },
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     TextFormField(
                       controller: _noteController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Notes',
                         border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.text,
                       textInputAction: TextInputAction.done,
                     ),
-                    SizedBox(height: 20.0),
+                    const SizedBox(height: 20.0),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton(
                           onPressed: () => Navigator.pop(context),
-                          child: Text('Cancel'),
+                          child: const Text('Cancel'),
                         ),
                         ElevatedButton(
                           onPressed: () {
                             scheduleNotification();
                             Navigator.pop(context);
                           },
-                          child: Text('OK'),
+                          child: const Text('OK'),
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.amber,
+                            primary: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ],

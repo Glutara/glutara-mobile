@@ -1,8 +1,12 @@
+import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:glutara_mobile/utils/format_utils.dart';
+import 'package:glutara_mobile/utils/validators.dart';
 import 'package:intl/intl.dart';
-import 'add-meal.dart';
-import 'add-medication.dart';
-import 'add-exercise.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:logger/logger.dart';
 
 class AddSleepPage extends StatefulWidget {
   const AddSleepPage({Key? key}) : super(key: key);
@@ -14,318 +18,223 @@ class AddSleepPage extends StatefulWidget {
 class _AddSleepPageState extends State<AddSleepPage> {
   bool showNotification = false;
   int currentPageIndex = 0;
-  DateTime? selectedStartDate; // Tambahkan variabel untuk tanggal awal
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  DateTime? selectedStartDate;
   DateTime? selectedEndDate;
+  String saveFormattedDate = "";
+  TextEditingController startTimeController = TextEditingController();
+  TextEditingController endTimeController = TextEditingController();
+
+  var logger = Logger(
+    printer: PrettyPrinter(),
+  );
+
+  @override
+  void dispose() {
+    startTimeController.dispose();
+    endTimeController.dispose();
+    super.dispose();
+  }
+
+  OutlineInputBorder _border(Color color) {
+    return OutlineInputBorder(
+      borderSide: BorderSide(color: color, width: 2.0),
+    );
+  }
+
+  Future<void> _handleSave() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? userID = prefs.getInt('userID');
+
+    logger.d(jsonEncode(<String, dynamic>{
+      "UserID": userID,
+      "SleepID": 0,
+      "StartTime": FormatUtils.combineDateWithTime(
+          selectedStartDate, TimeOfDay.fromDateTime(selectedStartDate!)),
+      "EndTime": FormatUtils.combineDateWithTime(
+          selectedStartDate, TimeOfDay.fromDateTime(selectedEndDate!)),
+    }));
+
+    try {
+      var response = await http.post(
+        Uri.parse(
+            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/sleeps'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          "UserID": userID,
+          "SleepID": 0,
+          "StartTime": FormatUtils.combineDateWithTime(
+              selectedStartDate, TimeOfDay.fromDateTime(selectedStartDate!)),
+          "EndTime": FormatUtils.combineDateWithTime(
+              selectedStartDate, TimeOfDay.fromDateTime(selectedEndDate!)),
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        Fluttertoast.showToast(
+                msg: "Sleep log saved successfully!",
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.green,
+                textColor: Colors.white,
+                fontSize: 16.0)
+            .then((value) => Navigator.pop(context));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.body),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred: $error'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Image.asset('assets/topbar-logo.png'),
-        backgroundColor: Colors.amber[50],
         centerTitle: true,
         toolbarHeight: 60.0,
         elevation: 20,
-        actions: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: IconButton(
-              onPressed: () {
-                setState(() {
-                  showNotification = !showNotification;
-                });
-              },
-              icon: Icon(
-                showNotification
-                    ? Icons.notifications
-                    : Icons.notifications_outlined,
-                size: 30.0,
-              ),
-            ),
-          ),
-        ],
       ),
-      // TODO: Implement body as design
-      // Inside the Scaffold of your AddSleepPage
-
-      body: Container(
-        padding: EdgeInsets.all(16.0),
-        color: Colors.orange[50],
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              'Add Sleep',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 32.0),
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Start Time',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.watch_later_outlined),
-                hintText: selectedStartDate != null
-                    ? DateFormat('dd MMM yyyy HH:mm').format(selectedStartDate!)
-                    : 'Select start time', // Tampilkan tanggal yang dipilih atau pesan 'Select start time'
-              ),
-              onTap: () async {
-                // Tampilkan date-time picker untuk tanggal awal
-                final selectedDate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime(2101),
-                );
-                if (selectedDate != null) {
-                  final selectedTime = await showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay.now(),
-                  );
-                  if (selectedTime != null) {
-                    setState(() {
-                      selectedStartDate = DateTime(
-                        selectedDate.year,
-                        selectedDate.month,
-                        selectedDate.day,
-                        selectedTime.hour,
-                        selectedTime.minute,
-                      );
-                    });
-                  }
-                }
-              },
-            ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'End Time',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.watch_later_outlined),
-                hintText: selectedEndDate != null
-                    ? DateFormat('dd MMM yyyy HH:mm').format(selectedEndDate!)
-                    : 'Select end time', // Tampilkan tanggal yang dipilih atau pesan 'Select end time'
-              ),
-              onTap: () async {
-                // Tampilkan date-time picker untuk tanggal akhir
-                final selectedDate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime(2101),
-                );
-                if (selectedDate != null) {
-                  final selectedTime = await showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay.now(),
-                  );
-                  if (selectedTime != null) {
-                    setState(() {
-                      selectedEndDate = DateTime(
-                        selectedDate.year,
-                        selectedDate.month,
-                        selectedDate.day,
-                        selectedTime.hour,
-                        selectedTime.minute,
-                      );
-                    });
-                  }
-                }
-              },
-            ),
-            SizedBox(height: 24.0),
-            Container(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                child: Text('Save', style: TextStyle(fontSize: 20.0)),
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  primary: Color(0xFF715C0C),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Text(
+                  'Add Sleep',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                onPressed: () {
-                  // Code to save sleep data
-                },
-              ),
+                const SizedBox(height: 60.0),
+                TextFormField(
+                  controller: startTimeController,
+                  decoration: InputDecoration(
+                    labelText: 'Start Time',
+                    border: _border(Colors.grey),
+                    prefixIcon: const Icon(Icons.watch_later_outlined),
+                    hintText: selectedStartDate != null
+                        ? DateFormat('dd MMM yyyy HH:mm')
+                            .format(selectedStartDate!)
+                        : 'Select start time', // Tampilkan tanggal yang dipilih atau pesan 'Select start time'
+                  ),
+                  validator: Validators.notEmptyValidator,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  onTap: () async {
+                    final DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: selectedStartDate ?? DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101),
+                    );
+                    if (pickedDate != null) {
+                      final TimeOfDay? pickedTime = await showTimePicker(
+                        context: context,
+                        initialTime: selectedStartDate != null
+                            ? TimeOfDay.fromDateTime(selectedStartDate!)
+                            : TimeOfDay.now(),
+                      );
+                      if (pickedTime != null) {
+                        setState(() {
+                          selectedStartDate = DateTime(
+                            pickedDate.year,
+                            pickedDate.month,
+                            pickedDate.day,
+                            pickedTime.hour,
+                            pickedTime.minute,
+                          );
+                          startTimeController.text =
+                              DateFormat('dd MMM yyyy HH:mm')
+                                  .format(selectedStartDate!);
+                        });
+                      }
+                    }
+                  },
+                ),
+                const SizedBox(height: 25.0),
+                TextFormField(
+                  controller: endTimeController,
+                  decoration: InputDecoration(
+                    labelText: 'End Time',
+                    border: _border(Colors.grey),
+                    prefixIcon: const Icon(Icons.watch_later_outlined),
+                    hintText: selectedEndDate != null
+                        ? DateFormat('dd MMM yyyy HH:mm')
+                            .format(selectedEndDate!)
+                        : 'Select end time', // Tampilkan tanggal yang dipilih atau pesan 'Select end time'
+                  ),
+                  validator: Validators.notEmptyValidator,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  onTap: () async {
+                    final DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: selectedEndDate ?? DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101),
+                    );
+                    if (pickedDate != null) {
+                      final TimeOfDay? pickedTime = await showTimePicker(
+                        context: context,
+                        initialTime: selectedEndDate != null
+                            ? TimeOfDay.fromDateTime(selectedEndDate!)
+                            : TimeOfDay.now(),
+                      );
+                      if (pickedTime != null) {
+                        setState(() {
+                          selectedEndDate = DateTime(
+                            pickedDate.year,
+                            pickedDate.month,
+                            pickedDate.day,
+                            pickedTime.hour,
+                            pickedTime.minute,
+                          );
+                          endTimeController.text =
+                              DateFormat('dd MMM yyyy HH:mm')
+                                  .format(selectedEndDate!);
+                        });
+                      }
+                    }
+                  },
+                ),
+                const SizedBox(height: 60.0),
+                Container(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    child: const Text('Save', style: TextStyle(fontSize: 20.0)),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      primary: Theme.of(context).colorScheme.primary,
+                    ),
+                    onPressed: () {
+                      _handleSave();
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
-
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xFFFF6B42),
-        foregroundColor: Colors.white,
-        shape: CircleBorder(eccentricity: 1),
-        child: Icon(Icons.add),
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(200.0), // Radius sudut kiri atas
-                topRight: Radius.circular(200.0), // Radius sudut kanan atas
-              ),
-            ),
-            builder: (context) {
-              return Container(
-                alignment: Alignment.center,
-                color: Color(0xFFFFF8F0),
-                height: 400,
-                child:
-                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text(
-                      "Add Log Activity",
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Divider(
-                    color: Color(0xFF7D7667),
-                    thickness: 2.0,
-                  ),
-                  ListTile(
-                    leading: CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Color(0xFFFEE086),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child:
-                            Icon(Icons.fastfood_outlined, color: Colors.black),
-                      ),
-                    ),
-                    title: Text(
-                      "Meal",
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.normal),
-                    ),
-                    subtitle: Text('Track your consumption',
-                        style:
-                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AddMealPage()));
-                    },
-                  ),
-                  ListTile(
-                    leading: CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Color(0xFFFEE086),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child:
-                            Icon(Icons.vaccines_outlined, color: Colors.black),
-                      ),
-                    ),
-                    title: Text(
-                      "Medication",
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.normal),
-                    ),
-                    subtitle: Text('Record medication taken',
-                        style:
-                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AddMedicationPage()));
-                    },
-                  ),
-                  ListTile(
-                    leading: CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Color(0xFFFEE086),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Icon(Icons.fitness_center_outlined,
-                            color: Colors.black),
-                      ),
-                    ),
-                    title: Text(
-                      "Exercise",
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.normal),
-                    ),
-                    subtitle: Text('Log your exercise activities',
-                        style:
-                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AddExercisePage()));
-                    },
-                  ),
-                  ListTile(
-                    leading: CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Color(0xFFFEE086),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child:
-                            Icon(Icons.bedtime_outlined, color: Colors.black),
-                      ),
-                    ),
-                    title: Text(
-                      "Sleep",
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.normal),
-                    ),
-                    subtitle: Text('Track your sleep patterns',
-                        style:
-                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AddSleepPage()));
-                    },
-                  ),
-                ]),
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: NavigationBar(
-        backgroundColor: Colors.amber[50],
-        onDestinationSelected: (int index) {
-          setState(() {
-            currentPageIndex = index;
-          });
-        },
-        indicatorColor: Color(0xFFF1E1BB),
-        selectedIndex: currentPageIndex,
-        destinations: const <Widget>[
-          NavigationDestination(
-            selectedIcon: Icon(Icons.query_stats),
-            icon: Icon(Icons.query_stats_outlined),
-            label: 'Dashboard',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.menu_book),
-            icon: Icon(Icons.menu_book_outlined),
-            label: 'Logbook',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.handshake),
-            icon: Icon(Icons.handshake_outlined),
-            label: 'Relation',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.person),
-            icon: Icon(Icons.person_outline),
-            label: 'Profile',
-          ),
-        ],
       ),
     );
   }

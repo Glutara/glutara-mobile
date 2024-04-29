@@ -4,6 +4,12 @@
 	<dict>
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
+		<string>NSLocationWhenInUseUsageDescription</string>
+		<key>To display and track location</key>
+		<string>NSLocationAlwaysUsageDescription</string>
+		<key>To display and track location</key>
+		<string>NSLocationAlwaysAndWhenInUseUsageDescription</string>
+		<key>To display and track location</key>
 		<key>CFBundleDisplayName</key>
 		<string>Glutara Mobile</string>
 		<key>CFBundleExecutable</key>

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
+import '../color_schemes.g.dart';
+import 'package:flutter/cupertino.dart';
 
 final dummyData = [
   {'x': 00.00, 'y': 99},
@@ -29,6 +31,7 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   DateTime selectedDate = DateTime.now();
+  int selectedSegment = 0; // 0: Today, 1: This Week, 2: This Month
 
   List<FlSpot> getSpots() {
     return dummyData
@@ -36,14 +39,39 @@ class _DashboardPageState extends State<DashboardPage> {
         .toList();
   }
 
+  Map<int, Widget> segmentedWidgets = const {
+    0: Text('Today'),
+    1: Text('This Week'),
+    2: Text('This Month'),
+  };
+
+  // Dummy data for insights
+  final Map<String, dynamic> insightsData = {
+    'today': {
+      'averageGlucose': '110 mg/dL',
+      'sleep': '8h 30m',
+      'exercise': '500cal',
+    },
+    'thisWeek': {
+      'averageGlucose': '105 mg/dL',
+      'sleep': '47h 30m',
+      'exercise': '3500cal',
+    },
+    'thisMonth': {
+      'averageGlucose': '100 mg/dL',
+      'sleep': '190h 15m',
+      'exercise': '14500cal',
+    },
+  };
+
   void changeDate(bool increment) {
     setState(() {
       if (increment) {
         if (selectedDate.isBefore(DateTime.now())) {
-          selectedDate = selectedDate.add(Duration(days: 1));
+          selectedDate = selectedDate.add(const Duration(days: 1));
         }
       } else {
-        selectedDate = selectedDate.subtract(Duration(days: 1));
+        selectedDate = selectedDate.subtract(const Duration(days: 1));
       }
     });
   }
@@ -89,35 +117,35 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           AspectRatio(
             aspectRatio: 1.70,
-            child: Padding(
-              padding: const EdgeInsets.all(40.0),
+            child: Container(
+              padding: const EdgeInsets.all(20.0),
               child: LineChart(
                 LineChartData(
                   lineTouchData: LineTouchData(
                     touchTooltipData: LineTouchTooltipData(
-                      tooltipBgColor: Colors.white,
+                      tooltipBgColor: Theme.of(context).colorScheme.onPrimary,
                       tooltipBorder:
-                          BorderSide(width: 2, color: Color(0xFFFF6B42)),
+                          const BorderSide(width: 2, color: CustomColors.brandColor),
                       tooltipRoundedRadius: 20,
                       getTooltipItems: (List<LineBarSpot> touchedSpots) {
                         return touchedSpots.map((spot) {
                           return LineTooltipItem(
                             '${spot.y} mg/dL',
-                            const TextStyle(
-                                color: Colors.black,
+                            TextStyle(
+                                color: Theme.of(context).colorScheme.onBackground,
                                 fontWeight: FontWeight.bold),
                           );
                         }).toList();
                       },
                     ),
                   ),
-                  gridData: FlGridData(show: true, verticalInterval: 3.0),
-                  titlesData: FlTitlesData(
+                  gridData: const FlGridData(show: true, verticalInterval: 3.0),
+                  titlesData: const FlTitlesData(
                     show: true,
-                    rightTitles: const AxisTitles(
+                    rightTitles: AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),
-                    topTitles: const AxisTitles(
+                    topTitles: AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),
                     bottomTitles: AxisTitles(
@@ -129,7 +157,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        reservedSize: 42,
+                        reservedSize: 35,
                       ),
                     ),
                   ),
@@ -141,14 +169,21 @@ class _DashboardPageState extends State<DashboardPage> {
                   lineBarsData: [
                     LineChartBarData(
                       spots: getSpots(),
-                      isCurved: false,
-                      color: Color(0xFFFF6B42),
-                      barWidth: 2,
+                      isCurved: true,
+                      color: CustomColors.brandColor,
+                      barWidth: 4,
                       isStrokeCapRound: true,
-                      dotData: FlDotData(show: false),
+                      dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: Colors.orange.withOpacity(0.2),
+                        gradient: LinearGradient(
+                          colors: [
+                            CustomColors.brandColor.withOpacity(0.3),
+                            Colors.transparent
+                          ], // Optional: add a gradient
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
                       ),
                     ),
                   ],
@@ -164,43 +199,49 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildInsightsSection() {
+    // Get the data for the current selected segment
+    var currentData = insightsData[selectedSegment == 0
+        ? 'today'
+        : selectedSegment == 1
+            ? 'thisWeek'
+            : 'thisMonth'];
     return Column(
       children: [
         Container(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.onSecondary,
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: const [
-              Text('Today', style: TextStyle(fontWeight: FontWeight.bold)),
-              Text('This week'),
-              Text('This month'),
+            children: [
+              _buildSegment('Today', 0),
+              _buildSegment('This week', 1),
+              _buildSegment('This month', 2),
             ],
           ),
         ),
         Card(
           elevation: 2,
           margin: const EdgeInsets.all(16.0),
-          color: Color(0xFFFEE086), // Replace with your card's background color
+          color: Theme.of(context).colorScheme.primaryContainer,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
+              children: [
+                const Text(
                   'Average glucose',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  '102 mg/dL',
-                  style: TextStyle(
+                  currentData['averageGlucose'],
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
+                const Text(
                   'Your glucose levels are quite good and relatively stable.',
                 ),
               ],
@@ -213,12 +254,45 @@ class _DashboardPageState extends State<DashboardPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildInfoCard('Sleep', '7h 15m', 'assets/sleep.png'),
-              _buildInfoCard('Exercise', '850cal', 'assets/exercise.png'),
+              _buildInfoCard('Sleep', currentData['sleep'], 'assets/sleep.png'),
+              _buildInfoCard(
+                  'Exercise', currentData['exercise'], 'assets/exercise.png'),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSegment(String text, int value) {
+    bool isSelected = selectedSegment == value;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedSegment = value;
+          // No need to update the data here since it's done in the build method
+        });
+      },
+      child: Container(
+        decoration: isSelected
+            ? BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Theme.of(context).primaryColor,
+                    width: 2.0,
+                  ),
+                ),
+              )
+            : null,
+        padding: const EdgeInsets.symmetric(vertical: 8.0), // Add padding if needed
+        child: Text(
+          text,
+          style: TextStyle(
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary,
+          ),
+        ),
+      ),
     );
   }
 
@@ -244,8 +318,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   Text(
                     title,
                     style: TextStyle(
-                      color: Colors
-                          .grey[800], // Adjust the color to match your design
+                      color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -254,7 +327,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     value,
                     style: TextStyle(
                       fontSize: 18,
-                      color: Colors.black,
+                      color: Theme.of(context).colorScheme.onBackground,
                     ),
                   ),
                 ],

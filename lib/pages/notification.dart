@@ -37,11 +37,9 @@ class NotificationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xFFF7F0E6),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Scaffold(
-          backgroundColor: Color(0xFFF7F0E6),
           appBar: AppBar(
             title: const Text(
               'Notification',
@@ -49,7 +47,6 @@ class NotificationPage extends StatelessWidget {
             ),
             centerTitle: false,
             elevation: 0,
-            backgroundColor: Color(0xFFF7F0E6),
           ),
           body: ListView.builder(
             itemCount: notifications.length,
@@ -60,9 +57,11 @@ class NotificationPage extends StatelessWidget {
                 child: ListTile(
                   title: Text(
                     notification['title'] as String,
-                    style: const TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 18),
                   ),
-                  subtitle: Text(notification['description'] as String),
+                  subtitle: Text(
+                    notification['description'] as String,
+                    style: const TextStyle(fontSize: 13)),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -71,7 +70,7 @@ class NotificationPage extends StatelessWidget {
                         Text(
                           notification['time'] as String,
                           style: TextStyle(
-                              color: Colors.amber,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                               fontWeight: FontWeight.bold,
                               fontSize: 14),
                         )
@@ -79,7 +78,7 @@ class NotificationPage extends StatelessWidget {
                         Text(
                           'Yesterday',
                           style: TextStyle(
-                            color: Colors.grey,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),

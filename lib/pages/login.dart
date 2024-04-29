@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import '../core/auth.dart';
 import 'homepage.dart';
 import 'signup.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../color_schemes.g.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -12,76 +15,77 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final FocusNode _nameFocusNode = FocusNode();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
-  final FocusNode _phoneFocusNode = FocusNode();
 
-  final AuthApi _authApi = AuthApi();
-
-  String? _email;
-  String? _password;
+  bool _isPasswordVisible = false;
 
   Future<void> _handleLogin() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
-      //show snackbar to indicate loading
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      //   content: const Text('Processing Data'),
-      //   backgroundColor: Colors.green.shade300,
-      // ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Logging in...'),
+      ),
+    );
 
-      // try {
-      //   //Get response from ApiClient
-      //   dynamic res = await _authApi.login(
-      //     _email!,
-      //     _password!,
-      //   );
-      //   ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    try {
+      var response = await http.post(
+        Uri.parse(
+            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/auth/login'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'email': _emailController.text,
+          'password': _passwordController.text,
+        }),
+      );
 
-      //   // If there is no error, redirect to homepage
-      //   if (res['ErrorCode'] == null) {
-      //     ScaffoldMessenger.of(context).showSnackBar(
-      //       SnackBar(
-      //         content: Text('Login successful!'),
-      //         backgroundColor: Colors.green,
-      //       ),
-      //     );
-      //     await Future.delayed(Duration(seconds: 2));
-      //     Navigator.pushReplacement(
-      //       context,
-      //       MaterialPageRoute(builder: (context) => HomePage()),
-      //     );
-      //   } else {
-      //     //if an error occurs, show snackbar with error message
-      //     showErrorSnackBar(res['Message']);
-      //   }
-      // } catch (e) {
-      //   showErrorSnackBar('An unexpected error occurred : ${e}a');
-      // }
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setInt('userID', data['ID']);
+        await prefs.setString('name', data['Name']);
+        await prefs.setString('phone', data['Phone']);
+        await prefs.setInt('role', data['Role']);
+        await prefs.setInt(
+            'lastLoginTime', DateTime.now().millisecondsSinceEpoch);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      } else {
+        final errorResponse = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Failed to login:  ${errorResponse['message'] ?? 'An error occurred'}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('User not found, check your email and password'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
 
-  void showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Error: $message'),
-        backgroundColor: Colors.red.shade300,
-      ),
-    );
-  }
-
   @override
   void dispose() {
-    _nameFocusNode.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
-    _phoneFocusNode.dispose();
     super.dispose();
   }
 
@@ -95,18 +99,14 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 30.0, top: 20.0, right: 30.0),
+          const Padding(
+            padding: EdgeInsets.only(left: 30.0, top: 20.0, right: 30.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -134,41 +134,61 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(height: 100.0),
+                    const SizedBox(height: 100.0),
                     TextFormField(
+                      controller: _emailController,
                       focusNode: _emailFocusNode,
                       decoration: InputDecoration(
-                        labelText: 'Email',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
-                        border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
-                      ),
+                          labelText: 'Email', border: _border(Colors.grey)),
                       keyboardType: TextInputType.emailAddress,
-                      onSaved: (value) => _email = value,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Email cannot be empty';
+                        }
+                        return null;
+                      },
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     TextFormField(
+                      controller: _passwordController,
                       focusNode: _passwordFocusNode,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                        ),
                       ),
-                      obscureText: true,
-                      onSaved: (value) => _password = value,
+                      obscureText: !_isPasswordVisible,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Password cannot be empty';
+                        }
+                        return null;
+                      },
                     ),
-                    SizedBox(height: 100.0),
+                    const SizedBox(height: 100.0),
                     ElevatedButton(
-                      child: Text('Log In', style: TextStyle(fontSize: 15.0)),
+                      child: const Text('Log In',
+                          style: TextStyle(fontSize: 15.0)),
                       onPressed: _handleLogin,
                       style: ElevatedButton.styleFrom(
-                          primary: Color(0xFF715C0C),
+                          primary: Theme.of(context).colorScheme.primary,
                           onPrimary: Colors.white,
-                          minimumSize: Size(double.infinity, 36),
-                          padding: EdgeInsets.symmetric(vertical: 12.0)),
+                          minimumSize: const Size(double.infinity, 36),
+                          padding: const EdgeInsets.symmetric(vertical: 12.0)),
                     ),
-                    SizedBox(height: 10.0),
+                    const SizedBox(height: 10.0),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: GestureDetector(
@@ -176,13 +196,13 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => SignUpPage()),
+                                builder: (context) => const SignUpPage()),
                           );
                         },
                         child: RichText(
                           text: TextSpan(
                             text: "Don’t have an account? ",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 17,
                                 color: Colors.black,
                                 fontWeight: FontWeight.normal),
@@ -190,7 +210,8 @@ class _LoginPageState extends State<LoginPage> {
                               TextSpan(
                                 text: 'Sign Up',
                                 style: TextStyle(
-                                    color: Color(0xFF715C0C),
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.bold),
                               ),
                             ],

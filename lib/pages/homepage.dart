@@ -8,6 +8,13 @@ import 'add-meal.dart';
 import 'add-exercise.dart';
 import 'add-medication.dart';
 import 'add-sleep.dart';
+import 'scan-food.dart';
+import 'add-with-qrcode.dart';
+import 'add-with-phone.dart';
+import '../color_schemes.g.dart';
+import 'package:camera/camera.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,203 +24,350 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late int userRole = 0;
   int currentPageIndex = 0;
   bool showNotification = false;
+  late StreamSubscription _userRoleSubscription;
 
-  final List<Widget> _pages = [
-    const DashboardPage(),
-    const LogbookPage(),
-    const RelationPage(),
-    const ProfilePage(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _getUserRole();
+  }
+
+  @override
+  void dispose() {
+    _userRoleSubscription.cancel(); // Cancel the subscription
+    super.dispose();
+  }
+
+  Future<void> _getUserRole() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int role = prefs.getInt('role') ?? 0; // Default role is patient
+
+    setState(() {
+      userRole = role;
+      currentPageIndex = (role == 0) ? 0 : 2;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Build UI based on user role
     return Scaffold(
-      appBar: AppBar(
-        title: Image.asset('assets/topbar-logo.png'),
-        backgroundColor: const Color(0xFFF5EDDF),
-        centerTitle: true,
-        toolbarHeight: 60.0,
-        elevation: 20,
-        actions: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0), // Padding kanan
-            child: IconButton(
-              onPressed: () {
-                setState(() {
-                  showNotification = !showNotification;
-                });
-              },
-              icon: Icon(
-                showNotification
-                    ? Icons.notifications
-                    : Icons.notifications_outlined,
-                size: 30.0, // Sesuaikan dengan ukuran yang Anda inginkan
-              ),
-            ),
+      appBar: _buildAppBar(),
+      body: _buildBody(),
+      floatingActionButton: _buildFloatingActionButton(userRole),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: _buildBottomNavigationBar(),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 16.0),
+        child: IconButton(
+          onPressed: () async {
+            await availableCameras().then((value) => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => ScanFoodPage(cameras: value))));
+          },
+          icon: Icon(
+            Icons.document_scanner_outlined,
+            size: 30.0,
           ),
+        ),
+      ),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset('assets/topbar-logo.png'),
         ],
       ),
-      body: showNotification
-          ? NotificationPage()
-          : IndexedStack(
-              index: currentPageIndex,
-              children: _pages,
+      centerTitle: true,
+      toolbarHeight: 60.0,
+      elevation: 20,
+      actions: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(right: 16.0),
+          child: IconButton(
+            onPressed: () {
+              setState(() {
+                showNotification = !showNotification;
+              });
+            },
+            icon: Icon(
+              showNotification
+                  ? Icons.notifications
+                  : Icons.notifications_outlined,
+              size: 30.0,
             ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xFFFF6B42),
-        foregroundColor: Colors.white,
-        shape: CircleBorder(eccentricity: 1),
-        child: Icon(Icons.add),
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(200.0), // Radius sudut kiri atas
-                topRight: Radius.circular(200.0), // Radius sudut kanan atas
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBody() {
+    return showNotification
+        ? const NotificationPage()
+        : IndexedStack(
+      index: currentPageIndex,
+      children: [
+        DashboardPage(),
+        LogbookPage(),
+        RelationPage(userRole: userRole),
+        ProfilePage(),
+      ],
+    );
+  }
+
+  FloatingActionButton _buildFloatingActionButton(int userRole) {
+    return FloatingActionButton(
+      backgroundColor: CustomColors.brandColor,
+      foregroundColor: Colors.white,
+      shape: const CircleBorder(eccentricity: 1),
+      child: const Icon(Icons.add),
+      onPressed: () {
+        if (userRole == 0) {
+          // Patient action
+          _showPatientActionSheet();
+        } else if (userRole == 1) {
+          // Relation action
+          _showRelationActionSheet();
+        } else {
+          // Default action
+        }
+      },
+    );
+  }
+
+  void _showPatientActionSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(200.0),
+          topRight: Radius.circular(200.0),
+        ),
+      ),
+      builder: (context) {
+        return Container(
+          alignment: Alignment.center,
+          color: Theme.of(context).colorScheme.background,
+          height: 400,
+          child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+            const Padding(
+              padding: EdgeInsets.only(bottom: 8),
+              child: Text(
+                "Add Log Activity",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),
-            builder: (context) {
-              return Container(
-                alignment: Alignment.center,
-                color: Color(0xFFFFF8F0),
-                height: 400,
-                child:
-                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text(
-                      "Add Log Activity",
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Divider(
-                    color: Color(0xFF7D7667),
-                    thickness: 2.0,
-                  ),
-                  ListTile(
-                    leading: CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Color(0xFFFEE086),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child:
-                            Icon(Icons.fastfood_outlined, color: Colors.black),
-                      ),
-                    ),
-                    title: Text(
-                      "Meal",
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.normal),
-                    ),
-                    subtitle: Text('Track your consumption',
-                        style:
-                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AddMealPage()));
-                    },
-                  ),
-                  ListTile(
-                    leading: CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Color(0xFFFEE086),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child:
-                            Icon(Icons.vaccines_outlined, color: Colors.black),
-                      ),
-                    ),
-                    title: Text(
-                      "Medication",
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.normal),
-                    ),
-                    subtitle: Text('Record medication taken',
-                        style:
-                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AddMedicationPage()));
-                    },
-                  ),
-                  ListTile(
-                    leading: CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Color(0xFFFEE086),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Icon(Icons.fitness_center_outlined,
-                            color: Colors.black),
-                      ),
-                    ),
-                    title: Text(
-                      "Exercise",
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.normal),
-                    ),
-                    subtitle: Text('Log your exercise activities',
-                        style:
-                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AddExercisePage()));
-                    },
-                  ),
-                  ListTile(
-                    leading: CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Color(0xFFFEE086),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child:
-                            Icon(Icons.bedtime_outlined, color: Colors.black),
-                      ),
-                    ),
-                    title: Text(
-                      "Sleep",
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.normal),
-                    ),
-                    subtitle: Text('Track your sleep patterns',
-                        style:
-                            TextStyle(fontSize: 15, color: Color(0xFF4C4639))),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AddSleepPage()));
-                    },
-                  ),
-                ]),
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: NavigationBar(
-        backgroundColor: Color(0xFFF5EDDF),
+            Divider(
+              color: Theme.of(context).colorScheme.outline,
+              thickness: 2.0,
+            ),
+            ListTile(
+              // add meal
+              leading: CircleAvatar(
+                radius: 24,
+                backgroundColor:
+                Theme.of(context).colorScheme.primaryContainer,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Icon(Icons.fastfood_outlined,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onPrimaryContainer),
+                ),
+              ),
+              title: const Text(
+                "Meal",
+                style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.normal),
+              ),
+              subtitle: Text('Track your consumption',
+                  style: TextStyle(
+                      fontSize: 15,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurfaceVariant)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AddMealPage()));
+              },
+            ),
+            ListTile(
+              // add medication
+              leading: CircleAvatar(
+                radius: 24,
+                backgroundColor:
+                Theme.of(context).colorScheme.primaryContainer,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Icon(Icons.vaccines_outlined,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onPrimaryContainer),
+                ),
+              ),
+              title: const Text(
+                "Medication",
+                style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.normal),
+              ),
+              subtitle: Text('Record medication taken',
+                  style: TextStyle(
+                      fontSize: 15,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurfaceVariant)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AddMedicationPage()));
+              },
+            ),
+            ListTile(
+              // add exercise
+              leading: CircleAvatar(
+                radius: 24,
+                backgroundColor:
+                Theme.of(context).colorScheme.primaryContainer,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Icon(Icons.fitness_center_outlined,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onPrimaryContainer),
+                ),
+              ),
+              title: const Text(
+                "Exercise",
+                style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.normal),
+              ),
+              subtitle: Text('Log your exercise activities',
+                  style: TextStyle(
+                      fontSize: 15,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurfaceVariant)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AddExercisePage()));
+              },
+            ),
+            ListTile(
+              // add sleep
+              leading: CircleAvatar(
+                radius: 24,
+                backgroundColor:
+                Theme.of(context).colorScheme.primaryContainer,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Icon(Icons.bedtime_outlined,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onPrimaryContainer),
+                ),
+              ),
+              title: const Text(
+                "Sleep",
+                style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.normal),
+              ),
+              subtitle: Text('Track your sleep patterns',
+                  style: TextStyle(
+                      fontSize: 15,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurfaceVariant)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AddSleepPage()));
+              },
+            ),
+          ]),
+        );
+      },
+    );
+  }
+
+  void _showRelationActionSheet() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add Connection',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20.0,
+              )),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Choose how you would like to connect',
+                  style: TextStyle(fontSize: 16.0)),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await availableCameras().then((value) => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddWithQRCodePage(userRole: userRole, cameras: value))),
+                  );
+                },
+                child: const Text('With QR code',
+                    style: TextStyle(fontSize: 16.0)),
+              ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddWithPhonePage(userRole: userRole)),
+                  );
+                },
+                child: const Text('With phone number',
+                    style: TextStyle(fontSize: 16.0)),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  NavigationBar _buildBottomNavigationBar() {
+    if (userRole == 0) {
+      // Patient UI
+      return NavigationBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         onDestinationSelected: (int index) {
           setState(() {
             showNotification = false;
             currentPageIndex = index;
           });
         },
-        indicatorColor: Color(0xFFF1E1BB),
+        indicatorColor: Theme.of(context).colorScheme.secondaryContainer,
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(
@@ -237,7 +391,32 @@ class _HomePageState extends State<HomePage> {
             label: 'Profile',
           ),
         ],
-      ),
-    );
+      );
+    } else {
+      // Relation UI
+      return NavigationBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        onDestinationSelected: (int index) {
+          setState(() {
+            showNotification = false;
+            currentPageIndex = index == 0 ? 2 : 3; // Map index for 'Relation' and 'Profile'
+          });
+        },
+        indicatorColor: Theme.of(context).colorScheme.secondaryContainer,
+        selectedIndex: currentPageIndex == 2 ? 0 : 1, // Map 'Relation' and 'Profile' to first and second index
+        destinations: const <Widget>[
+          NavigationDestination(
+            selectedIcon: Icon(Icons.handshake),
+            icon: Icon(Icons.handshake_outlined),
+            label: 'Relation',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.person),
+            icon: Icon(Icons.person_outline),
+            label: 'Profile',
+          ),
+        ],
+      );
+    }
   }
 }

@@ -1,9 +1,15 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'login.dart';
-import 'add-reminder.dart';
+import 'homepage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../color_schemes.g.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({Key? key}) : super(key: key);
+  const SignUpPage({super.key});
 
   @override
   _SignUpPageState createState() => _SignUpPageState();
@@ -11,26 +17,86 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final FocusNode _nameFocusNode = FocusNode();
-  final FocusNode _emailFocusNode = FocusNode();
-  final FocusNode _passwordFocusNode = FocusNode();
-  final FocusNode _phoneFocusNode = FocusNode();
-
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   String? _selectedRole;
+  bool _obscurePassword = true;
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      // API pendaftaran atau logic lainnya bisa diimplementasikan di sini
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscurePassword = !_obscurePassword;
+    });
+  }
+
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Signing in...'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+
+    int roleValue = _selectedRole == 'Patient'
+        ? 0
+        : _selectedRole == 'Relation'
+            ? 1
+            : _selectedRole == 'Volunteer'
+                ? 2
+                : 3;
+
+    var response = await http.post(
+      Uri.parse(
+          'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/auth/register'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'ID': 0,
+        'name': _nameController.text,
+        'email': _emailController.text,
+        'password': _passwordController.text,
+        'phone': _phoneController.text,
+        'role': roleValue,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('userID', data['ID']);
+      await prefs.setString('name', data['Name']);
+      await prefs.setString('phone', data['Phone']);
+      await prefs.setInt('role', data['Role']);
+      await prefs.setInt(
+          'lastLoginTime', DateTime.now().millisecondsSinceEpoch);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'Failed to register user: ${json.decode(response.body)['message']}'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
+        ),
+      );
     }
   }
 
   @override
   void dispose() {
-    _nameFocusNode.dispose();
-    _emailFocusNode.dispose();
-    _passwordFocusNode.dispose();
-    _phoneFocusNode.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -42,42 +108,29 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    String? _name;
-    String? _email;
-    String? _password;
-    String? _phone;
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(
-                left: 30.0,
-                top: 20.0,
-                right: 30.0), // Add padding for the title section
+          const Padding(
+            padding: EdgeInsets.only(left: 30.0, top: 20.0, right: 30.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Text(
                   'Sign Up',
-                  textAlign:
-                      TextAlign.center, // Align text to center horizontally
+                  textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8.0),
                 Text(
                   'Sign up now to take control of your glucose management',
-                  textAlign:
-                      TextAlign.center, // Align text to center horizontally
+                  textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 18.0, color: Colors.grey),
                 ),
               ],
@@ -92,34 +145,43 @@ class _SignUpPageState extends State<SignUpPage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(height: 40.0),
+                    const SizedBox(height: 40.0),
                     TextFormField(
-                      focusNode: _nameFocusNode,
+                      controller: _nameController,
                       decoration: InputDecoration(
                         labelText: 'Name',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                        labelStyle: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary), // Use theme color
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
+                        focusedBorder: _border(Theme.of(context)
+                            .colorScheme
+                            .primary), // Use theme color
                       ),
-                      onSaved: (value) => _name = value,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Name is required';
+                        }
+                        return null;
+                      },
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     DropdownButtonFormField<String>(
-                      focusNode:
-                          _nameFocusNode, // You can still use the focus node if needed for form navigation
                       decoration: InputDecoration(
                         labelText: 'I am a',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
+                        labelStyle: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary), // Use theme color
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
+                        focusedBorder: _border(Theme.of(context)
+                            .colorScheme
+                            .primary), // Use theme color
                       ),
                       value: _selectedRole,
-                      items: <String>[
-                        'Patient',
-                        'Doctor',
-                        'Volunteer',
-                        'Relation'
-                      ].map<DropdownMenuItem<String>>((String value) {
+                      items: <String>['Patient', 'Relation', 'Volunteer']
+                          .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
@@ -128,66 +190,79 @@ class _SignUpPageState extends State<SignUpPage> {
                       onChanged: (String? newValue) {
                         // Ensure the current state is updated
                         setState(() {
-                          _selectedRole = newValue;
+                          _selectedRole = newValue!;
                         });
                       },
                       onSaved: (String? newValue) {
-                        _selectedRole = newValue;
+                        _selectedRole = newValue!;
                       },
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     TextFormField(
-                      focusNode: _emailFocusNode,
+                      controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
                       ),
                       keyboardType: TextInputType.emailAddress,
-                      onSaved: (value) => _email = value,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Email is required';
+                        }
+                        return null;
+                      },
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     TextFormField(
-                      focusNode: _passwordFocusNode,
+                      controller: _passwordController,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          onPressed: _togglePasswordVisibility,
+                        ),
                       ),
-                      obscureText: true,
-                      onSaved: (value) => _password = value,
+                      obscureText: _obscurePassword,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Password is required';
+                        }
+                        return null;
+                      },
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     TextFormField(
-                      focusNode: _phoneFocusNode,
+                      controller: _phoneController,
                       decoration: InputDecoration(
                         labelText: 'Phone',
-                        labelStyle: TextStyle(color: Color(0xFF715C0C)),
                         border: _border(Colors.grey),
-                        focusedBorder: _border(Color(0xFF715C0C)),
                       ),
                       keyboardType: TextInputType.phone,
-                      onSaved: (value) => _phone = value,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Phone number is required';
+                        }
+                        return null;
+                      },
                     ),
-                    SizedBox(height: 24.0),
+                    const SizedBox(height: 24.0),
                     ElevatedButton(
-                      child: Text('Sign Up'),
-                      onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AddReminderPage()),
-                          );
-                        },
+                      child: const Text('Sign Up'),
+                      onPressed: _submitForm,
                       style: ElevatedButton.styleFrom(
-                          primary: Color(0xFF715C0C),
-                          onPrimary: Colors.white,
-                          minimumSize: Size(double.infinity, 36),
-                          padding: EdgeInsets.symmetric(vertical: 12.0)),
+                        primary: Theme.of(context).colorScheme.primary,
+                        onPrimary: Colors.white,
+                        minimumSize: const Size(double.infinity, 36),
+                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      ),
                     ),
-                    SizedBox(height: 10.0),
+                    const SizedBox(height: 10.0),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: GestureDetector(
@@ -195,20 +270,23 @@ class _SignUpPageState extends State<SignUpPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LoginPage()),
+                              builder: (context) => const LoginPage(),
+                            ),
                           );
                         },
                         child: Text.rich(
                           TextSpan(
                             text: "Already have an account? ",
-                            style: TextStyle(color: Colors.black, fontSize: 17),
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 17),
                             children: <TextSpan>[
                               TextSpan(
                                 text: 'Log In',
                                 style: TextStyle(
-                                    color: Color(0xFF715C0C),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16),
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                             ],
                           ),

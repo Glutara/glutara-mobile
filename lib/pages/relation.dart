@@ -1,62 +1,394 @@
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
+import 'add-with-qrcode.dart';
+import 'add-with-phone.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:camera/camera.dart';
 
-class RelationPage extends StatelessWidget {
-  const RelationPage({Key? key}) : super(key: key);
+class RelationPage extends StatefulWidget {
+  final int userRole;
+
+  const RelationPage({Key? key, required this.userRole}) : super(key: key);
+
+  @override
+  _RelationPageState createState() => _RelationPageState();
+}
+
+class _RelationPageState extends State<RelationPage> {
+  late GoogleMapController mapController;
+  final Location _location = Location();
+  LatLng _initialPosition = const LatLng(-6.890670, 107.607060);
+  final Set<Marker> _markers = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserLocation();
+    _addInitialMarker();
+  }
+
+  void _addInitialMarker() {
+    _markers.add(const Marker(
+      markerId: MarkerId('marker1'),
+      icon: BitmapDescriptor.defaultMarker,
+      position: LatLng(-6.900670, 107.627060),
+      infoWindow: InfoWindow(
+        title: 'Marker 1',
+        snippet: 'Label for Marker 1',
+      ),
+    ));
+    _markers.add(const Marker(
+      markerId: MarkerId('marker2'),
+      icon: BitmapDescriptor.defaultMarker,
+      position: LatLng(-6.930670, 107.617060),
+      infoWindow: InfoWindow(
+        title: 'Marker 2',
+        snippet: 'Label for Marker 2',
+      ),
+    ));
+  }
+
+  Future<void> _getUserLocation() async {
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+    _serviceEnabled = await _location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await _location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await _location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await _location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _locationData = await _location.getLocation();
+    setState(() {
+      _initialPosition = LatLng(_locationData.latitude ?? -6.890670,
+          _locationData.longitude ?? 107.607060);
+
+      _markers.add(
+        Marker(
+          markerId: const MarkerId("currentLocation"),
+          position: _initialPosition,
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+        ),
+      );
+    });
+
+    _location.onLocationChanged.listen((LocationData currentLocation) {
+      setState(() {
+        _initialPosition = LatLng(
+          currentLocation.latitude ?? -6.890670,
+          currentLocation.longitude ?? 107.607060,
+        );
+        _markers.removeWhere(
+            (marker) => marker.markerId == const MarkerId("currentLocation"));
+        _markers.add(
+          Marker(
+            markerId: const MarkerId("currentLocation"),
+            position: _initialPosition,
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueAzure),
+          ),
+        );
+      });
+    });
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'My Relation',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-            icon: CircleAvatar(
-              backgroundColor:
-                  Color(0xFF715C0C), 
-              radius: 18,
-              child: Icon(Icons.add, color: Colors.white), 
-            ),
-            onPressed: () {
-              // TODO: Implement add relation action
-            },
-          ),
-        ],
-      ),
+      appBar: _buildAppBar(context),
       body: Padding(
-        padding: const EdgeInsets.all(16.0), 
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Expanded(
               child: ListView(
-                children: const [
-                  _RelationTile(name: 'Jonas'),
-                  _RelationTile(name: 'Thomas'),
-                  _RelationTile(name: 'Irene'),
+                children: _buildRelationTiles(context),
+              ),
+            ),
+            _buildMapSection(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildRelationTiles(BuildContext context) {
+    if (widget.userRole == 0) {
+      return [
+        _TileForPatient(name: 'Jonas', phone: '082338741009'),
+        _TileForPatient(name: 'Thomas', phone: '081395328431'),
+        _TileForPatient(name: 'Irene', phone: '085391410588'),
+      ];
+    } else if (widget.userRole == 1) {
+      return [
+        _TileForRelation(name: 'Jonas', phone: '082338741009', glucose: '108'),
+        _TileForRelation(name: 'Thomas', phone: '081395328431', glucose: '112'),
+      ];
+    } else {
+      return [
+        _TileForVolunteer(name: 'Thomas', phone: '081395328431'),
+      ];
+    }
+  }
+
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    String titleText = '';
+    bool showCircleIconButton = true;
+
+    switch (widget.userRole) {
+      case 0:
+        titleText = 'My Relation';
+        break;
+      case 1:
+        titleText = 'Track My Relation';
+        showCircleIconButton = false;
+        break;
+      case 2:
+        titleText = 'Patient Around Me';
+        showCircleIconButton = false;
+        break;
+      default:
+        titleText = 'My Relation';
+        break;
+    }
+
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(kToolbarHeight),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
+        child: AppBar(
+          title: Text(
+            titleText,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          actions: [
+            if (showCircleIconButton)
+              IconButton(
+                icon: CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  radius: 24,
+                  child: const Icon(Icons.add, color: Colors.white),
+                ),
+                onPressed: () {
+                  _showAddConnectionDialog(context);
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMapSection(BuildContext context) {
+    if (widget.userRole == 1) {
+      // Hide map section for relation role
+      return SizedBox();
+    } else {
+      // Show map section for other roles
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
+            child: const Text(
+              'Search From Map',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+            ),
+          ),
+          Container(
+            height: 300,
+            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.0),
+              child: GoogleMap(
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: CameraPosition(target: _initialPosition, zoom: 13),
+                markers: _markers,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+  }
+
+  void _showAddConnectionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add Connection',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20.0,
+              )),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Choose how you would like to connect',
+                  style: TextStyle(fontSize: 16.0)),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await availableCameras().then((value) => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddWithQRCodePage(userRole: widget.userRole, cameras: value))),
+                  );
+                },
+                child: const Text('With QR code',
+                    style: TextStyle(fontSize: 16.0)),
+              ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddWithPhonePage(userRole: widget.userRole)),
+                  );
+                },
+                child: const Text('With phone number',
+                    style: TextStyle(fontSize: 16.0)),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _TileForPatient extends StatelessWidget {
+  final String name;
+  final String phone;
+
+  const _TileForPatient({super.key, required this.name, required this.phone});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const CircleAvatar(
+              radius: 24,
+              backgroundImage: AssetImage('assets/default-avatar.jpeg'),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      name,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  Text(
+                    phone,
+                    style: const TextStyle(fontSize: 13, color: Colors.grey),
+                  ),
                 ],
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Search From Map',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            const Wrap(
+              spacing: 12,
+              children: <Widget>[
+                Icon(Icons.call_outlined),
+                Icon(Icons.chat_outlined),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TileForRelation extends StatelessWidget {
+  final String name;
+  final String phone;
+  final String glucose;
+
+  const _TileForRelation({super.key, required this.name, required this.phone, required this.glucose});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const CircleAvatar(
+              radius: 24,
+              backgroundImage: AssetImage('assets/default-avatar.jpeg'),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      name,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  Text(
+                    phone,
+                    style: const TextStyle(fontSize: 13, color: Colors.grey),
+                  ),
+                ],
               ),
             ),
-            Expanded(
-              flex: 2,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(30.0),
-                child: GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(37.77483, -122.41942), // Example coordinates
-                    zoom: 14.0,
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    glucose.toString(),
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
                   ),
-                  // Set other map properties if needed
-                ),
+                  const Text(
+                    'mg/dL',
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
               ),
             ),
           ],
@@ -66,24 +398,52 @@ class RelationPage extends StatelessWidget {
   }
 }
 
-class _RelationTile extends StatelessWidget {
+class _TileForVolunteer extends StatelessWidget {
   final String name;
+  final String phone;
 
-  const _RelationTile({Key? key, required this.name}) : super(key: key);
+  const _TileForVolunteer({super.key, required this.name, required this.phone});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: ListTile(
-        title: Text(name),
-        trailing: Wrap(
-          spacing: 12, // space between two icons
-          children: <Widget>[
-            const Icon(Icons
-                .call_outlined), // Dummy icon, replace with actions as needed
-            const Icon(Icons
-                .chat_outlined), // Dummy icon, replace with actions as needed
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const CircleAvatar(
+              radius: 24,
+              backgroundImage: AssetImage('assets/default-avatar.jpeg'),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      name,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  Text(
+                    phone,
+                    style: const TextStyle(fontSize: 13, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+            const Wrap(
+              spacing: 12,
+              children: <Widget>[
+                Icon(Icons.call_outlined),
+                Icon(Icons.chat_outlined),
+              ],
+            ),
           ],
         ),
       ),
