@@ -1,58 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:glutara_mobile/utils/format_utils.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-
-final List<Map<String, dynamic>> logs = [
-  {
-    'date': 'Today, 17 January 2024',
-    'entries': [
-      {
-        'time': '12.00',
-        'icon': Icons.bedtime_outlined,
-        'activity': 'Sleep',
-        'detail': '1h 30m'
-      },
-      {
-        'time': '10.00',
-        'icon': Icons.fitness_center_outlined,
-        'activity': 'Exercise',
-        'detail': 'Light intensity, 30 min'
-      },
-      {
-        'time': '08.00',
-        'icon': Icons.fastfood_outlined,
-        'activity': 'Breakfast',
-        'detail': '230 Calories'
-      },
-    ],
-  },
-  {
-    'date': 'Yesterday, 16 January 2024',
-    'entries': [
-      {
-        'time': '12.00',
-        'icon': Icons.bedtime_outlined,
-        'activity': 'Sleep',
-        'detail': '1h 30m'
-      },
-      {
-        'time': '10.00',
-        'icon': Icons.fitness_center_outlined,
-        'activity': 'Exercise',
-        'detail': 'Light intensity, 30 min'
-      },
-      {
-        'time': '08.00',
-        'icon': Icons.fastfood_outlined,
-        'activity': 'Breakfast',
-        'detail': '230 Calories'
-      },
-    ],
-  },
-];
 
 class LogbookPage extends StatefulWidget {
   const LogbookPage({Key? key}) : super(key: key);
@@ -68,6 +20,7 @@ class _LogbookPageState extends State<LogbookPage> {
   Future<void> _fetchLogs() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? userID = prefs.getInt('userID');
+    List<Map<String, dynamic>> formattedLogs = [];
     if (userID == null) {
       logger.e("User ID not found in SharedPreferences");
       return;
@@ -79,9 +32,26 @@ class _LogbookPageState extends State<LogbookPage> {
       var response = await http.get(url);
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
-        logger.d("Logs fetched successfully: $data");
+
+        for (var log in data) {
+          logger.d("Log item: $log");
+          final date = log['Date'];
+          String formattedDate =
+              FormatUtils.formatDateToReadable(date) ?? 'Invalid date';
+          logger.d("Log item date: $date $formattedDate");
+          formattedLogs.add({
+            'date': formattedDate,
+            'logs': log['Logs'].map((log) {
+              return {
+                'type': log['Type'],
+                'Data': log['Data'],
+              };
+            }).toList(),
+          });
+        }
+        logger.d("Log item logs: $formattedLogs");
         setState(() {
-          _logs = data;
+          _logs = formattedLogs;
         });
       } else {
         logger.e("Failed to fetch logs: ${response.body}");
@@ -89,6 +59,8 @@ class _LogbookPageState extends State<LogbookPage> {
     } catch (e) {
       logger.e("Error fetching logs: $e");
     }
+
+    logger.d("Log item data: $formattedLogs");
   }
 
   IconData getIconForType(String type) {
@@ -106,12 +78,54 @@ class _LogbookPageState extends State<LogbookPage> {
     }
   }
 
+  String formatSubtitle(Map<String, dynamic> entry) {
+    var type = entry['type'];
+    var data = entry['Data'];
+
+    switch (type) {
+      case 'Medication':
+        return '${data['Category']}, Dose: ${data['Dose']}';
+      case 'Exercise':
+        var intensityLabel = ['light', 'medium', 'high'][data['Intensity']];
+        var durationMinutes = DateTime.parse(data['EndTime'])
+            .difference(DateTime.parse(data['StartTime']))
+            .inMinutes;
+        var duration = FormatUtils.formatDuration(durationMinutes);
+        return '${data['Name']}, $intensityLabel intensity, ${duration}';
+      case 'Sleep':
+        var durationMinutes = DateTime.parse(data['EndTime'])
+            .difference(DateTime.parse(data['StartTime']))
+            .inMinutes
+            .abs();
+        var duration = FormatUtils.formatDuration(durationMinutes);
+        return 'Duration: ${duration}';
+      case 'Meal':
+        var mealTypeLabel = ['Breakfast', 'Lunch', 'Dinner', ''][data['Type']];
+        var name = data['Name'].toString();
+        if (name.length > 10) {
+          name = name.substring(0, 10);
+        }
+        return '$name, $mealTypeLabel, ${data['Calories']} Calories';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  String formatTime(Map<String, dynamic> data) {
+    DateTime time;
+    if (data.containsKey('Time')) {
+      time = DateTime.parse(data['Time']);
+    } else {
+      time = DateTime.parse(data['StartTime']);
+    }
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  }
+
   @override
   void initState() {
     super.initState();
     _fetchLogs();
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -143,9 +157,9 @@ class _LogbookPageState extends State<LogbookPage> {
       body: Padding(
         padding: const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
         child: ListView.builder(
-          itemCount: logs.length,
+          itemCount: _logs.length,
           itemBuilder: (BuildContext context, int index) {
-            final dailyLog = logs[index];
+            final dailyLog = _logs[index];
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -157,7 +171,9 @@ class _LogbookPageState extends State<LogbookPage> {
                         fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
-                ...dailyLog['entries'].map<Widget>((entry) {
+                ...dailyLog['logs'].map<Widget>((entry) {
+                  IconData icon = getIconForType(entry['type']);
+
                   return Card(
                     margin:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -165,14 +181,14 @@ class _LogbookPageState extends State<LogbookPage> {
                       leading: CircleAvatar(
                         backgroundColor:
                             Theme.of(context).colorScheme.primaryContainer,
-                        child: Icon(entry['icon'],
+                        child: Icon(icon,
                             color: Theme.of(context)
                                 .colorScheme
                                 .onPrimaryContainer),
                       ),
-                      title: Text(entry['activity']),
-                      subtitle: Text(entry['detail']),
-                      trailing: Text(entry['time']),
+                      title: Text(entry['type']),
+                      subtitle: Text(formatSubtitle(entry)),
+                      trailing: Text(formatTime(entry['Data'])),
                     ),
                   );
                 }).toList(),

@@ -24,13 +24,22 @@ class FormatUtils {
   }
 
   static String? formatDateToReadable(String isoDate) {
-    if (isoDate == null) return "";
     try {
       DateTime dateTime = DateTime.parse(isoDate);
       DateFormat formatter = DateFormat('EEEE, MMMM d yyyy', 'en_US');
       return formatter.format(dateTime);
     } catch (error) {
       return '';
+    }
+  }
+
+  static String formatDuration(int minutes) {
+    if (minutes < 60) {
+      return '$minutes min';
+    } else {
+      final hours = minutes ~/ 60;
+      final remainingMinutes = minutes % 60;
+      return '${hours}h ${remainingMinutes}m';
     }
   }
 }
