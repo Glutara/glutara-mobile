@@ -53,6 +53,7 @@ dependencies:
   flutter_spinkit: ^5.2.1
   qr_flutter: ^4.1.0
   mobile_scanner: ^4.0.1
+  encrypt: ^5.0.3
 
 dev_dependencies:
   flutter_test:

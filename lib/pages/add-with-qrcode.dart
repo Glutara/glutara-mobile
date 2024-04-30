@@ -5,6 +5,27 @@ import 'package:camera/camera.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+
+// Generate a random encryption key
+final key = encrypt.Key.fromLength(32);
+
+// Generate a random IV (Initialization Vector)
+final iv = encrypt.IV.fromLength(16);
+
+// Encryption method
+String encryptData(String data) {
+  final encrypter = encrypt.Encrypter(encrypt.AES(key));
+  final encryptedData = encrypter.encrypt(data, iv: iv);
+  return encryptedData.base64;
+}
+
+// Decryption method
+String decryptData(String encryptedData) {
+  final encrypter = encrypt.Encrypter(encrypt.AES(key));
+  final decryptedData = encrypter.decrypt64(encryptedData, iv: iv);
+  return decryptedData;
+}
 
 class AddWithQRCodePage extends StatelessWidget {
   final int userRole;
@@ -59,8 +80,9 @@ class AddWithQRCodePage extends StatelessWidget {
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
+                  String encryptedData = encryptData(snapshot.data!);
                   return QrImageView(
-                    data: snapshot.data!,
+                    data: encryptedData,
                     version: QrVersions.auto,
                     backgroundColor: Color(0xFFFFFFFF),
                     size: 250,
@@ -142,9 +164,12 @@ class _ScanQRPageState extends State<_ScanQRPage> {
       String raw = barcodeCapture.raw[0]['rawValue'];
       _screenOpened = true;
 
+      // Decrypt data
+      String decryptedData = decryptData(raw);
+
       // Navigating to a new screen to display the barcode data
       Navigator.push(context, MaterialPageRoute(builder: (context) =>
-          FoundCodeScreen(screenClosed: _screenWasClosed, value: raw),));
+          FoundCodeScreen(screenClosed: _screenWasClosed, value: decryptedData),));
     }
   }
 
