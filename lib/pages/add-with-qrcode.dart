@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'add-with-phone.dart';
 import 'package:camera/camera.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 class AddWithQRCodePage extends StatelessWidget {
   final int userRole;
@@ -15,7 +16,7 @@ class AddWithQRCodePage extends StatelessWidget {
     if (userRole == 0) {
       return _buildAddWithQRCode(context);
     } else {
-      return _CameraPage(cameras: cameras);
+      return _ScanQRPage();
     }
   }
 
@@ -75,37 +76,16 @@ class AddWithQRCodePage extends StatelessWidget {
   }
 }
 
-class _CameraPage extends StatefulWidget {
-  final List<CameraDescription> cameras;
-
-  const _CameraPage({Key? key, required this.cameras}) : super(key: key);
+class _ScanQRPage extends StatefulWidget {
+  const _ScanQRPage({Key? key}) : super(key: key);
 
   @override
-  _CameraPageState createState() => _CameraPageState();
+  State<_ScanQRPage> createState() => _ScanQRPageState();
 }
 
-class _CameraPageState extends State<_CameraPage> {
-  late CameraController _cameraController;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeCamera();
-  }
-
-  @override
-  void dispose() {
-    _cameraController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _initializeCamera() async {
-    _cameraController = CameraController(widget.cameras[0], ResolutionPreset.medium);
-    await _cameraController.initialize();
-    if (mounted) {
-      setState(() {});
-    }
-  }
+class _ScanQRPageState extends State<_ScanQRPage> {
+  MobileScannerController cameraController = MobileScannerController();
+  bool _screenOpened = false;
 
   @override
   Widget build(BuildContext context) {
@@ -118,18 +98,25 @@ class _CameraPageState extends State<_CameraPage> {
       ),
       body: Stack(
         children: [
-          Positioned.fill(
-            child: _cameraController.value.isInitialized
-                ? CameraPreview(_cameraController)
-                : Container(
-              color: Colors.black,
-              child: const Center(child: CircularProgressIndicator()),
-            ),
+          MobileScanner(
+            controller: cameraController,
+            onDetect: _foundBarcode
           ),
           _buildDescription(),
         ],
       ),
     );
+  }
+
+  void _foundBarcode(BarcodeCapture barcodeCapture) {
+    if (!_screenOpened) {
+      String raw = barcodeCapture.raw[0]['rawValue'];
+      _screenOpened = true;
+
+      // Navigating to a new screen to display the barcode data
+      Navigator.push(context, MaterialPageRoute(builder: (context) =>
+          FoundCodeScreen(screenClosed: _screenWasClosed, value: raw),));
+    }
   }
 
   Widget _buildDescription() {
@@ -160,6 +147,50 @@ class _CameraPageState extends State<_CameraPage> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _screenWasClosed() {
+    _screenOpened = false;
+  }
+}
+
+class FoundCodeScreen extends StatefulWidget {
+  final String value;
+  final Function() screenClosed;
+  const FoundCodeScreen({
+    Key? key,
+    required this.value,
+    required this.screenClosed,
+  }) : super(key: key);
+
+  @override
+  State<FoundCodeScreen> createState() => _FoundCodeScreenState();
+}
+
+class _FoundCodeScreenState extends State<FoundCodeScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Image.asset('assets/topbar-logo.png'),
+        centerTitle: true,
+        toolbarHeight: 60.0,
+        elevation: 20,
+      ),
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Scanned Code:", style: TextStyle(fontSize: 20,),),
+              SizedBox(height: 20,),
+              Text(widget.value, style: TextStyle(fontSize: 16,),),
+            ],
+          ),
         ),
       ),
     );
