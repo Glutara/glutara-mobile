@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'add-with-phone.dart';
 import 'package:camera/camera.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class AddWithQRCodePage extends StatelessWidget {
   final int userRole;
@@ -47,10 +48,13 @@ class AddWithQRCodePage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            Image.asset(
-              'assets/qrcode.png',
-              width: 250,
-              height: 250,
+            // TODO : update QR data
+            QrImageView(
+              data: 'This is a simple QR code',
+              version: QrVersions.auto,
+              backgroundColor: Color(0xFFFFFFFF),
+              size: 250,
+              gapless: true,
             ),
             const SizedBox(height: 50),
             TextButton(
