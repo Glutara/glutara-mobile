@@ -43,7 +43,7 @@ class FormatUtils {
     }
   }
 
-  staticString formatTime(Map<String, dynamic> data) {
+  static String formatTime(Map<String, dynamic> data) {
     DateTime time;
     if (data.containsKey('Time')) {
       time = DateTime.parse(data['Time']);

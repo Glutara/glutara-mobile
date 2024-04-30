@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'add-with-phone.dart';
+import 'dart:convert';
 import 'package:camera/camera.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddWithQRCodePage extends StatelessWidget {
   final int userRole;
@@ -49,13 +51,23 @@ class AddWithQRCodePage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            // TODO : update QR data
-            QrImageView(
-              data: 'This is a simple QR code',
-              version: QrVersions.auto,
-              backgroundColor: Color(0xFFFFFFFF),
-              size: 250,
-              gapless: true,
+            FutureBuilder<String>(
+              future: _generateQRData(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return QrImageView(
+                    data: snapshot.data!,
+                    version: QrVersions.auto,
+                    backgroundColor: Color(0xFFFFFFFF),
+                    size: 250,
+                    gapless: true,
+                  );
+                }
+              },
             ),
             const SizedBox(height: 50),
             TextButton(
@@ -73,6 +85,23 @@ class AddWithQRCodePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<String> _generateQRData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? userID = prefs.getInt('userID');
+    String name = prefs.getString('name') ?? '';
+    String phone = prefs.getString('phone') ?? '';
+
+    // Format the data into a string
+    Map<String, dynamic> userData = {
+      'userID': userID,
+      'name': name,
+      'phone': phone,
+    };
+
+    String userDataString = jsonEncode(userData);
+    return userDataString;
   }
 }
 
