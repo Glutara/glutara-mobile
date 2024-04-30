@@ -16,6 +16,7 @@ class LogbookPage extends StatefulWidget {
 class _LogbookPageState extends State<LogbookPage> {
   final logger = Logger();
   List _logs = [];
+  bool _isLoading = false;
 
   Future<void> _fetchLogs() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -124,7 +125,14 @@ class _LogbookPageState extends State<LogbookPage> {
   @override
   void initState() {
     super.initState();
-    _fetchLogs();
+    setState(() {
+      _isLoading = true;
+    });
+    _fetchLogs().then((_) {
+      setState(() {
+        _isLoading = false;
+      });
+    });
   }
 
   @override
@@ -154,49 +162,61 @@ class _LogbookPageState extends State<LogbookPage> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
-        child: ListView.builder(
-          itemCount: _logs.length,
-          itemBuilder: (BuildContext context, int index) {
-            final dailyLog = _logs[index];
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  child: Text(
-                    dailyLog['date'],
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                ...dailyLog['logs'].map<Widget>((entry) {
-                  IconData icon = getIconForType(entry['type']);
+      body: FutureBuilder(
+          future: _fetchLogs(), // Fetch data on build
+          builder: (context, snapshot) {
+            if (_isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const Center(child: Text('Error loading logs'));
+            } else {
+              return Padding(
+                padding:
+                    const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
+                child: ListView.builder(
+                  itemCount: _logs.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final dailyLog = _logs[index];
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                          child: Text(
+                            dailyLog['date'],
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        ...dailyLog['logs'].map<Widget>((entry) {
+                          IconData icon = getIconForType(entry['type']);
 
-                  return Card(
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.primaryContainer,
-                        child: Icon(icon,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer),
-                      ),
-                      title: Text(entry['type']),
-                      subtitle: Text(formatSubtitle(entry)),
-                      trailing: Text(formatTime(entry['Data'])),
-                    ),
-                  );
-                }).toList(),
-              ],
-            );
-          },
-        ),
-      ),
+                          return Card(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 4),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer,
+                                child: Icon(icon,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer),
+                              ),
+                              title: Text(entry['type']),
+                              subtitle: Text(formatSubtitle(entry)),
+                              trailing: Text(formatTime(entry['Data'])),
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    );
+                  },
+                ),
+              );
+            }
+          }),
     );
   }
 }
