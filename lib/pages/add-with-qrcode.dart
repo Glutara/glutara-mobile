@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'add-with-phone.dart';
-import 'dart:convert';
 import 'package:camera/camera.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
+import 'add-with-phone.dart';
+import 'dart:convert';
 
 // Generate a random encryption key
 final key = encrypt.Key.fromLength(32);
@@ -80,9 +82,8 @@ class AddWithQRCodePage extends StatelessWidget {
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
-                  String encryptedData = encryptData(snapshot.data!);
                   return QrImageView(
-                    data: encryptedData,
+                    data: snapshot.data!,
                     version: QrVersions.auto,
                     backgroundColor: Color(0xFFFFFFFF),
                     size: 250,
@@ -159,17 +160,64 @@ class _ScanQRPageState extends State<_ScanQRPage> {
     );
   }
 
-  void _foundBarcode(BarcodeCapture barcodeCapture) {
+  Future<void> _foundBarcode(BarcodeCapture barcodeCapture) async {
     if (!_screenOpened) {
       String raw = barcodeCapture.raw[0]['rawValue'];
       _screenOpened = true;
 
-      // Decrypt data
-      String decryptedData = decryptData(raw);
+      // Decode the QR data
+      Map<String, dynamic> patientData = jsonDecode(raw);
 
-      // Navigating to a new screen to display the barcode data
-      Navigator.push(context, MaterialPageRoute(builder: (context) =>
-          FoundCodeScreen(screenClosed: _screenWasClosed, value: decryptedData),));
+      // Get relation data
+      String relationData = await _generateQRData();
+
+      // Decode the relation data
+      Map<String, dynamic> relationMap = jsonDecode(relationData);
+
+      // Prepare the query body
+      Map<String, dynamic> body = {
+        'UserID': patientData['userID'],
+        'Name': patientData['name'],
+        'Phone': patientData['phone'],
+        'RelationID': relationMap['userID'],
+        'RelationName': relationMap['name'],
+        'RelationPhone': relationMap['phone'],
+        'Logitude': 107.606017,
+        'Latitude': -6.881305
+      };
+
+      // Convert the body to JSON
+      String requestBody = jsonEncode(body);
+      debugPrint(requestBody);
+      int? userID = patientData['userID'];
+
+      var response = await http.post(
+        Uri.parse(
+              'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/relations'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: requestBody,
+      );
+
+      if (response.statusCode == 200) {
+        Fluttertoast.showToast(
+            msg: "New patient was added successfully",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0)
+        .then((value) => Navigator.pop(context));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.body),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -208,6 +256,23 @@ class _ScanQRPageState extends State<_ScanQRPage> {
 
   void _screenWasClosed() {
     _screenOpened = false;
+  }
+
+  Future<String> _generateQRData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? userID = prefs.getInt('userID');
+    String name = prefs.getString('name') ?? '';
+    String phone = prefs.getString('phone') ?? '';
+
+    // Format the data into a string
+    Map<String, dynamic> userData = {
+      'userID': userID,
+      'name': name,
+      'phone': phone,
+    };
+
+    String userDataString = jsonEncode(userData);
+    return userDataString;
   }
 }
 
