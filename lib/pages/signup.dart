@@ -63,6 +63,7 @@ class _SignUpPageState extends State<SignUpPage> {
         'password': _passwordController.text,
         'phone': _phoneController.text,
         'role': roleValue,
+        'LatestBloodGlucose': 0
       }),
     );
 
