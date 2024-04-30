@@ -35,11 +35,11 @@ class _LogbookPageState extends State<LogbookPage> {
         List<dynamic> data = jsonDecode(response.body);
 
         for (var log in data) {
-          logger.d("Log item: $log");
+          // logger.d("Log item: $log");
           final date = log['Date'];
           String formattedDate =
               FormatUtils.formatDateToReadable(date) ?? 'Invalid date';
-          logger.d("Log item date: $date $formattedDate");
+          // logger.d("Log item date: $date $formattedDate");
           formattedLogs.add({
             'date': formattedDate,
             'logs': log['Logs'].map((log) {
@@ -50,7 +50,7 @@ class _LogbookPageState extends State<LogbookPage> {
             }).toList(),
           });
         }
-        logger.d("Log item logs: $formattedLogs");
+        // logger.d("Log item logs: $formattedLogs");
         setState(() {
           _logs = formattedLogs;
         });
@@ -61,7 +61,7 @@ class _LogbookPageState extends State<LogbookPage> {
       logger.e("Error fetching logs: $e");
     }
 
-    logger.d("Log item data: $formattedLogs");
+    // logger.d("Log item data: $formattedLogs");
   }
 
   IconData getIconForType(String type) {
@@ -73,7 +73,7 @@ class _LogbookPageState extends State<LogbookPage> {
       case "Exercise":
         return Icons.fitness_center_outlined;
       case "Medication":
-        return Icons.medical_services_outlined;
+        return Icons.vaccines_outlined;
       default:
         return Icons.info_outline;
     }

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:glutara_mobile/utils/format_utils.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
@@ -22,11 +23,19 @@ class _AddReminderPageState extends State<AddReminderPage> {
   String? _selectedLabel = 'Medication';
   final logger = Logger();
   List<dynamic> reminders = [];
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchReminders();
+    setState(() {
+      _isLoading = true;
+    });
+    _fetchReminders().then((_) {
+      setState(() {
+        _isLoading = false;
+      });
+    });
   }
 
   IconData getIconForType(String type) {
@@ -38,7 +47,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
       case "Exercise":
         return Icons.fitness_center_outlined;
       case "Medication":
-        return Icons.medical_services_outlined;
+        return Icons.vaccines_outlined;
       default:
         return Icons.info_outline;
     }
@@ -120,6 +129,50 @@ class _AddReminderPageState extends State<AddReminderPage> {
     }
   }
 
+  Future<void> _confirmAndDeleteReminder(int reminderID) async {
+    final bool? deleteConfirmed = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Center(
+            child: Text(
+              "Confirm Delete",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          content: const Text("Are you sure you want to delete this reminder?"),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text("Cancel"),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    Navigator.of(context).pop(true);
+                    await _deleteReminder(reminderID);
+                    _fetchReminders();
+                  },
+                  child: const Text(
+                    "Delete",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+
+    if (deleteConfirmed == true) {
+      await _deleteReminder(reminderID);
+      _fetchReminders();
+    }
+  }
+
   Widget _buildReminderItem(
       int reminderID, String name, String time, String description) {
     return Card(
@@ -144,10 +197,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
         ),
         trailing: IconButton(
           icon: const Icon(Icons.delete, color: Colors.red),
-          onPressed: () async {
-            await _deleteReminder(reminderID);
-            _fetchReminders();
-          },
+          onPressed: () => _confirmAndDeleteReminder(reminderID),
         ),
       ),
     );
@@ -165,42 +215,56 @@ class _AddReminderPageState extends State<AddReminderPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: ListView(
-            children: <Widget>[
-              const Center(
-                child: Text(
-                  'Add Reminder',
-                  style: TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
+      body: FutureBuilder(
+          future: _fetchReminders(),
+          builder: (context, snapshot) {
+            if (_isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const Center(child: Text('Error loading logs'));
+            } else {
+              return SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ListView(
+                    children: <Widget>[
+                      const Center(
+                        child: Text(
+                          'Add Reminder',
+                          style: TextStyle(
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8.0),
+                      const Center(
+                        child: Text(
+                          'Elevate your well-being effortlessly with timely reminder and notifications for a healthier you.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24.0),
+                      ...reminders.map<Widget>((reminder) {
+                        DateTime dateTime = DateTime.parse(reminder['Time']);
+                        String formattedTime =
+                            DateFormat('HH:mm').format(dateTime);
+                        return _buildReminderItem(
+                            reminder['ReminderID'],
+                            reminder['Name'],
+                            formattedTime,
+                            reminder['Description']);
+                      }),
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 8.0),
-              const Center(
-                child: Text(
-                  'Elevate your well-being effortlessly with timely reminder and notifications for a healthier you.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.grey,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24.0),
-              ...reminders.map<Widget>((reminder) {
-                DateTime dateTime = DateTime.parse(reminder['Time']);
-                String formattedTime = DateFormat('HH:mm').format(dateTime);
-                return _buildReminderItem(reminder['ReminderID'],
-                    reminder['Name'], formattedTime, reminder['Description']);
-              }),
-            ],
-          ),
-        ),
-      ),
+              );
+            }
+          }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _showAddReminderModal();
@@ -214,35 +278,62 @@ class _AddReminderPageState extends State<AddReminderPage> {
   Future<void> _createReminder() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? userID = prefs.getInt('userID');
-    if (userID == null) {
-      logger.e("User ID not found in SharedPreferences");
-      return;
-    }
 
-    var url = Uri.parse(
-        'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/reminders');
+    final DateTime now = DateTime.now();
+    final DateTime reminderTime = DateTime(
+        now.year, now.month, now.day, _selectedTime.hour, _selectedTime.minute);
 
-    Map<String, dynamic> newReminder = {
+    logger.f(jsonEncode(<String, dynamic>{
       "UserID": userID,
+      "ReminderID": 1,
       "Name": _selectedLabel,
       "Description": _noteController.text,
-      "Time": FormatUtils.formatToIsoDateTime(_selectedTime as DateTime?),
-    };
+      "Time": FormatUtils.combineDateWithTime(
+          now, TimeOfDay.fromDateTime(reminderTime)),
+    }));
 
     try {
       var response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
+        Uri.parse(
+            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/reminders'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(newReminder),
+        body: jsonEncode(<String, dynamic>{
+          "UserID": userID,
+          "ReminderID": 1,
+          "Name": _selectedLabel,
+          "Description": _noteController.text,
+          "Time": FormatUtils.combineDateWithTime(
+              now, TimeOfDay.fromDateTime(reminderTime)),
+        }),
       );
 
-      if (response.statusCode != 200) {
-        logger.e("Failed to create reminder: ${response.body}");
+      if (response.statusCode == 200) {
+        Fluttertoast.showToast(
+                msg: "Reminder saved successfully!",
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.green,
+                textColor: Colors.white,
+                fontSize: 16.0)
+            .then((value) => Navigator.pop(context));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.body),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
-    } catch (e) {
-      logger.e("Error creating reminder: $e");
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred: $error'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -266,7 +357,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     const Text(
-                      'Select time',
+                      'Select Time',
                       style: TextStyle(
                         fontSize: 18.0,
                         fontWeight: FontWeight.bold,
@@ -326,9 +417,10 @@ class _AddReminderPageState extends State<AddReminderPage> {
                           child: const Text('Cancel'),
                         ),
                         ElevatedButton(
-                          onPressed: () =>
-                              // scheduleNotification();
-                              Navigator.pop(context),
+                          onPressed: () => {
+                            _createReminder(),
+                            // scheduleNotification();
+                          },
                           child: const Text('Ok'),
                         ),
                       ],
