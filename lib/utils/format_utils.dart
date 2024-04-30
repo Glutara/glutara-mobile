@@ -42,4 +42,14 @@ class FormatUtils {
       return '${hours}h ${remainingMinutes}m';
     }
   }
+
+  staticString formatTime(Map<String, dynamic> data) {
+    DateTime time;
+    if (data.containsKey('Time')) {
+      time = DateTime.parse(data['Time']);
+    } else {
+      time = DateTime.parse(data['StartTime']);
+    }
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  }
 }

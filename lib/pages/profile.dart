@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:glutara_mobile/pages/add-reminder.dart';
 import '/pages/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -118,7 +119,12 @@ class ProfilePage extends StatelessWidget {
       leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
       title: Text(title),
       onTap: () {
-        // TODO: Implement navigation or action for each ListTile
+        if (title == 'Reminders') {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => AddReminderPage()),
+          );
+        } else {
+        }
       },
     );
   }

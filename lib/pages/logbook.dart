@@ -112,16 +112,6 @@ class _LogbookPageState extends State<LogbookPage> {
     }
   }
 
-  String formatTime(Map<String, dynamic> data) {
-    DateTime time;
-    if (data.containsKey('Time')) {
-      time = DateTime.parse(data['Time']);
-    } else {
-      time = DateTime.parse(data['StartTime']);
-    }
-    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-  }
-
   @override
   void initState() {
     super.initState();
@@ -206,7 +196,8 @@ class _LogbookPageState extends State<LogbookPage> {
                               ),
                               title: Text(entry['type']),
                               subtitle: Text(formatSubtitle(entry)),
-                              trailing: Text(formatTime(entry['Data'])),
+                              trailing:
+                                  Text(FormatUtils.formatTime(entry['Data'])),
                             ),
                           );
                         }).toList(),

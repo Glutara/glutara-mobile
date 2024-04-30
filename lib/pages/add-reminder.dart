@@ -1,6 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:glutara_mobile/utils/format_utils.dart';
+import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:http/http.dart' as http;
 
 class AddReminderPage extends StatefulWidget {
   @override
@@ -13,10 +20,53 @@ class _AddReminderPageState extends State<AddReminderPage> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   String? _selectedLabel = 'Medication';
+  final logger = Logger();
+  List<dynamic> reminders = [];
 
   @override
   void initState() {
     super.initState();
+    _fetchReminders();
+  }
+
+  IconData getIconForType(String type) {
+    switch (type) {
+      case "Meal":
+        return Icons.fastfood_outlined;
+      case "Sleep":
+        return Icons.bedtime_outlined;
+      case "Exercise":
+        return Icons.fitness_center_outlined;
+      case "Medication":
+        return Icons.medical_services_outlined;
+      default:
+        return Icons.info_outline;
+    }
+  }
+
+  Future<void> _fetchReminders() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? userID = prefs.getInt('userID');
+    if (userID == null) {
+      logger.e("User ID not found in SharedPreferences");
+      return;
+    }
+
+    var url = Uri.parse(
+        'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/reminders');
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body) as List;
+        setState(() {
+          reminders = jsonData;
+        });
+      } else {
+        logger.e("Failed to fetch reminders: ${response.body}");
+      }
+    } catch (e) {
+      logger.e("Error fetching reminders: $e");
+    }
   }
 
   List<DropdownMenuItem<String>> get _dropdownMenuItems {
@@ -28,10 +78,6 @@ class _AddReminderPageState extends State<AddReminderPage> {
       );
     }).toList();
   }
-
-  // Future onSelectNotification(String? payload) {
-  //   // Handle your notification tap here.
-  // }
 
   Future<void> scheduleNotification() async {
     var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
@@ -54,21 +100,55 @@ class _AddReminderPageState extends State<AddReminderPage> {
             UILocalNotificationDateInterpretation.absoluteTime);
   }
 
-  Widget _buildReminderItem(String label, String time) {
+  Future<void> _deleteReminder(int reminderID) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? userID = prefs.getInt('userID');
+    if (userID == null) {
+      logger.e("User ID not found in SharedPreferences");
+      return;
+    }
+
+    var url = Uri.parse(
+        'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/reminders/$reminderID');
+    try {
+      var response = await http.delete(url);
+      if (response.statusCode != 200) {
+        logger.e("Failed to delete reminder: ${response.body}");
+      }
+    } catch (e) {
+      logger.e("Error deleting reminder: $e");
+    }
+  }
+
+  Widget _buildReminderItem(
+      int reminderID, String name, String time, String description) {
     return Card(
       child: ListTile(
         tileColor: Colors.orange[50],
         leading: CircleAvatar(
           radius: 24,
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          child: const Align(
-            alignment: Alignment.center,
-            child: Icon(Icons.vaccines_outlined, color: Colors.black),
-          ),
+          child: Icon(getIconForType(name), color: Colors.white),
         ),
-        title: Text(label),
-        subtitle: Text(time),
-        trailing: const Icon(Icons.delete), // Update with your own icon
+        title: Text(name,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            )),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(time, style: TextStyle(fontSize: 16)),
+            Text(description,
+                style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          ],
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.delete, color: Colors.red),
+          onPressed: () async {
+            await _deleteReminder(reminderID);
+            _fetchReminders();
+          },
+        ),
       ),
     );
   }
@@ -76,49 +156,47 @@ class _AddReminderPageState extends State<AddReminderPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set the background color
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white, // Set the AppBar background color
-        elevation: 0, // Remove shadow
+        backgroundColor: Colors.white,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black), // Change color
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        actions: [
-          // Add actions if needed
-        ],
       ),
       body: SafeArea(
         child: Padding(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 16.0), // Add horizontal padding
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: ListView(
             children: <Widget>[
               const Center(
                 child: Text(
                   'Add Reminder',
                   style: TextStyle(
-                    fontSize: 24.0, // Adjust the font size
-                    fontWeight: FontWeight.bold, // Adjust the font weight
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const SizedBox(height: 8.0), // Spacing between title and description
+              const SizedBox(height: 8.0),
               const Center(
                 child: Text(
                   'Elevate your well-being effortlessly with timely reminder and notifications for a healthier you.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 16.0, // Adjust the font size
-                    color: Colors.grey, // Set the color
+                    fontSize: 16.0,
+                    color: Colors.grey,
                   ),
                 ),
               ),
               const SizedBox(height: 24.0),
-              // ... Your other widgets ...
-              _buildReminderItem('Take 500g of Metformin', '12:00'),
-              _buildReminderItem('Take 500g of Metformin', '12:00'),
-              // ... Add more items ...
+              ...reminders.map<Widget>((reminder) {
+                DateTime dateTime = DateTime.parse(reminder['Time']);
+                String formattedTime = DateFormat('HH:mm').format(dateTime);
+                return _buildReminderItem(reminder['ReminderID'],
+                    reminder['Name'], formattedTime, reminder['Description']);
+              }),
             ],
           ),
         ),
@@ -131,6 +209,41 @@ class _AddReminderPageState extends State<AddReminderPage> {
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
     );
+  }
+
+  Future<void> _createReminder() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? userID = prefs.getInt('userID');
+    if (userID == null) {
+      logger.e("User ID not found in SharedPreferences");
+      return;
+    }
+
+    var url = Uri.parse(
+        'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/reminders');
+
+    Map<String, dynamic> newReminder = {
+      "UserID": userID,
+      "Name": _selectedLabel,
+      "Description": _noteController.text,
+      "Time": FormatUtils.formatToIsoDateTime(_selectedTime as DateTime?),
+    };
+
+    try {
+      var response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(newReminder),
+      );
+
+      if (response.statusCode != 200) {
+        logger.e("Failed to create reminder: ${response.body}");
+      }
+    } catch (e) {
+      logger.e("Error creating reminder: $e");
+    }
   }
 
   Future<void> _showAddReminderModal() async {
@@ -213,14 +326,10 @@ class _AddReminderPageState extends State<AddReminderPage> {
                           child: const Text('Cancel'),
                         ),
                         ElevatedButton(
-                          onPressed: () {
-                            scheduleNotification();
-                            Navigator.pop(context);
-                          },
-                          child: const Text('OK'),
-                          style: ElevatedButton.styleFrom(
-                            primary: Theme.of(context).colorScheme.primary,
-                          ),
+                          onPressed: () =>
+                              // scheduleNotification();
+                              Navigator.pop(context),
+                          child: const Text('Ok'),
                         ),
                       ],
                     ),
