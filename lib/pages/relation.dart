@@ -4,6 +4,9 @@ import 'add-with-qrcode.dart';
 import 'add-with-phone.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:camera/camera.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RelationPage extends StatefulWidget {
   final int userRole;
@@ -19,12 +22,45 @@ class _RelationPageState extends State<RelationPage> {
   final Location _location = Location();
   LatLng _initialPosition = const LatLng(-6.890670, 107.607060);
   final Set<Marker> _markers = {};
+  bool _isLoading = false;
+
+  Future<List<Map<String, dynamic>>> fetchRelationData() async {
+    // Fetch the user ID
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? userID = prefs.getInt('userID');
+    if (userID == null) {
+      throw Exception('No user ID detected');
+    }
+    
+    var url = Uri.parse('https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/relations/related');
+
+    try {
+      var response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> responseData = json.decode(response.body);
+        return responseData.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception('Failed to load relation data');
+      }
+    } catch (e) {
+      throw Exception("Error fetching logs: $e");
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _getUserLocation();
     _addInitialMarker();
+    setState(() {
+      _isLoading = true;
+    });
+    fetchRelationData().then((_) {
+      setState(() {
+        _isLoading = false;
+      });
+    });
   }
 
   void _addInitialMarker() {
@@ -117,8 +153,19 @@ class _RelationPageState extends State<RelationPage> {
         child: Column(
           children: [
             Expanded(
-              child: ListView(
-                children: _buildRelationTiles(context),
+              child: FutureBuilder<List<Widget>>(
+                future: _buildRelationTiles(context),
+                builder: (context, snapshot) {
+                  if (_isLoading) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    return ListView(
+                      children: snapshot.data ?? [],
+                    );
+                  }
+                },
               ),
             ),
             _buildMapSection(context),
@@ -128,7 +175,7 @@ class _RelationPageState extends State<RelationPage> {
     );
   }
 
-  List<Widget> _buildRelationTiles(BuildContext context) {
+  Future<List<Widget>> _buildRelationTiles(BuildContext context) async {
     if (widget.userRole == 0) {
       return [
         _TileForPatient(name: 'Jonas', phone: '082338741009'),
@@ -136,10 +183,18 @@ class _RelationPageState extends State<RelationPage> {
         _TileForPatient(name: 'Irene', phone: '085391410588'),
       ];
     } else if (widget.userRole == 1) {
-      return [
-        _TileForRelation(name: 'Jonas', phone: '082338741009', glucose: '108'),
-        _TileForRelation(name: 'Thomas', phone: '081395328431', glucose: '112'),
-      ];
+      try {
+        final List<Map<String, dynamic>> relationData = await fetchRelationData();
+        return relationData.map((data) {
+          return _TileForRelation(
+            name: data['Name'] ?? '',
+            phone: data['Phone'] ?? '',
+            glucose: data['LatestBloodGlucose'].toDouble().toStringAsFixed(1) ?? '',
+          );
+        }).toList();
+      } catch (e) {
+        return [];
+      }
     } else {
       return [
         _TileForVolunteer(name: 'Thomas', phone: '081395328431'),
