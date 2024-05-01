@@ -76,31 +76,34 @@ class _RelationPageState extends State<RelationPage> {
   void initState() {
     super.initState();
     _getUserLocation();
-    _addInitialMarker();
     setState(() {
       _isLoading = true;
     });
   }
 
-  void _addInitialMarker() {
-    _markers.add(const Marker(
-      markerId: MarkerId('marker1'),
-      icon: BitmapDescriptor.defaultMarker,
-      position: LatLng(-6.900670, 107.627060),
-      infoWindow: InfoWindow(
-        title: 'Marker 1',
-        snippet: 'Label for Marker 1',
-      ),
-    ));
-    _markers.add(const Marker(
-      markerId: MarkerId('marker2'),
-      icon: BitmapDescriptor.defaultMarker,
-      position: LatLng(-6.930670, 107.617060),
-      infoWindow: InfoWindow(
-        title: 'Marker 2',
-        snippet: 'Label for Marker 2',
-      ),
-    ));
+  void _addInitialMarker(List<Map<String, dynamic>> patientData) async {
+    if (patientData.isNotEmpty) {
+      final Map<String, dynamic> patient = patientData.first; // Get first patient data
+      final double patientLatitude = patient['Latitude'].toDouble() ?? 0.0;
+      final double patientLongitude = patient['Longitude'].toDouble() ?? 0.0;
+      final String relationName = patient['RelationName'] ?? '';
+
+      // Send lat/lng to patient using your preferred method (e.g., socket, messaging)
+
+      final marker = Marker(
+        markerId: MarkerId(relationName), // Use relation name as marker ID
+        position: LatLng(patientLatitude, patientLongitude),
+        icon: BitmapDescriptor.defaultMarker,
+        infoWindow: InfoWindow(
+          title: relationName,
+          snippet: 'Your Relation',
+        ),
+      );
+
+      setState(() {
+        _markers.add(marker);
+      });
+    }
   }
 
   Future<void> _getUserLocation() async {
@@ -201,6 +204,7 @@ class _RelationPageState extends State<RelationPage> {
         setState(() {
           _isLoading = false;
         });
+        _addInitialMarker(patientData);
         if (patientData.isNotEmpty) {
           return patientData.map((data) {
             return _TileForPatient(
