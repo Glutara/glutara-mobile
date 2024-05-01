@@ -210,10 +210,10 @@ class _ScanQRPageState extends State<_ScanQRPage> {
             textColor: Colors.white,
             fontSize: 16.0)
         .then((value) => Navigator.pop(context));
-      } else {
+      } else if (response.statusCode == 409) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(response.body),
+            content: Text("Patient already added to your list!"),
             backgroundColor: Colors.red,
           ),
         );
