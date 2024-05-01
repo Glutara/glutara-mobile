@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
+import 'dummy.dart';
 import 'add-with-qrcode.dart';
 import 'add-with-phone.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -31,8 +32,9 @@ class _RelationPageState extends State<RelationPage> {
     if (userID == null) {
       throw Exception('No user ID detected');
     }
-    
-    var url = Uri.parse('https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/relations/related');
+
+    var url = Uri.parse(
+        'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/relations/related');
 
     try {
       final response = await http.get(url);
@@ -44,12 +46,14 @@ class _RelationPageState extends State<RelationPage> {
         // Check if data is not null before decoding
         if (data != null) {
           final List<dynamic> responseData = json.decode(data);
-          return responseData.cast<Map<String, dynamic>>(); // Explicit type cast
+          return responseData
+              .cast<Map<String, dynamic>>(); // Explicit type cast
         } else {
           return []; // Return an empty list if no data is present
         }
       } else {
-        throw Exception('Failed to load relation data (Status Code: ${response.statusCode})');
+        throw Exception(
+            'Failed to load relation data (Status Code: ${response.statusCode})');
       }
     } catch (e) {
       throw Exception("Error fetching logs: $e");
@@ -63,8 +67,9 @@ class _RelationPageState extends State<RelationPage> {
     if (userID == null) {
       throw Exception('No user ID detected');
     }
-    
-    var url = Uri.parse('https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/relations');
+
+    var url = Uri.parse(
+        'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/relations');
 
     try {
       final response = await http.get(url);
@@ -76,12 +81,14 @@ class _RelationPageState extends State<RelationPage> {
         // Check if data is not null before decoding
         if (data != null) {
           final List<dynamic> responseData = json.decode(data);
-          return responseData.cast<Map<String, dynamic>>(); // Explicit type cast
+          return responseData
+              .cast<Map<String, dynamic>>(); // Explicit type cast
         } else {
           return []; // Return an empty list if no data is present
         }
       } else {
-        throw Exception('Failed to load patient data (Status Code: ${response.statusCode})');
+        throw Exception(
+            'Failed to load patient data (Status Code: ${response.statusCode})');
       }
     } catch (e) {
       throw Exception("Error fetching logs: $e");
@@ -99,7 +106,8 @@ class _RelationPageState extends State<RelationPage> {
 
   void _addInitialMarker(List<Map<String, dynamic>> patientData) async {
     if (patientData.isNotEmpty) {
-      final Map<String, dynamic> patient = patientData.first; // Get first patient data
+      final Map<String, dynamic> patient =
+          patientData.first; // Get first patient data
       final double patientLatitude = patient['Latitude'].toDouble() ?? 0.0;
       final double patientLongitude = patient['Longitude'].toDouble() ?? 0.0;
       final String relationName = patient['RelationName'] ?? '';
@@ -237,7 +245,8 @@ class _RelationPageState extends State<RelationPage> {
       }
     } else if (widget.userRole == 1) {
       try {
-        final List<Map<String, dynamic>> relationData = await fetchRelationData();
+        final List<Map<String, dynamic>> relationData =
+            await fetchRelationData();
         setState(() {
           _isLoading = false;
         });
@@ -247,7 +256,9 @@ class _RelationPageState extends State<RelationPage> {
             return _TileForRelation(
               name: data['Name'] ?? '',
               phone: data['Phone'] ?? '',
-              glucose: data['LatestBloodGlucose'].toDouble().toStringAsFixed(1) ?? '',
+              glucose:
+                  data['LatestBloodGlucose'].toDouble().toStringAsFixed(1) ??
+                      '',
             );
           }).toList();
         } else {
@@ -323,7 +334,8 @@ class _RelationPageState extends State<RelationPage> {
         children: [
           Container(
             alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
             child: const Text(
               'Search From Map',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
@@ -339,7 +351,8 @@ class _RelationPageState extends State<RelationPage> {
               borderRadius: BorderRadius.circular(12.0),
               child: GoogleMap(
                 onMapCreated: _onMapCreated,
-                initialCameraPosition: CameraPosition(target: _initialPosition, zoom: 13),
+                initialCameraPosition:
+                    CameraPosition(target: _initialPosition, zoom: 13),
                 markers: _markers,
               ),
             ),
@@ -369,10 +382,12 @@ class _RelationPageState extends State<RelationPage> {
               TextButton(
                 onPressed: () async {
                   Navigator.pop(context);
-                  await availableCameras().then((value) => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AddWithQRCodePage(userRole: widget.userRole, cameras: value))),
+                  await availableCameras().then(
+                    (value) => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddWithQRCodePage(
+                                userRole: widget.userRole, cameras: value))),
                   );
                 },
                 child: const Text('With QR code',
@@ -384,7 +399,9 @@ class _RelationPageState extends State<RelationPage> {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AddWithPhonePage(userRole: widget.userRole)),
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            AddWithPhonePage(userRole: widget.userRole)),
                   );
                 },
                 child: const Text('With phone number',
@@ -456,59 +473,73 @@ class _TileForRelation extends StatelessWidget {
   final String phone;
   final String glucose;
 
-  const _TileForRelation({super.key, required this.name, required this.phone, required this.glucose});
+  const _TileForRelation({
+    Key? key,
+    required this.name,
+    required this.phone,
+    required this.glucose,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const CircleAvatar(
-              radius: 24,
-              backgroundImage: AssetImage('assets/default-avatar.jpeg'),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text(
-                      name,
-                      style: const TextStyle(fontSize: 16),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DummyPage()),
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const CircleAvatar(
+                radius: 24,
+                backgroundImage: AssetImage('assets/default-avatar.jpeg'),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        name,
+                        style: const TextStyle(fontSize: 16),
+                      ),
                     ),
-                  ),
-                  Text(
-                    phone,
-                    style: const TextStyle(fontSize: 13, color: Colors.grey),
-                  ),
-                ],
+                    Text(
+                      phone,
+                      style: const TextStyle(fontSize: 13, color: Colors.grey),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    glucose.toString(),
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
-                  ),
-                  const Text(
-                    'mg/dL',
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      glucose.toString(),
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.w500),
+                    ),
+                    const Text(
+                      'mg/dL',
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

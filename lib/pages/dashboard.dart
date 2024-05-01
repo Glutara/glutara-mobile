@@ -62,9 +62,9 @@ class _DashboardPageState extends State<DashboardPage> {
         var data = jsonDecode(response.body);
         setState(() {
           // Update the insights data directly with fetched averages.
-          insightsData['today']['averageGlucose'] = '${data['Today'].toStringAsFixed(2)}}';
-          insightsData['thisWeek']['averageGlucose'] = '${data['Week'].toStringAsFixed(2)}}';
-          insightsData['thisMonth']['averageGlucose'] = '${data['Month'].toStringAsFixed(2)}}';
+          insightsData['today']['averageGlucose'] = '${data['Today'].toStringAsFixed(2)} mg/dL';
+          insightsData['thisWeek']['averageGlucose'] = '${data['Week'].toStringAsFixed(2)} mg/dL';
+          insightsData['thisMonth']['averageGlucose'] = '${data['Month'].toStringAsFixed(2)} mg/dL';
         });
         logger.f(insightsData);
         logger.f(insightsData);
@@ -123,17 +123,17 @@ class _DashboardPageState extends State<DashboardPage> {
   // Dummy data for insights
   final Map<String, dynamic> insightsData = {
     'today': {
-      'averageGlucose': 0,
+      'averageGlucose': "0",
       'sleep': '8h 30m',
       'exercise': '500cal',
     },
     'thisWeek': {
-      'averageGlucose': 0,
+      'averageGlucose': "0",
       'sleep': '47h 30m',
       'exercise': '3500cal',
     },
     'thisMonth': {
-      'averageGlucose': 0,
+      'averageGlucose': "0",
       'sleep': '190h 15m',
       'exercise': '14500cal',
     },
