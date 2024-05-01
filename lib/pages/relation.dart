@@ -48,6 +48,30 @@ class _RelationPageState extends State<RelationPage> {
     }
   }
 
+  Future<List<Map<String, dynamic>>> fetchPatientData() async {
+    // Fetch the user ID
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? userID = prefs.getInt('userID');
+    if (userID == null) {
+      throw Exception('No user ID detected');
+    }
+    
+    var url = Uri.parse('https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/relations');
+
+    try {
+      var response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> responseData = json.decode(response.body);
+        return responseData.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception('Failed to load patient data');
+      }
+    } catch (e) {
+      throw Exception("Error fetching logs: $e");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -55,11 +79,6 @@ class _RelationPageState extends State<RelationPage> {
     _addInitialMarker();
     setState(() {
       _isLoading = true;
-    });
-    fetchRelationData().then((_) {
-      setState(() {
-        _isLoading = false;
-      });
     });
   }
 
@@ -177,23 +196,46 @@ class _RelationPageState extends State<RelationPage> {
 
   Future<List<Widget>> _buildRelationTiles(BuildContext context) async {
     if (widget.userRole == 0) {
-      return [
-        _TileForPatient(name: 'Jonas', phone: '082338741009'),
-        _TileForPatient(name: 'Thomas', phone: '081395328431'),
-        _TileForPatient(name: 'Irene', phone: '085391410588'),
-      ];
+      try {
+        final List<Map<String, dynamic>> patientData = await fetchPatientData();
+        setState(() {
+          _isLoading = false;
+        });
+        if (patientData.isNotEmpty) {
+          return patientData.map((data) {
+            return _TileForPatient(
+              name: data['RelationName'] ?? '',
+              phone: data['RelationPhone'] ?? '',
+            );
+          }).toList();
+        } else {
+          // Handle case where no relation data is found (optional)
+          return [Text('No relation data found')];
+        }
+      } catch (e) {
+        return [Text('Error fetching relation data')];
+      }
     } else if (widget.userRole == 1) {
       try {
         final List<Map<String, dynamic>> relationData = await fetchRelationData();
-        return relationData.map((data) {
-          return _TileForRelation(
-            name: data['Name'] ?? '',
-            phone: data['Phone'] ?? '',
-            glucose: data['LatestBloodGlucose'].toDouble().toStringAsFixed(1) ?? '',
-          );
-        }).toList();
+        setState(() {
+          _isLoading = false;
+        });
+        // Check if data exists before building tiles
+        if (relationData.isNotEmpty) {
+          return relationData.map((data) {
+            return _TileForRelation(
+              name: data['Name'] ?? '',
+              phone: data['Phone'] ?? '',
+              glucose: data['LatestBloodGlucose'].toDouble().toStringAsFixed(1) ?? '',
+            );
+          }).toList();
+        } else {
+          // Handle case where no relation data is found (optional)
+          return [Text('No patient data found')];
+        }
       } catch (e) {
-        return [];
+        return [Text('Error fetching patient data')];
       }
     } else {
       return [
