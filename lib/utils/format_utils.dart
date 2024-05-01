@@ -75,4 +75,13 @@ class FormatUtils {
     }
     return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
+
+  /// Converts an ISO 8601 date-time string into a double representing the time of day.
+  /// Input: "2024-04-28T15:30:00Z"
+  /// Output: 15.30
+  static double formatTimeAsDouble(String isoDate) {
+    DateTime dateTime = DateTime.parse(isoDate);
+    double timeAsDouble = dateTime.hour + (dateTime.minute / 60.0);
+    return timeAsDouble;
+  }
 }

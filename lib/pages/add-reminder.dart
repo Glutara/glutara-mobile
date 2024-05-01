@@ -66,7 +66,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
     try {
       var response = await http.get(url);
       if (response.statusCode == 200) {
-        var jsonData = jsonDecode(response.body) as List;
+        List<dynamic> jsonData = jsonDecode(response.body);
         setState(() {
           reminders = jsonData;
         });
@@ -155,9 +155,10 @@ class _AddReminderPageState extends State<AddReminderPage> {
                     await _deleteReminder(reminderID);
                     _fetchReminders();
                   },
-                  child: const Text(
+                  child: Text(
                     "Delete",
-                    style: TextStyle(color: Colors.red),
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.error),
                   ),
                 ),
               ],
@@ -177,11 +178,11 @@ class _AddReminderPageState extends State<AddReminderPage> {
       int reminderID, String name, String time, String description) {
     return Card(
       child: ListTile(
-        tileColor: Colors.orange[50],
         leading: CircleAvatar(
           radius: 24,
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          child: Icon(getIconForType(name), color: Colors.white),
+          child: Icon(getIconForType(name),
+              color: Theme.of(context).colorScheme.onPrimaryContainer),
         ),
         title: Text(name,
             style: const TextStyle(
@@ -196,7 +197,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
           ],
         ),
         trailing: IconButton(
-          icon: const Icon(Icons.delete, color: Colors.red),
+          icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
           onPressed: () => _confirmAndDeleteReminder(reminderID),
         ),
       ),
@@ -269,7 +270,10 @@ class _AddReminderPageState extends State<AddReminderPage> {
         onPressed: () {
           _showAddReminderModal();
         },
-        child: const Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Colors.white, // Set the icon color to white
+        ),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
     );
@@ -323,7 +327,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(response.body),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -331,7 +335,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('An error occurred: $error'),
-          backgroundColor: Colors.red,
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     }
