@@ -1,7 +1,7 @@
 <br>
 <div align="center">
     <div >
-        <img height="150px" src="./pics/Glutara.png" alt=""/>
+        <img height="150px" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2FGlutara.png?alt=media&token=77d4dd88-6cca-4e4d-94f2-321124c20a61" alt=""/>
     </div>
     <div>
             <h3><b>Glutara</b></h3>
@@ -16,16 +16,16 @@ Your pocket-sized companion: Glutara's mobile app is your intuitive dashboard, d
 
 <div align="center">
 <kbd>
-<img src="./pics/icons/Flutter.png" height="60" />
+<img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Ficons%2FFlutter.png?alt=media&token=1f460ae7-f790-4400-9d9b-fc96f34e11a2" height="60" />
 </kbd>
 <kbd>
-<img src="./pics/icons/Dart.png" height="60" />
+<img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Ficons%2FDart.png?alt=media&token=68dad83b-1358-4ef6-98b2-419fe4224f61" height="60" />
 </kbd>
 <kbd>
-<img src="./pics/icons/Maps.png" height="60" />
+<img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Ficons%2FMaps.png?alt=media&token=5f01c487-3892-4d93-a3e6-dac1909b1e17" height="60" />
 </kbd>
 <kbd>
-<img src="./pics/icons/Firebase.png" height="60" />
+<img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Ficons%2FFirebase.png?alt=media&token=da3b3135-dec1-4f6c-b0db-0051541754b6" height="60" />
 </kbd>
 </div>
 <div align="center">
@@ -78,6 +78,6 @@ Make sure you already do these things before running the code
 
 ## 👥 &nbsp;Contributors
 
-| <a href="https://github.com/mikeleo03"><img width="180px" height="180px" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2FLeon.png?alt=media&token=83646a8a-9d1f-4330-ad5e-2d4cf89a66d0" alt=""/></a> | <a href="https://github.com/GoDillonAudris512"><img width="180px" height="180px" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2FDillon.png?alt=media&token=b668d5d6-f59d-457a-b26a-15ac3b6d2016" alt=""/></a> | <a href="https://github.com/margarethaolivia"><img width="180px" height="180px" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2FOlivia.png?alt=media&token=0ddb5619-e610-45ac-9705-e7ff81d73e0a" alt=""/></a> | <a href="https://github.com/AustinPardosi"><img width="180px" height="180px" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2FAustin.png?alt=media&token=8e7d06b9-83d5-4d5b-83f8-346003388708" alt=""/></a> |
+| <a href="https://github.com/mikeleo03"><img width="180px" height="180px" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fpicprof%2FLeon.png?alt=media&token=0ea1884a-32ca-471b-a3af-bf3995bbc605" alt=""/></a> | <a href="https://github.com/GoDillonAudris512"><img width="180px" height="180px" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fpicprof%2FDillon.png?alt=media&token=bc76cc6b-5606-4351-8472-9c243c8b9da3" alt=""/></a> | <a href="https://github.com/margarethaolivia"><img width="180px" height="180px" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fpicprof%2FOlivia.png?alt=media&token=d53f9cfd-e1e1-41b6-a28c-440904df29b8" alt=""/></a> | <a href="https://github.com/AustinPardosi"><img width="180px" height="180px" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fpicprof%2FAustin.png?alt=media&token=f520a334-4aeb-4efe-9437-669451b6dca6" alt=""/></a> |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <div align="center"><h3><b><a href="https://github.com/mikeleo03">Michael Leon Putra Widhi</a></b></h3><i><p>Bandung Institute of Technology</i></p></div>                                                                               | <div align="center"><h3><b><a href="https://github.com/GoDillonAudris512">Go Dillon Audris</a></b></h3></a><p><i>Bandung Institute of Technology</i></p></div>                                                                          | <div align="center"><h3><b><a href="https://github.com/margarethaolivia">Margaretha Olivia Haryono</a></b></h3></a><p><i>Bandung Institute of Technology</i></p></div>                                                               | <div align="center"><h3><b><a href="https://github.com/AustinPardosi">Austin Gabriel Pardosi</a></b></h3></a><p><i>Bandung Institute of Technology</i></p></div>                                                                            |
