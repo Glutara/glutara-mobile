@@ -35,13 +35,21 @@ class _RelationPageState extends State<RelationPage> {
     var url = Uri.parse('https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/relations/related');
 
     try {
-      var response = await http.get(url);
+      final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        final List<dynamic> responseData = json.decode(response.body);
-        return responseData.cast<Map<String, dynamic>>();
+        // Handle potential null response body using null-conditional operator
+        final String? data = response.body;
+
+        // Check if data is not null before decoding
+        if (data != null) {
+          final List<dynamic> responseData = json.decode(data);
+          return responseData.cast<Map<String, dynamic>>(); // Explicit type cast
+        } else {
+          return []; // Return an empty list if no data is present
+        }
       } else {
-        throw Exception('Failed to load relation data');
+        throw Exception('Failed to load relation data (Status Code: ${response.statusCode})');
       }
     } catch (e) {
       throw Exception("Error fetching logs: $e");
@@ -59,13 +67,21 @@ class _RelationPageState extends State<RelationPage> {
     var url = Uri.parse('https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/relations');
 
     try {
-      var response = await http.get(url);
+      final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        final List<dynamic> responseData = json.decode(response.body);
-        return responseData.cast<Map<String, dynamic>>();
+        // Handle potential null response body using null-conditional operator
+        final String? data = response.body;
+
+        // Check if data is not null before decoding
+        if (data != null) {
+          final List<dynamic> responseData = json.decode(data);
+          return responseData.cast<Map<String, dynamic>>(); // Explicit type cast
+        } else {
+          return []; // Return an empty list if no data is present
+        }
       } else {
-        throw Exception('Failed to load patient data');
+        throw Exception('Failed to load patient data (Status Code: ${response.statusCode})');
       }
     } catch (e) {
       throw Exception("Error fetching logs: $e");
@@ -205,7 +221,7 @@ class _RelationPageState extends State<RelationPage> {
           _isLoading = false;
         });
         _addInitialMarker(patientData);
-        if (patientData.isNotEmpty) {
+        if (patientData.isNotEmpty || patientData != 'null') {
           return patientData.map((data) {
             return _TileForPatient(
               name: data['RelationName'] ?? '',
@@ -226,7 +242,7 @@ class _RelationPageState extends State<RelationPage> {
           _isLoading = false;
         });
         // Check if data exists before building tiles
-        if (relationData.isNotEmpty) {
+        if (relationData.isNotEmpty || relationData != 'null') {
           return relationData.map((data) {
             return _TileForRelation(
               name: data['Name'] ?? '',
