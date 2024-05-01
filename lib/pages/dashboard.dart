@@ -1,8 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:glutara_mobile/utils/format_utils.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../color_schemes.g.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
 
 final dummyData = [
   {'x': 00.00, 'y': 99},
@@ -32,11 +38,80 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   DateTime selectedDate = DateTime.now();
   int selectedSegment = 0; // 0: Today, 1: This Week, 2: This Month
+  List<FlSpot> spots = [];
+  final logger = Logger();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchGlucose();
+    _fetchAverage();
+  }
 
   List<FlSpot> getSpots() {
-    return dummyData
-        .map((data) => FlSpot(data['x']!.toDouble(), data['y']!.toDouble()))
-        .toList();
+    return spots;
+  }
+
+  Future<void> _fetchAverage() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? userID = prefs.getInt('userID');
+
+    try {
+      var response = await http.get(Uri.parse('https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/1/glucoses/info/average'));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        setState(() {
+          // Update the insights data directly with fetched averages.
+          insightsData['today']['averageGlucose'] = '${data['Today'].toStringAsFixed(2)}}';
+          insightsData['thisWeek']['averageGlucose'] = '${data['Week'].toStringAsFixed(2)}}';
+          insightsData['thisMonth']['averageGlucose'] = '${data['Month'].toStringAsFixed(2)}}';
+        });
+        logger.f(insightsData);
+        logger.f(insightsData);
+        logger.f(insightsData);
+      }
+  } catch (e) {
+    logger.e("Error fetching averages: $e");
+  }
+  }
+
+  Future<void> _fetchGlucose() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? userID = prefs.getInt('userID');
+
+    try {
+      Uri uri = Uri.parse(
+              'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/1/glucoses/info/graphic')
+          .replace(queryParameters: {
+        "Date": FormatUtils.formatToIsoDateTime(selectedDate),
+      });
+
+      var response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+
+        List<FlSpot> fetchedSpots = data.map((entry) {
+          double x = FormatUtils.formatTimeAsDouble(entry['Time']);
+          double y = entry['Prediction'].toDouble();
+          return FlSpot(x, y);
+        }).toList();
+
+        setState(() {
+          spots = fetchedSpots;
+        });
+
+        logger.f(selectedDate);
+        logger.f(data);
+      }
+    } catch (e) {
+      logger.e("Error fetching logs: $e");
+    }
   }
 
   Map<int, Widget> segmentedWidgets = const {
@@ -48,17 +123,17 @@ class _DashboardPageState extends State<DashboardPage> {
   // Dummy data for insights
   final Map<String, dynamic> insightsData = {
     'today': {
-      'averageGlucose': '110 mg/dL',
+      'averageGlucose': 0,
       'sleep': '8h 30m',
       'exercise': '500cal',
     },
     'thisWeek': {
-      'averageGlucose': '105 mg/dL',
+      'averageGlucose': 0,
       'sleep': '47h 30m',
       'exercise': '3500cal',
     },
     'thisMonth': {
-      'averageGlucose': '100 mg/dL',
+      'averageGlucose': 0,
       'sleep': '190h 15m',
       'exercise': '14500cal',
     },
@@ -66,13 +141,18 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void changeDate(bool increment) {
     setState(() {
+      DateTime now = DateTime.now();
+
       if (increment) {
-        if (selectedDate.isBefore(DateTime.now())) {
+        if (selectedDate.isBefore(DateTime(now.year, now.month, now.day))) {
           selectedDate = selectedDate.add(const Duration(days: 1));
         }
       } else {
         selectedDate = selectedDate.subtract(const Duration(days: 1));
       }
+
+      logger.f(selectedDate);
+      _fetchGlucose();
     });
   }
 
@@ -83,6 +163,11 @@ class _DashboardPageState extends State<DashboardPage> {
 
     String displayDay = dayFormat.format(selectedDate);
     String displayDate = dateFormat.format(selectedDate);
+    DateTime today = DateTime.now();
+
+    bool isToday = selectedDate.year == today.year &&
+        selectedDate.month == today.month &&
+        selectedDate.day == today.day;
 
     if (DateTime.now().difference(selectedDate).inDays == 0 &&
         selectedDate.day == DateTime.now().day) {
@@ -110,8 +195,14 @@ class _DashboardPageState extends State<DashboardPage> {
                 ],
               ),
               IconButton(
-                icon: const Icon(Icons.chevron_right),
-                onPressed: () => changeDate(true),
+                icon: Icon(
+                  Icons.chevron_right,
+                  color: isToday
+                      ? Colors.grey.withOpacity(0.3)
+                      : Theme.of(context).primaryColor,
+                ),
+                onPressed:
+                    isToday ? null : () => changeDate(true), // Disable if today
               ),
             ],
           ),
@@ -124,15 +215,16 @@ class _DashboardPageState extends State<DashboardPage> {
                   lineTouchData: LineTouchData(
                     touchTooltipData: LineTouchTooltipData(
                       tooltipBgColor: Theme.of(context).colorScheme.onPrimary,
-                      tooltipBorder:
-                          const BorderSide(width: 2, color: CustomColors.brandColor),
+                      tooltipBorder: const BorderSide(
+                          width: 2, color: CustomColors.brandColor),
                       tooltipRoundedRadius: 20,
                       getTooltipItems: (List<LineBarSpot> touchedSpots) {
                         return touchedSpots.map((spot) {
                           return LineTooltipItem(
                             '${spot.y} mg/dL',
                             TextStyle(
-                                color: Theme.of(context).colorScheme.onBackground,
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
                                 fontWeight: FontWeight.bold),
                           );
                         }).toList();
@@ -180,7 +272,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           colors: [
                             CustomColors.brandColor.withOpacity(0.3),
                             Colors.transparent
-                          ], // Optional: add a gradient
+                          ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
@@ -284,12 +376,15 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               )
             : null,
-        padding: const EdgeInsets.symmetric(vertical: 8.0), // Add padding if needed
+        padding:
+            const EdgeInsets.symmetric(vertical: 8.0), // Add padding if needed
         child: Text(
           text,
           style: TextStyle(
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary,
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.secondary,
           ),
         ),
       ),
