@@ -10,24 +10,6 @@ import '../color_schemes.g.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
-final dummyData = [
-  {'x': 00.00, 'y': 99},
-  {'x': 02.59, 'y': 119},
-  {'x': 04.39, 'y': 148},
-  {'x': 06.48, 'y': 116},
-  {'x': 08.00, 'y': 104},
-  {'x': 09.58, 'y': 96},
-  {'x': 11.40, 'y': 126},
-  {'x': 13.50, 'y': 124},
-  {'x': 15.20, 'y': 96},
-  {'x': 16.38, 'y': 125},
-  {'x': 18.10, 'y': 102},
-  {'x': 19.45, 'y': 116},
-  {'x': 21.20, 'y': 96},
-  {'x': 22.45, 'y': 149},
-  {'x': 23.24, 'y': 149},
-];
-
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
 
@@ -120,7 +102,7 @@ class _DashboardPageState extends State<DashboardPage> {
     2: Text('This Month'),
   };
 
-  // Dummy data for insights
+  // Patient data for insights
   final Map<String, dynamic> insightsData = {
     'today': {
       'averageGlucose': "0",

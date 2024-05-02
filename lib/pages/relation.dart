@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
-import 'dummy.dart';
+import 'patient.dart';
 import 'add-with-qrcode.dart';
 import 'add-with-phone.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -486,7 +486,7 @@ class _TileForRelation extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DummyPage()),
+          MaterialPageRoute(builder: (context) => PatientPage()),
         );
       },
       child: Card(

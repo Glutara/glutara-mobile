@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import '../color_schemes.g.dart';
 import 'package:flutter/cupertino.dart';
 
-final dummyData = [
+final patientData = [
   {'x': 00.00, 'y': 99},
   {'x': 02.59, 'y': 119},
   {'x': 04.39, 'y': 148},
@@ -22,19 +22,19 @@ final dummyData = [
   {'x': 23.24, 'y': 149},
 ];
 
-class DummyPage extends StatefulWidget {
-  const DummyPage({Key? key}) : super(key: key);
+class PatientPage extends StatefulWidget {
+  const PatientPage({Key? key}) : super(key: key);
 
   @override
-  _DummyPageState createState() => _DummyPageState();
+  _PatientPageState createState() => _PatientPageState();
 }
 
-class _DummyPageState extends State<DummyPage> {
+class _PatientPageState extends State<PatientPage> {
   DateTime selectedDate = DateTime.now();
   int selectedSegment = 0; // 0: Today, 1: This Week, 2: This Month
 
   List<FlSpot> getSpots() {
-    return dummyData
+    return patientData
         .map((data) => FlSpot(data['x']!.toDouble(), data['y']!.toDouble()))
         .toList();
   }
@@ -45,7 +45,7 @@ class _DummyPageState extends State<DummyPage> {
     2: Text('This Month'),
   };
 
-  // Dummy data for insights
+  // Patient data for insights
   final Map<String, dynamic> insightsData = {
     'today': {
       'averageGlucose': '110 mg/dL',
