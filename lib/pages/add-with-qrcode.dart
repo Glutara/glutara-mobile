@@ -5,6 +5,8 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'add-with-phone.dart';
 import 'dart:convert';
@@ -116,15 +118,39 @@ class AddWithQRCodePage extends StatelessWidget {
     String name = prefs.getString('name') ?? '';
     String phone = prefs.getString('phone') ?? '';
 
-    // Format the data into a string
-    Map<String, dynamic> userData = {
-      'userID': userID,
-      'name': name,
-      'phone': phone,
-    };
+    // Function to check location permission (optional)
+    Future<bool> hasLocationPermission() async {
+      final permissionStatus = await Permission.location.status;
+      return permissionStatus.isGranted;
+    }
 
-    String userDataString = jsonEncode(userData);
-    return userDataString;
+    // Request and check location permission
+    if (await hasLocationPermission()) {
+      try {
+        // Get current location
+        Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+        // Add latitude and longitude to user data
+        Map<String, dynamic> userData = {
+          'userID': userID,
+          'name': name,
+          'phone': phone,
+          'latitude': position.latitude,
+          'longitude': position.longitude,
+        };
+
+        String userDataString = jsonEncode(userData);
+        return userDataString;
+      } catch (error) {
+        // Handle errors while getting location (optional)
+        print('Error getting location: $error');
+        return ""; // Or return a default value
+      }
+    } else {
+      // Location permission denied case
+      print('Location permission denied');
+      return ""; // Or return a default value
+    }
   }
 }
 
@@ -182,8 +208,8 @@ class _ScanQRPageState extends State<_ScanQRPage> {
         'RelationID': relationMap['userID'],
         'RelationName': relationMap['name'],
         'RelationPhone': relationMap['phone'],
-        'Logitude': 107.606017,
-        'Latitude': -6.881305
+        'Longitude': patientData['longitude'],
+        'Latitude': patientData['latitude'],
       };
 
       // Convert the body to JSON
