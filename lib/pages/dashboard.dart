@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:glutara_mobile/utils/format_utils.dart';
@@ -52,9 +51,9 @@ class _DashboardPageState extends State<DashboardPage> {
         logger.f(insightsData);
         logger.f(insightsData);
       }
-  } catch (e) {
-    logger.e("Error fetching averages: $e");
-  }
+    } catch (e) {
+      logger.e("Error fetching averages: $e");
+    }
   }
 
   Future<void> _fetchGlucose() async {

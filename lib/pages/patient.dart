@@ -1,29 +1,19 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:glutara_mobile/utils/format_utils.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../color_schemes.g.dart';
 import 'package:flutter/cupertino.dart';
-
-final patientData = [
-  {'x': 00.00, 'y': 99},
-  {'x': 02.59, 'y': 119},
-  {'x': 04.39, 'y': 148},
-  {'x': 06.48, 'y': 116},
-  {'x': 08.00, 'y': 104},
-  {'x': 09.58, 'y': 96},
-  {'x': 11.40, 'y': 126},
-  {'x': 13.50, 'y': 124},
-  {'x': 15.20, 'y': 96},
-  {'x': 16.38, 'y': 125},
-  {'x': 18.10, 'y': 102},
-  {'x': 19.45, 'y': 116},
-  {'x': 21.20, 'y': 96},
-  {'x': 22.45, 'y': 149},
-  {'x': 23.24, 'y': 149},
-];
+import 'package:http/http.dart' as http;
 
 class PatientPage extends StatefulWidget {
-  const PatientPage({Key? key}) : super(key: key);
+  final String userID;
+  const PatientPage({
+    Key? key,
+    required this.userID,
+  }) : super(key: key);
 
   @override
   _PatientPageState createState() => _PatientPageState();
@@ -32,11 +22,73 @@ class PatientPage extends StatefulWidget {
 class _PatientPageState extends State<PatientPage> {
   DateTime selectedDate = DateTime.now();
   int selectedSegment = 0; // 0: Today, 1: This Week, 2: This Month
+  List<FlSpot> spots = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchGlucose();
+    _fetchAverage();
+  }
 
   List<FlSpot> getSpots() {
-    return patientData
-        .map((data) => FlSpot(data['x']!.toDouble(), data['y']!.toDouble()))
-        .toList();
+    return spots;
+  }
+
+  Future<void> _fetchAverage() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? userID = prefs.getInt('userID');
+
+    try {
+      var response = await http.get(Uri.parse('https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/${widget.userID}/glucoses/info/average'));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        setState(() {
+          // Update the insights data directly with fetched averages.
+          insightsData['today']['averageGlucose'] = '${data['Today'].toStringAsFixed(2)} mg/dL';
+          insightsData['thisWeek']['averageGlucose'] = '${data['Week'].toStringAsFixed(2)} mg/dL';
+          insightsData['thisMonth']['averageGlucose'] = '${data['Month'].toStringAsFixed(2)} mg/dL';
+        });
+      }
+    } catch (e) {
+      // logger.e("Error fetching averages: $e");
+    }
+  }
+
+  Future<void> _fetchGlucose() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? userID = prefs.getInt('userID');
+
+    try {
+      Uri uri = Uri.parse(
+              'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/${widget.userID}/glucoses/info/graphic')
+          .replace(queryParameters: {
+        "Date": FormatUtils.formatToIsoDateTime(selectedDate),
+      });
+
+      var response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+
+        List<FlSpot> fetchedSpots = data.map((entry) {
+          double x = FormatUtils.formatTimeAsDouble(entry['Time']);
+          double y = entry['Prediction'].toDouble();
+          return FlSpot(x, y);
+        }).toList();
+
+        setState(() {
+          spots = fetchedSpots;
+        });
+      }
+    } catch (e) {
+      // logger.e("Error fetching logs: $e");
+    }
   }
 
   Map<int, Widget> segmentedWidgets = const {
@@ -66,13 +118,17 @@ class _PatientPageState extends State<PatientPage> {
 
   void changeDate(bool increment) {
     setState(() {
+      DateTime now = DateTime.now();
+
       if (increment) {
-        if (selectedDate.isBefore(DateTime.now())) {
+        if (selectedDate.isBefore(DateTime(now.year, now.month, now.day))) {
           selectedDate = selectedDate.add(const Duration(days: 1));
         }
       } else {
         selectedDate = selectedDate.subtract(const Duration(days: 1));
       }
+
+      _fetchGlucose();
     });
   }
 
@@ -83,6 +139,11 @@ class _PatientPageState extends State<PatientPage> {
 
     String displayDay = dayFormat.format(selectedDate);
     String displayDate = dateFormat.format(selectedDate);
+    DateTime today = DateTime.now();
+
+    bool isToday = selectedDate.year == today.year &&
+        selectedDate.month == today.month &&
+        selectedDate.day == today.day;
 
     if (DateTime.now().difference(selectedDate).inDays == 0 &&
         selectedDate.day == DateTime.now().day) {
@@ -91,119 +152,126 @@ class _PatientPageState extends State<PatientPage> {
     }
 
     return Scaffold(
-        appBar: AppBar(
-          title: Image.asset('assets/topbar-logo.png'),
-          centerTitle: true,
-          toolbarHeight: 60.0,
-          elevation: 20,
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  IconButton(
-                    icon: const Icon(Icons.chevron_left),
-                    onPressed: () => changeDate(false),
+      appBar: AppBar(
+        title: Image.asset('assets/topbar-logo.png'),
+        centerTitle: true,
+        toolbarHeight: 60.0,
+        elevation: 20,
+      ),
+      body:SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                IconButton(
+                  icon: const Icon(Icons.chevron_left),
+                  onPressed: () => changeDate(false),
+                ),
+                Column(
+                  children: <Widget>[
+                    Text(displayDay,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    if (displayDate.isNotEmpty) Text(displayDate),
+                  ],
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.chevron_right,
+                    color: isToday
+                        ? Colors.grey.withOpacity(0.3)
+                        : Theme.of(context).primaryColor,
                   ),
-                  Column(
-                    children: <Widget>[
-                      Text(displayDay,
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
-                      if (displayDate.isNotEmpty) Text(displayDate),
-                    ],
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.chevron_right),
-                    onPressed: () => changeDate(true),
-                  ),
-                ],
-              ),
-              AspectRatio(
-                aspectRatio: 1.70,
-                child: Container(
-                  padding: const EdgeInsets.all(20.0),
-                  child: LineChart(
-                    LineChartData(
-                      lineTouchData: LineTouchData(
-                        touchTooltipData: LineTouchTooltipData(
-                          tooltipBgColor: Colors.white,
-                          tooltipBorder: const BorderSide(
-                              width: 2, color: CustomColors.brandColor),
-                          tooltipRoundedRadius: 20,
-                          getTooltipItems: (List<LineBarSpot> touchedSpots) {
-                            return touchedSpots.map((spot) {
-                              return LineTooltipItem(
-                                '${spot.y} mg/dL',
-                                const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              );
-                            }).toList();
-                          },
-                        ),
+                  onPressed:
+                      isToday ? null : () => changeDate(true), // Disable if today
+                ),
+              ],
+            ),
+            AspectRatio(
+              aspectRatio: 1.70,
+              child: Container(
+                padding: const EdgeInsets.all(20.0),
+                child: LineChart(
+                  LineChartData(
+                    lineTouchData: LineTouchData(
+                      touchTooltipData: LineTouchTooltipData(
+                        tooltipBgColor: Theme.of(context).colorScheme.onPrimary,
+                        tooltipBorder: const BorderSide(
+                            width: 2, color: CustomColors.brandColor),
+                        tooltipRoundedRadius: 20,
+                        getTooltipItems: (List<LineBarSpot> touchedSpots) {
+                          return touchedSpots.map((spot) {
+                            return LineTooltipItem(
+                              '${spot.y} mg/dL',
+                              TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.onBackground,
+                                  fontWeight: FontWeight.bold),
+                            );
+                          }).toList();
+                        },
                       ),
-                      gridData:
-                          const FlGridData(show: true, verticalInterval: 3.0),
-                      titlesData: const FlTitlesData(
-                        show: true,
-                        rightTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        topTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            reservedSize: 30,
-                          ),
-                        ),
-                        leftTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            reservedSize: 35,
-                          ),
-                        ),
-                      ),
-                      borderData: FlBorderData(show: false),
-                      minX: 0,
-                      maxX: 24,
-                      minY: 0,
-                      maxY: 200,
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: getSpots(),
-                          isCurved: true,
-                          color: CustomColors.brandColor,
-                          barWidth: 4,
-                          isStrokeCapRound: true,
-                          dotData: const FlDotData(show: false),
-                          belowBarData: BarAreaData(
-                            show: true,
-                            gradient: LinearGradient(
-                              colors: [
-                                CustomColors.brandColor.withOpacity(0.3),
-                                Colors.transparent
-                              ], // Optional: add a gradient
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
+                    gridData: const FlGridData(show: true, verticalInterval: 3.0),
+                    titlesData: const FlTitlesData(
+                      show: true,
+                      rightTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      topTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 30,
+                        ),
+                      ),
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 35,
+                        ),
+                      ),
+                    ),
+                    borderData: FlBorderData(show: false),
+                    minX: 0,
+                    maxX: 24,
+                    minY: 0,
+                    maxY: 200,
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: getSpots(),
+                        isCurved: true,
+                        color: CustomColors.brandColor,
+                        barWidth: 4,
+                        isStrokeCapRound: true,
+                        dotData: const FlDotData(show: false),
+                        belowBarData: BarAreaData(
+                          show: true,
+                          gradient: LinearGradient(
+                            colors: [
+                              CustomColors.brandColor.withOpacity(0.3),
+                              Colors.transparent
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              _buildInsightsSection(),
-            ],
-          ),
-        ));
+            ),
+            const SizedBox(height: 16),
+            _buildInsightsSection(),
+          ],
+        )
+      ),
+    );
   }
 
   Widget _buildInsightsSection() {

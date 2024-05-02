@@ -254,6 +254,7 @@ class _RelationPageState extends State<RelationPage> {
         if (relationData.isNotEmpty || relationData != 'null') {
           return relationData.map((data) {
             return _TileForRelation(
+              userID: data['UserID'] ?? 0,
               name: data['Name'] ?? '',
               phone: data['Phone'] ?? '',
               glucose:
@@ -469,12 +470,14 @@ class _TileForPatient extends StatelessWidget {
 }
 
 class _TileForRelation extends StatelessWidget {
+  final int userID;
   final String name;
   final String phone;
   final String glucose;
 
   const _TileForRelation({
     Key? key,
+    required this.userID,
     required this.name,
     required this.phone,
     required this.glucose,
@@ -486,7 +489,7 @@ class _TileForRelation extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => PatientPage()),
+          MaterialPageRoute(builder: (context) => PatientPage(userID: this.userID.toString())),
         );
       },
       child: Card(
