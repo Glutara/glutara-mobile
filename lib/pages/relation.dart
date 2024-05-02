@@ -41,10 +41,10 @@ class _RelationPageState extends State<RelationPage> {
 
       if (response.statusCode == 200) {
         // Handle potential null response body using null-conditional operator
-        final String? data = response.body;
+        final String data = response.body;
 
         // Check if data is not null before decoding
-        if (data != null) {
+        if (data != 'null') {
           final List<dynamic> responseData = json.decode(data);
           return responseData
               .cast<Map<String, dynamic>>(); // Explicit type cast
@@ -76,10 +76,10 @@ class _RelationPageState extends State<RelationPage> {
 
       if (response.statusCode == 200) {
         // Handle potential null response body using null-conditional operator
-        final String? data = response.body;
+        final String data = response.body;
 
         // Check if data is not null before decoding
-        if (data != null) {
+        if (data != 'null') {
           final List<dynamic> responseData = json.decode(data);
           return responseData
               .cast<Map<String, dynamic>>(); // Explicit type cast
@@ -229,7 +229,7 @@ class _RelationPageState extends State<RelationPage> {
           _isLoading = false;
         });
         _addInitialMarker(patientData);
-        if (patientData.isNotEmpty || patientData != 'null') {
+        if (!patientData.isEmpty && patientData != 'null') {
           return patientData.map((data) {
             return _TileForPatient(
               name: data['RelationName'] ?? '',
@@ -238,10 +238,20 @@ class _RelationPageState extends State<RelationPage> {
           }).toList();
         } else {
           // Handle case where no relation data is found (optional)
-          return [Text('No relation data found')];
+          return [Center(
+            child: Text(
+              'No relation data found',
+              style: TextStyle(fontSize: 18.0),
+            ),
+          )];
         }
       } catch (e) {
-        return [Text('Error fetching relation data')];
+        return [Center(
+          child: Text(
+            'Error fetching relation data',
+            style: TextStyle(fontSize: 18.0),
+          ),
+        )];
       }
     } else if (widget.userRole == 1) {
       try {
@@ -251,7 +261,7 @@ class _RelationPageState extends State<RelationPage> {
           _isLoading = false;
         });
         // Check if data exists before building tiles
-        if (relationData.isNotEmpty || relationData != 'null') {
+        if (!relationData.isEmpty && relationData != 'null') {
           return relationData.map((data) {
             return _TileForRelation(
               userID: data['UserID'] ?? 0,
@@ -264,10 +274,20 @@ class _RelationPageState extends State<RelationPage> {
           }).toList();
         } else {
           // Handle case where no relation data is found (optional)
-          return [Text('No patient data found')];
+          return [Center(
+            child: Text(
+              'No patient data found',
+              style: TextStyle(fontSize: 18.0),
+            ),
+          )];
         }
       } catch (e) {
-        return [Text('Error fetching patient data')];
+        return [Center(
+          child: Text(
+            'Error fetching patient data',
+            style: TextStyle(fontSize: 18.0),
+          ),
+        )];
       }
     } else {
       return [
