@@ -10,26 +10,50 @@
 </div>
 <br>
 <h1 align="center">Glutara Mobile Application</h1>
+<div align="center">
+
+|                               Patient                                |                           Relation                            |
+ :------------------------------------------------------------: | :---------------------------------------------: |
+| <img height="500" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FPatient%20Page.jpg?alt=media&token=1ff249bd-f214-4df6-bd14-efde46612013"> | <img height="500" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FRelation%20Page.jpg?alt=media&token=e3e733dc-dda3-46a6-ab19-f4fd10ca5bfd">
+
+</div>
 Your pocket-sized companion: Glutara's mobile app is your intuitive dashboard, displaying real-time data, personalized insights, and a vibrant community right at your fingertips. It's your health cheerleader, empowering you to take control, one tap at a time.
 
 ## 👨🏻‍💻 &nbsp;Technology Stack
 
 <div align="center">
+<a href="https://flutter.dev/">
 <kbd>
 <img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Ficons%2FFlutter.png?alt=media&token=1f460ae7-f790-4400-9d9b-fc96f34e11a2" height="60" />
 </kbd>
+</a>
+
+<a href="https://dart.dev/">
 <kbd>
 <img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Ficons%2FDart.png?alt=media&token=68dad83b-1358-4ef6-98b2-419fe4224f61" height="60" />
 </kbd>
+</a>
+
+<a href="https://mapsplatform.google.com/">
 <kbd>
 <img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Ficons%2FMaps.png?alt=media&token=5f01c487-3892-4d93-a3e6-dac1909b1e17" height="60" />
 </kbd>
+</a>
+
+<a href="https://firebase.google.com/">
 <kbd>
 <img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Ficons%2FFirebase.png?alt=media&token=da3b3135-dec1-4f6c-b0db-0051541754b6" height="60" />
 </kbd>
+</a>
+
+<a href="https://www.bluetooth.com/">
+<kbd>
+<img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Ficons%2FBluetooth.png?alt=media&token=2634a992-eee1-44cf-bce7-13fe5f15e3ec" height="60" />
+</kbd>
+</a>
 </div>
 <div align="center">
-<h4>Flutter | Dart | Firebase | Google Maps Platform</h4>
+<h4>Flutter | Dart | Firebase | Google Maps Platform | Bluetooth</h4>
 </div>
 
 ## Getting Started
