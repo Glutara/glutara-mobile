@@ -56,16 +56,22 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> _fetchAverage() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? userID = prefs.getInt('userID');
+    String? token = prefs.getString('jwtToken');
 
     try {
-      var response = await http.get(Uri.parse(
-          'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/glucoses/info/average'));
+      var response = await http.get(
+        Uri.parse(
+            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/glucoses/info/average'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token', // Use the token for authorization
+        },
+      );
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         setState(() {
           // Update the insights data directly with fetched averages.
-          insightsData['today']['averageGlucose'] =
-              '110 mg/dL';
+          insightsData['today']['averageGlucose'] = '110 mg/dL';
           insightsData['thisWeek']['averageGlucose'] =
               '${data['Week'].toStringAsFixed(2)} mg/dL';
           insightsData['thisMonth']['averageGlucose'] =
@@ -80,6 +86,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> _fetchGlucose() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? userID = prefs.getInt('userID');
+    String? token = prefs.getString('jwtToken');
 
     try {
       logger.f("MASUKK");
@@ -97,6 +104,7 @@ class _DashboardPageState extends State<DashboardPage> {
         uri,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
       );
       logger.f(response.body);

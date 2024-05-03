@@ -38,16 +38,27 @@ class _PatientPageState extends State<PatientPage> {
   Future<void> _fetchAverage() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? userID = prefs.getInt('userID');
+    final String? token = prefs.getString('jwtToken');
 
     try {
-      var response = await http.get(Uri.parse('https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/${widget.userID}/glucoses/info/average'));
+      var response = await http.get(
+        Uri.parse(
+            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/${widget.userID}/glucoses/info/average'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         setState(() {
           // Update the insights data directly with fetched averages.
-          insightsData['today']['averageGlucose'] = '${data['Today'].toStringAsFixed(2)} mg/dL';
-          insightsData['thisWeek']['averageGlucose'] = '${data['Week'].toStringAsFixed(2)} mg/dL';
-          insightsData['thisMonth']['averageGlucose'] = '${data['Month'].toStringAsFixed(2)} mg/dL';
+          insightsData['today']['averageGlucose'] =
+              '${data['Today'].toStringAsFixed(2)} mg/dL';
+          insightsData['thisWeek']['averageGlucose'] =
+              '${data['Week'].toStringAsFixed(2)} mg/dL';
+          insightsData['thisMonth']['averageGlucose'] =
+              '${data['Month'].toStringAsFixed(2)} mg/dL';
         });
       }
     } catch (e) {
@@ -58,6 +69,7 @@ class _PatientPageState extends State<PatientPage> {
   Future<void> _fetchGlucose() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? userID = prefs.getInt('userID');
+    final String? token = prefs.getString('jwtToken');
 
     try {
       Uri uri = Uri.parse(
@@ -70,6 +82,7 @@ class _PatientPageState extends State<PatientPage> {
         uri,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
       );
 
@@ -158,119 +171,118 @@ class _PatientPageState extends State<PatientPage> {
         toolbarHeight: 60.0,
         elevation: 20,
       ),
-      body:SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                IconButton(
-                  icon: const Icon(Icons.chevron_left),
-                  onPressed: () => changeDate(false),
+      body: SingleChildScrollView(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.chevron_left),
+                onPressed: () => changeDate(false),
+              ),
+              Column(
+                children: <Widget>[
+                  Text(displayDay,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  if (displayDate.isNotEmpty) Text(displayDate),
+                ],
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.chevron_right,
+                  color: isToday
+                      ? Colors.grey.withOpacity(0.3)
+                      : Theme.of(context).primaryColor,
                 ),
-                Column(
-                  children: <Widget>[
-                    Text(displayDay,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    if (displayDate.isNotEmpty) Text(displayDate),
+                onPressed:
+                    isToday ? null : () => changeDate(true), // Disable if today
+              ),
+            ],
+          ),
+          AspectRatio(
+            aspectRatio: 1.70,
+            child: Container(
+              padding: const EdgeInsets.all(20.0),
+              child: LineChart(
+                LineChartData(
+                  lineTouchData: LineTouchData(
+                    touchTooltipData: LineTouchTooltipData(
+                      tooltipBgColor: Theme.of(context).colorScheme.onPrimary,
+                      tooltipBorder: const BorderSide(
+                          width: 2, color: CustomColors.brandColor),
+                      tooltipRoundedRadius: 20,
+                      getTooltipItems: (List<LineBarSpot> touchedSpots) {
+                        return touchedSpots.map((spot) {
+                          return LineTooltipItem(
+                            '${spot.y} mg/dL',
+                            TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                                fontWeight: FontWeight.bold),
+                          );
+                        }).toList();
+                      },
+                    ),
+                  ),
+                  gridData: const FlGridData(show: true, verticalInterval: 3.0),
+                  titlesData: const FlTitlesData(
+                    show: true,
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 30,
+                      ),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 35,
+                      ),
+                    ),
+                  ),
+                  borderData: FlBorderData(show: false),
+                  minX: 0,
+                  maxX: 24,
+                  minY: 0,
+                  maxY: 200,
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: getSpots(),
+                      isCurved: true,
+                      color: CustomColors.brandColor,
+                      barWidth: 4,
+                      isStrokeCapRound: true,
+                      dotData: const FlDotData(show: false),
+                      belowBarData: BarAreaData(
+                        show: true,
+                        gradient: LinearGradient(
+                          colors: [
+                            CustomColors.brandColor.withOpacity(0.3),
+                            Colors.transparent
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                    ),
                   ],
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.chevron_right,
-                    color: isToday
-                        ? Colors.grey.withOpacity(0.3)
-                        : Theme.of(context).primaryColor,
-                  ),
-                  onPressed:
-                      isToday ? null : () => changeDate(true), // Disable if today
-                ),
-              ],
-            ),
-            AspectRatio(
-              aspectRatio: 1.70,
-              child: Container(
-                padding: const EdgeInsets.all(20.0),
-                child: LineChart(
-                  LineChartData(
-                    lineTouchData: LineTouchData(
-                      touchTooltipData: LineTouchTooltipData(
-                        tooltipBgColor: Theme.of(context).colorScheme.onPrimary,
-                        tooltipBorder: const BorderSide(
-                            width: 2, color: CustomColors.brandColor),
-                        tooltipRoundedRadius: 20,
-                        getTooltipItems: (List<LineBarSpot> touchedSpots) {
-                          return touchedSpots.map((spot) {
-                            return LineTooltipItem(
-                              '${spot.y} mg/dL',
-                              TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.onBackground,
-                                  fontWeight: FontWeight.bold),
-                            );
-                          }).toList();
-                        },
-                      ),
-                    ),
-                    gridData: const FlGridData(show: true, verticalInterval: 3.0),
-                    titlesData: const FlTitlesData(
-                      show: true,
-                      rightTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                      topTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: 30,
-                        ),
-                      ),
-                      leftTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: 35,
-                        ),
-                      ),
-                    ),
-                    borderData: FlBorderData(show: false),
-                    minX: 0,
-                    maxX: 24,
-                    minY: 0,
-                    maxY: 200,
-                    lineBarsData: [
-                      LineChartBarData(
-                        spots: getSpots(),
-                        isCurved: true,
-                        color: CustomColors.brandColor,
-                        barWidth: 4,
-                        isStrokeCapRound: true,
-                        dotData: const FlDotData(show: false),
-                        belowBarData: BarAreaData(
-                          show: true,
-                          gradient: LinearGradient(
-                            colors: [
-                              CustomColors.brandColor.withOpacity(0.3),
-                              Colors.transparent
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-            _buildInsightsSection(),
-          ],
-        )
-      ),
+          ),
+          const SizedBox(height: 16),
+          _buildInsightsSection(),
+        ],
+      )),
     );
   }
 

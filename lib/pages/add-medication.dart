@@ -51,6 +51,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? userID = prefs.getInt('userID');
+    String? token = prefs.getString('jwtToken');
     int medicationType = isInjection ? 0 : 1;
     String? category =
         isInjection ? selectedInjectionType : nameControllerPill.text;
@@ -78,6 +79,7 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
             'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/medications'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
         body: jsonEncode(<String, dynamic>{
           "UserID": userID,
@@ -288,7 +290,8 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
-                          child: const Text('Save', style: TextStyle(fontSize: 20.0)),
+                          child: const Text('Save',
+                              style: TextStyle(fontSize: 20.0)),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             primary: Theme.of(context).colorScheme.primary,
@@ -423,7 +426,8 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
-                          child: const Text('Save', style: TextStyle(fontSize: 20.0)),
+                          child: const Text('Save',
+                              style: TextStyle(fontSize: 20.0)),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             primary: Theme.of(context).colorScheme.primary,

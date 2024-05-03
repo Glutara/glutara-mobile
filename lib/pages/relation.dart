@@ -29,15 +29,23 @@ class _RelationPageState extends State<RelationPage> {
     // Fetch the user ID
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? userID = prefs.getInt('userID');
-    if (userID == null) {
-      throw Exception('No user ID detected');
+    final String? token = prefs.getString('jwtToken');
+
+    if (userID == null || token == null) {
+      throw Exception('User authentication failed. Please login again.');
     }
 
     var url = Uri.parse(
         'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/relations/related');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
 
       if (response.statusCode == 200) {
         // Handle potential null response body using null-conditional operator
@@ -64,15 +72,23 @@ class _RelationPageState extends State<RelationPage> {
     // Fetch the user ID
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? userID = prefs.getInt('userID');
-    if (userID == null) {
-      throw Exception('No user ID detected');
+    final String? token = prefs.getString('jwtToken');
+
+    if (userID == null || token == null) {
+      throw Exception('User authentication failed. Please login again.');
     }
 
     var url = Uri.parse(
         'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/relations');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
 
       if (response.statusCode == 200) {
         // Handle potential null response body using null-conditional operator
@@ -238,20 +254,24 @@ class _RelationPageState extends State<RelationPage> {
           }).toList();
         } else {
           // Handle case where no relation data is found (optional)
-          return [Center(
-            child: Text(
-              'No relation data found',
-              style: TextStyle(fontSize: 18.0),
-            ),
-          )];
+          return [
+            Center(
+              child: Text(
+                'No relation data found',
+                style: TextStyle(fontSize: 18.0),
+              ),
+            )
+          ];
         }
       } catch (e) {
-        return [Center(
-          child: Text(
-            'Error fetching relation data',
-            style: TextStyle(fontSize: 18.0),
-          ),
-        )];
+        return [
+          Center(
+            child: Text(
+              'Error fetching relation data',
+              style: TextStyle(fontSize: 18.0),
+            ),
+          )
+        ];
       }
     } else if (widget.userRole == 1) {
       try {
@@ -274,20 +294,24 @@ class _RelationPageState extends State<RelationPage> {
           }).toList();
         } else {
           // Handle case where no relation data is found (optional)
-          return [Center(
-            child: Text(
-              'No patient data found',
-              style: TextStyle(fontSize: 18.0),
-            ),
-          )];
+          return [
+            Center(
+              child: Text(
+                'No patient data found',
+                style: TextStyle(fontSize: 18.0),
+              ),
+            )
+          ];
         }
       } catch (e) {
-        return [Center(
-          child: Text(
-            'Error fetching patient data',
-            style: TextStyle(fontSize: 18.0),
-          ),
-        )];
+        return [
+          Center(
+            child: Text(
+              'Error fetching patient data',
+              style: TextStyle(fontSize: 18.0),
+            ),
+          )
+        ];
       }
     } else {
       return [
@@ -509,7 +533,9 @@ class _TileForRelation extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => PatientPage(userID: this.userID.toString())),
+          MaterialPageRoute(
+              builder: (context) =>
+                  PatientPage(userID: this.userID.toString())),
         );
       },
       child: Card(

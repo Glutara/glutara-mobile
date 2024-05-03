@@ -54,6 +54,7 @@ class _LoginPageState extends State<LoginPage> {
         await prefs.setString('name', data['Name']);
         await prefs.setString('phone', data['Phone']);
         await prefs.setInt('role', data['Role']);
+        await prefs.setString('jwtToken', data['Token']);
         await prefs.setInt(
             'lastLoginTime', DateTime.now().millisecondsSinceEpoch);
         Navigator.pushReplacement(

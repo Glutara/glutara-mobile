@@ -101,10 +101,12 @@ class AddWithQRCodePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => AddWithPhonePage(userRole: userRole)),
+                      builder: (context) =>
+                          AddWithPhonePage(userRole: userRole)),
                 );
               },
-              child: const Text('Add with phone number', style: TextStyle(fontSize: 16.0)),
+              child: const Text('Add with phone number',
+                  style: TextStyle(fontSize: 16.0)),
             )
           ],
         ),
@@ -115,6 +117,7 @@ class AddWithQRCodePage extends StatelessWidget {
   Future<String> _generateQRData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? userID = prefs.getInt('userID');
+    String? token = prefs.getString('jwtToken');
     String name = prefs.getString('name') ?? '';
     String phone = prefs.getString('phone') ?? '';
 
@@ -128,7 +131,8 @@ class AddWithQRCodePage extends StatelessWidget {
     if (await hasLocationPermission()) {
       try {
         // Get current location
-        Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+        Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
 
         // Add latitude and longitude to user data
         Map<String, dynamic> userData = {
@@ -176,10 +180,7 @@ class _ScanQRPageState extends State<_ScanQRPage> {
       ),
       body: Stack(
         children: [
-          MobileScanner(
-            controller: cameraController,
-            onDetect: _foundBarcode
-          ),
+          MobileScanner(controller: cameraController, onDetect: _foundBarcode),
           _buildDescription(),
         ],
       ),
@@ -187,6 +188,8 @@ class _ScanQRPageState extends State<_ScanQRPage> {
   }
 
   Future<void> _foundBarcode(BarcodeCapture barcodeCapture) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('jwtToken');
     if (!_screenOpened) {
       String raw = barcodeCapture.raw[0]['rawValue'];
       _screenOpened = true;
@@ -219,23 +222,24 @@ class _ScanQRPageState extends State<_ScanQRPage> {
 
       var response = await http.post(
         Uri.parse(
-              'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/relations'),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: requestBody,
+            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/relations'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+        body: requestBody,
       );
 
       if (response.statusCode == 200) {
         Fluttertoast.showToast(
-            msg: "New patient was added successfully",
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 16.0)
-        .then((value) => Navigator.pop(context));
+                msg: "New patient was added successfully",
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.green,
+                textColor: Colors.white,
+                fontSize: 16.0)
+            .then((value) => Navigator.pop(context));
       } else if (response.statusCode == 409) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -286,6 +290,7 @@ class _ScanQRPageState extends State<_ScanQRPage> {
 
   Future<String> _generateQRData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('jwtToken');
     int? userID = prefs.getInt('userID');
     String name = prefs.getString('name') ?? '';
     String phone = prefs.getString('phone') ?? '';
@@ -301,4 +306,3 @@ class _ScanQRPageState extends State<_ScanQRPage> {
     return userDataString;
   }
 }
-

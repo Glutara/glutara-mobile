@@ -21,16 +21,22 @@ class _LogbookPageState extends State<LogbookPage> {
   Future<void> _fetchLogs() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? userID = prefs.getInt('userID');
+    final String? token = prefs.getString('jwtToken');
     List<Map<String, dynamic>> formattedLogs = [];
-    if (userID == null) {
-      logger.e("User ID not found in SharedPreferences");
+    if (userID == null || token == null) {
+      logger.e("User ID or Token not found in SharedPreferences");
       return;
     }
 
     var url = Uri.parse(
         'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/logs');
     try {
-      var response = await http.get(url);
+      var response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
 
@@ -103,9 +109,6 @@ class _LogbookPageState extends State<LogbookPage> {
       case 'Meal':
         var mealTypeLabel = ['Breakfast', 'Lunch', 'Dinner', ''][data['Type']];
         var name = data['Name'].toString();
-        if (name.length > 10) {
-          name = name.substring(0, 10);
-        }
         return '$name, $mealTypeLabel, ${data['Calories']} Calories';
       default:
         return 'Unknown';

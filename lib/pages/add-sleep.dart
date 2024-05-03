@@ -49,6 +49,7 @@ class _AddSleepPageState extends State<AddSleepPage> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? userID = prefs.getInt('userID');
+    String? token = prefs.getString('jwtToken');
 
     logger.d(jsonEncode(<String, dynamic>{
       "UserID": userID,
@@ -65,6 +66,7 @@ class _AddSleepPageState extends State<AddSleepPage> {
             'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/sleeps'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
         body: jsonEncode(<String, dynamic>{
           "UserID": userID,

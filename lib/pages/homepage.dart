@@ -44,6 +44,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _getUserRole() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int role = prefs.getInt('role') ?? 0; // Default role is patient
+    final String? token = prefs.getString('jwtToken');
 
     setState(() {
       userRole = role;

@@ -51,6 +51,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? userID = prefs.getInt('userID');
+    String? token = prefs.getString('jwtToken');
 
     logger.d(jsonEncode(<String, dynamic>{
       "UserID": userID,
@@ -72,6 +73,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
             'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/exercises'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
         body: jsonEncode(<String, dynamic>{
           "UserID": userID,

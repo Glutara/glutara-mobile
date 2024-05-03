@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'scan-food-detail.dart';
 
 class ScanFoodPage extends StatefulWidget {
@@ -49,16 +50,20 @@ class _ScanFoodPageState extends State<ScanFoodPage> {
   }
 
   Future<void> sendImageToService(XFile image) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? userID = prefs.getInt('userID');
+    final String? token = prefs.getString('jwtToken');
+
     final String url =
         "https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/1/scan";
     final Uri uri = Uri.parse(url);
 
-    final http.MultipartRequest request = http.MultipartRequest('POST', uri);
-    final http.MultipartFile multipartFile = await http.MultipartFile.fromPath(
-      'image',
-      image.path,
-    );
-    request.files.add(multipartFile);
+    final http.MultipartRequest request = http.MultipartRequest('POST', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..files.add(await http.MultipartFile.fromPath(
+        'image',
+        image.path,
+      ));
 
     showDialog(
       context: context,

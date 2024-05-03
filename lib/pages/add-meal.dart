@@ -55,6 +55,7 @@ class _AddMealPageState extends State<AddMealPage> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? userID = prefs.getInt('userID');
+    String? token = prefs.getString('jwtToken');
 
     // Log information before sending the HTTP request
     logger.d("Preparing to save the meal with the following details:");
@@ -87,6 +88,7 @@ class _AddMealPageState extends State<AddMealPage> {
             'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/meals'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
         body: jsonEncode(<String, dynamic>{
           "UserID": userID,

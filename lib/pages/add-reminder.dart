@@ -56,6 +56,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
   Future<void> _fetchReminders() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? userID = prefs.getInt('userID');
+    final String? token = prefs.getString('jwtToken');
     if (userID == null) {
       logger.e("User ID not found in SharedPreferences");
       return;
@@ -64,7 +65,13 @@ class _AddReminderPageState extends State<AddReminderPage> {
     var url = Uri.parse(
         'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/reminders');
     try {
-      var response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token', // Include the JWT token
+        },
+      );
       if (response.statusCode == 200) {
         List<dynamic> jsonData = jsonDecode(response.body);
         setState(() {
@@ -112,6 +119,8 @@ class _AddReminderPageState extends State<AddReminderPage> {
   Future<void> _deleteReminder(int reminderID) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? userID = prefs.getInt('userID');
+    final String? token = prefs.getString('jwtToken');
+
     if (userID == null) {
       logger.e("User ID not found in SharedPreferences");
       return;
@@ -120,12 +129,44 @@ class _AddReminderPageState extends State<AddReminderPage> {
     var url = Uri.parse(
         'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/reminders/$reminderID');
     try {
-      var response = await http.delete(url);
-      if (response.statusCode != 200) {
+      var response = await http.delete(
+        url,
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        logger.i("Reminder deleted successfully");
+        Fluttertoast.showToast(
+          msg: "Reminder deleted successfully!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      } else {
         logger.e("Failed to delete reminder: ${response.body}");
+        Fluttertoast.showToast(
+          msg: "Failed to delete reminder: ${response.body}",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
       }
     } catch (e) {
       logger.e("Error deleting reminder: $e");
+      Fluttertoast.showToast(
+        msg: "Error deleting reminder: $e",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     }
   }
 
@@ -282,6 +323,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
   Future<void> _createReminder() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? userID = prefs.getInt('userID');
+    final String? token = prefs.getString('jwtToken');
 
     final DateTime now = DateTime.now();
     final DateTime reminderTime = DateTime(
@@ -302,6 +344,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
             'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/reminders'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
         body: jsonEncode(<String, dynamic>{
           "UserID": userID,

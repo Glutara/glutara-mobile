@@ -144,6 +144,7 @@ class ProfilePage extends StatelessWidget {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.remove('userID');
           await prefs.remove('lastLoginTime');
+          await prefs.remove('jwtToken');
 
           // Navigate to LoginPage and remove all routes below from the stack
           Navigator.of(context).pushAndRemoveUntil(
