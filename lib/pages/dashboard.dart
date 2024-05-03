@@ -16,6 +16,24 @@ class DashboardPage extends StatefulWidget {
   _DashboardPageState createState() => _DashboardPageState();
 }
 
+final dummyData = [
+  {'x': 00.00, 'y': 99},
+  {'x': 02.59, 'y': 119},
+  {'x': 04.39, 'y': 148},
+  {'x': 06.48, 'y': 116},
+  {'x': 08.00, 'y': 104},
+  {'x': 09.58, 'y': 96},
+  {'x': 11.40, 'y': 126},
+  {'x': 13.50, 'y': 124},
+  {'x': 15.20, 'y': 96},
+  {'x': 16.38, 'y': 125},
+  {'x': 18.10, 'y': 102},
+  {'x': 19.45, 'y': 116},
+  {'x': 21.20, 'y': 96},
+  {'x': 22.45, 'y': 149},
+  {'x': 23.24, 'y': 149},
+];
+
 class _DashboardPageState extends State<DashboardPage> {
   DateTime selectedDate = DateTime.now();
   int selectedSegment = 0; // 0: Today, 1: This Week, 2: This Month
@@ -30,7 +48,9 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   List<FlSpot> getSpots() {
-    return spots;
+    return dummyData
+        .map((data) => FlSpot(data['x']!.toDouble(), data['y']!.toDouble()))
+        .toList();
   }
 
   Future<void> _fetchAverage() async {
@@ -38,18 +58,19 @@ class _DashboardPageState extends State<DashboardPage> {
     final int? userID = prefs.getInt('userID');
 
     try {
-      var response = await http.get(Uri.parse('https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/1/glucoses/info/average'));
+      var response = await http.get(Uri.parse(
+          'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/glucoses/info/average'));
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         setState(() {
           // Update the insights data directly with fetched averages.
-          insightsData['today']['averageGlucose'] = '${data['Today'].toStringAsFixed(2)} mg/dL';
-          insightsData['thisWeek']['averageGlucose'] = '${data['Week'].toStringAsFixed(2)} mg/dL';
-          insightsData['thisMonth']['averageGlucose'] = '${data['Month'].toStringAsFixed(2)} mg/dL';
+          insightsData['today']['averageGlucose'] =
+              '110 mg/dL';
+          insightsData['thisWeek']['averageGlucose'] =
+              '${data['Week'].toStringAsFixed(2)} mg/dL';
+          insightsData['thisMonth']['averageGlucose'] =
+              '${data['Month'].toStringAsFixed(2)} mg/dL';
         });
-        logger.f(insightsData);
-        logger.f(insightsData);
-        logger.f(insightsData);
       }
     } catch (e) {
       logger.e("Error fetching averages: $e");
@@ -61,27 +82,41 @@ class _DashboardPageState extends State<DashboardPage> {
     final int? userID = prefs.getInt('userID');
 
     try {
+      logger.f("MASUKK");
+      logger.f("MASUKK");
+      logger.f("MASUKK");
       Uri uri = Uri.parse(
-              'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/1/glucoses/info/graphic')
+              'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/glucoses/info/graphic')
           .replace(queryParameters: {
         "Date": FormatUtils.formatToIsoDateTime(selectedDate),
       });
-
+      logger.f("YESS");
+      logger.f("YESS");
+      logger.f("YESS");
       var response = await http.get(
         uri,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
-
+      logger.f(response.body);
+      logger.f(response.body);
+      logger.f(response.body);
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
+        logger.f(data);
+        logger.f(data);
+        logger.f(data);
 
         List<FlSpot> fetchedSpots = data.map((entry) {
           double x = FormatUtils.formatTimeAsDouble(entry['Time']);
           double y = entry['Prediction'].toDouble();
           return FlSpot(x, y);
         }).toList();
+
+        logger.f(fetchedSpots);
+        logger.f(fetchedSpots);
+        logger.f(fetchedSpots);
 
         setState(() {
           spots = fetchedSpots;
@@ -106,17 +141,17 @@ class _DashboardPageState extends State<DashboardPage> {
     'today': {
       'averageGlucose': "0",
       'sleep': '8h 30m',
-      'exercise': '500cal',
+      'exercise': '500 cal',
     },
     'thisWeek': {
       'averageGlucose': "0",
-      'sleep': '47h 30m',
-      'exercise': '3500cal',
+      'sleep': '8h 10m',
+      'exercise': '750 cal',
     },
     'thisMonth': {
       'averageGlucose': "0",
-      'sleep': '190h 15m',
-      'exercise': '14500cal',
+      'sleep': '8h 20m',
+      'exercise': '600 cal',
     },
   };
 
@@ -132,8 +167,8 @@ class _DashboardPageState extends State<DashboardPage> {
         selectedDate = selectedDate.subtract(const Duration(days: 1));
       }
 
-      logger.f(selectedDate);
       _fetchGlucose();
+      logger.f(selectedDate);
     });
   }
 
