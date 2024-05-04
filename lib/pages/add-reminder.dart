@@ -5,7 +5,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:glutara_mobile/utils/format_utils.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:http/http.dart' as http;
@@ -21,7 +20,6 @@ class _AddReminderPageState extends State<AddReminderPage> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   String? _selectedLabel = 'Medication';
-  final logger = Logger();
   List<dynamic> reminders = [];
   bool _isLoading = false;
 
@@ -57,31 +55,21 @@ class _AddReminderPageState extends State<AddReminderPage> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? userID = prefs.getInt('userID');
     final String? token = prefs.getString('jwtToken');
-    if (userID == null) {
-      logger.e("User ID not found in SharedPreferences");
-      return;
-    }
 
     var url = Uri.parse(
         'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/reminders');
-    try {
-      final response = await http.get(
-        url,
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token', // Include the JWT token
-        },
-      );
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = jsonDecode(response.body);
-        setState(() {
-          reminders = jsonData;
-        });
-      } else {
-        logger.e("Failed to fetch reminders: ${response.body}");
-      }
-    } catch (e) {
-      logger.e("Error fetching reminders: $e");
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token', // Include the JWT token
+      },
+    );
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = jsonDecode(response.body);
+      setState(() {
+        reminders = jsonData;
+      });
     }
   }
 
@@ -121,11 +109,6 @@ class _AddReminderPageState extends State<AddReminderPage> {
     final int? userID = prefs.getInt('userID');
     final String? token = prefs.getString('jwtToken');
 
-    if (userID == null) {
-      logger.e("User ID not found in SharedPreferences");
-      return;
-    }
-
     var url = Uri.parse(
         'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/reminders/$reminderID');
     try {
@@ -137,7 +120,6 @@ class _AddReminderPageState extends State<AddReminderPage> {
         },
       );
       if (response.statusCode == 200) {
-        logger.i("Reminder deleted successfully");
         Fluttertoast.showToast(
           msg: "Reminder deleted successfully!",
           toastLength: Toast.LENGTH_SHORT,
@@ -147,7 +129,6 @@ class _AddReminderPageState extends State<AddReminderPage> {
           fontSize: 16.0,
         );
       } else {
-        logger.e("Failed to delete reminder: ${response.body}");
         Fluttertoast.showToast(
           msg: "Failed to delete reminder: ${response.body}",
           toastLength: Toast.LENGTH_LONG,
@@ -158,7 +139,6 @@ class _AddReminderPageState extends State<AddReminderPage> {
         );
       }
     } catch (e) {
-      logger.e("Error deleting reminder: $e");
       Fluttertoast.showToast(
         msg: "Error deleting reminder: $e",
         toastLength: Toast.LENGTH_LONG,
@@ -328,15 +308,6 @@ class _AddReminderPageState extends State<AddReminderPage> {
     final DateTime now = DateTime.now();
     final DateTime reminderTime = DateTime(
         now.year, now.month, now.day, _selectedTime.hour, _selectedTime.minute);
-
-    logger.f(jsonEncode(<String, dynamic>{
-      "UserID": userID,
-      "ReminderID": 1,
-      "Name": _selectedLabel,
-      "Description": _noteController.text,
-      "Time": FormatUtils.combineDateWithTime(
-          now, TimeOfDay.fromDateTime(reminderTime)),
-    }));
 
     try {
       var response = await http.post(

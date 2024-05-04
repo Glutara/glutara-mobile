@@ -6,7 +6,6 @@ import 'package:glutara_mobile/utils/format_utils.dart';
 import 'package:glutara_mobile/utils/validators.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:logger/logger.dart';
 
 class AddSleepPage extends StatefulWidget {
   const AddSleepPage({Key? key}) : super(key: key);
@@ -24,10 +23,6 @@ class _AddSleepPageState extends State<AddSleepPage> {
   String saveFormattedDate = "";
   TextEditingController startTimeController = TextEditingController();
   TextEditingController endTimeController = TextEditingController();
-
-  var logger = Logger(
-    printer: PrettyPrinter(),
-  );
 
   @override
   void dispose() {
@@ -50,15 +45,6 @@ class _AddSleepPageState extends State<AddSleepPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? userID = prefs.getInt('userID');
     String? token = prefs.getString('jwtToken');
-
-    logger.d(jsonEncode(<String, dynamic>{
-      "UserID": userID,
-      "SleepID": 0,
-      "StartTime": FormatUtils.combineDateWithTime(
-          selectedStartDate, TimeOfDay.fromDateTime(selectedStartDate!)),
-      "EndTime": FormatUtils.combineDateWithTime(
-          selectedStartDate, TimeOfDay.fromDateTime(selectedEndDate!)),
-    }));
 
     try {
       var response = await http.post(

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:glutara_mobile/utils/format_utils.dart';
-import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,7 +13,6 @@ class LogbookPage extends StatefulWidget {
 }
 
 class _LogbookPageState extends State<LogbookPage> {
-  final logger = Logger();
   List _logs = [];
   bool _isLoading = false;
 
@@ -23,51 +21,36 @@ class _LogbookPageState extends State<LogbookPage> {
     final int? userID = prefs.getInt('userID');
     final String? token = prefs.getString('jwtToken');
     List<Map<String, dynamic>> formattedLogs = [];
-    if (userID == null || token == null) {
-      logger.e("User ID or Token not found in SharedPreferences");
-      return;
-    }
 
     var url = Uri.parse(
         'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/logs');
-    try {
-      var response = await http.get(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-      if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body);
+    var response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
 
-        for (var log in data) {
-          // logger.d("Log item: $log");
-          final date = log['Date'];
-          String formattedDate =
-              FormatUtils.formatDateToReadable(date) ?? 'Invalid date';
-          // logger.d("Log item date: $date $formattedDate");
-          formattedLogs.add({
-            'date': formattedDate,
-            'logs': log['Logs'].map((log) {
-              return {
-                'type': log['Type'],
-                'Data': log['Data'],
-              };
-            }).toList(),
-          });
-        }
-        // logger.d("Log item logs: $formattedLogs");
-        setState(() {
-          _logs = formattedLogs;
+      for (var log in data) {
+        final date = log['Date'];
+        String formattedDate =
+            FormatUtils.formatDateToReadable(date) ?? 'Invalid date';
+        formattedLogs.add({
+          'date': formattedDate,
+          'logs': log['Logs'].map((log) {
+            return {
+              'type': log['Type'],
+              'Data': log['Data'],
+            };
+          }).toList(),
         });
-      } else {
-        logger.e("Failed to fetch logs: ${response.body}");
       }
-    } catch (e) {
-      logger.e("Error fetching logs: $e");
-    }
-
-    // logger.d("Log item data: $formattedLogs");
+      setState(() {
+        _logs = formattedLogs;
+      });
+    };
   }
 
   IconData getIconForType(String type) {

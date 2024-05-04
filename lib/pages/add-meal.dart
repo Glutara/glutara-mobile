@@ -5,7 +5,6 @@ import 'package:glutara_mobile/utils/format_utils.dart';
 import 'package:glutara_mobile/utils/validators.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
-import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddMealPage extends StatefulWidget {
@@ -28,10 +27,6 @@ class _AddMealPageState extends State<AddMealPage> {
   DateTime? selectedEndDate;
   int? selectedMealType;
   String? saveFormattedDate;
-
-  var logger = Logger(
-    printer: PrettyPrinter(),
-  );
 
   @override
   void dispose() {
@@ -56,31 +51,6 @@ class _AddMealPageState extends State<AddMealPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? userID = prefs.getInt('userID');
     String? token = prefs.getString('jwtToken');
-
-    // Log information before sending the HTTP request
-    logger.d("Preparing to save the meal with the following details:");
-    logger.d("Name: ${mealController.text}");
-    logger.d("Calories: ${caloriesController.text}");
-    logger.d("Type: $selectedMealType");
-    logger.d("Date: ${FormatUtils.formatToIsoDate(saveFormattedDate)}");
-    logger.d(
-        "Start Time: ${FormatUtils.combineDateWithTime(DateFormat('dd-MM-yyyy').parseLoose(saveFormattedDate!), TimeOfDay.fromDateTime(selectedStartDate!))}");
-    logger.d(
-        "End Time: ${FormatUtils.combineDateWithTime(DateFormat('dd-MM-yyyy').parseLoose(saveFormattedDate!), TimeOfDay.fromDateTime(selectedEndDate!))}");
-    logger.d(jsonEncode(<String, dynamic>{
-      "UserID": userID,
-      "MealID": 1,
-      "Name": mealController.text,
-      "Calories": int.tryParse(caloriesController.text) ?? 0,
-      "Type": selectedMealType,
-      "Date": FormatUtils.formatToIsoDate(saveFormattedDate),
-      "StartTime": FormatUtils.combineDateWithTime(
-          DateFormat('dd-MM-yyyy').parseLoose(saveFormattedDate!),
-          TimeOfDay.fromDateTime(selectedStartDate!)),
-      "EndTime": FormatUtils.combineDateWithTime(
-          DateFormat('dd-MM-yyyy').parseLoose(saveFormattedDate!),
-          TimeOfDay.fromDateTime(selectedEndDate!)),
-    }));
 
     try {
       var response = await http.post(

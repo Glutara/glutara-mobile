@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:glutara_mobile/utils/format_utils.dart';
 import 'package:glutara_mobile/utils/validators.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddExercisePage extends StatefulWidget {
@@ -28,10 +27,6 @@ class _AddExercisePageState extends State<AddExercisePage> {
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
 
-  var logger = Logger(
-    printer: PrettyPrinter(),
-  );
-
   @override
   void dispose() {
     dateController.dispose();
@@ -52,20 +47,6 @@ class _AddExercisePageState extends State<AddExercisePage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? userID = prefs.getInt('userID');
     String? token = prefs.getString('jwtToken');
-
-    logger.d(jsonEncode(<String, dynamic>{
-      "UserID": userID,
-      "ExerciseID": 1,
-      "Name": nameController.text,
-      "Intensity": selectedIntensityType,
-      "Date": FormatUtils.formatToIsoDate(saveFormattedDate),
-      "StartTime": FormatUtils.combineDateWithTime(
-          DateFormat('dd-MM-yyyy').parseLoose(saveFormattedDate),
-          TimeOfDay.fromDateTime(selectedStartDate!)),
-      "EndTime": FormatUtils.combineDateWithTime(
-          DateFormat('dd-MM-yyyy').parseLoose(saveFormattedDate),
-          TimeOfDay.fromDateTime(selectedEndDate!)),
-    }));
 
     try {
       var response = await http.post(

@@ -40,29 +40,25 @@ class _PatientPageState extends State<PatientPage> {
     final int? userID = prefs.getInt('userID');
     final String? token = prefs.getString('jwtToken');
 
-    try {
-      var response = await http.get(
-        Uri.parse(
-            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/${widget.userID}/glucoses/info/average'),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-      );
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        setState(() {
-          // Update the insights data directly with fetched averages.
-          insightsData['today']['averageGlucose'] =
-              '${data['Today'].toStringAsFixed(2)} mg/dL';
-          insightsData['thisWeek']['averageGlucose'] =
-              '${data['Week'].toStringAsFixed(2)} mg/dL';
-          insightsData['thisMonth']['averageGlucose'] =
-              '${data['Month'].toStringAsFixed(2)} mg/dL';
-        });
-      }
-    } catch (e) {
-      // logger.e("Error fetching averages: $e");
+    var response = await http.get(
+      Uri.parse(
+          'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/${widget.userID}/glucoses/info/average'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      setState(() {
+        // Update the insights data directly with fetched averages.
+        insightsData['today']['averageGlucose'] =
+            '${data['Today'].toStringAsFixed(2)} mg/dL';
+        insightsData['thisWeek']['averageGlucose'] =
+            '${data['Week'].toStringAsFixed(2)} mg/dL';
+        insightsData['thisMonth']['averageGlucose'] =
+            '${data['Month'].toStringAsFixed(2)} mg/dL';
+      });
     }
   }
 
@@ -71,36 +67,32 @@ class _PatientPageState extends State<PatientPage> {
     final int? userID = prefs.getInt('userID');
     final String? token = prefs.getString('jwtToken');
 
-    try {
-      Uri uri = Uri.parse(
-              'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/${widget.userID}/glucoses/info/graphic')
-          .replace(queryParameters: {
-        "Date": FormatUtils.formatToIsoDateTime(selectedDate),
+    Uri uri = Uri.parse(
+            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/${widget.userID}/glucoses/info/graphic')
+        .replace(queryParameters: {
+      "Date": FormatUtils.formatToIsoDateTime(selectedDate),
+    });
+
+    var response = await http.get(
+      uri,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
+
+      List<FlSpot> fetchedSpots = data.map((entry) {
+        double x = FormatUtils.formatTimeAsDouble(entry['Time']);
+        double y = entry['Prediction'].toDouble();
+        return FlSpot(x, y);
+      }).toList();
+
+      setState(() {
+        spots = fetchedSpots;
       });
-
-      var response = await http.get(
-        uri,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body);
-
-        List<FlSpot> fetchedSpots = data.map((entry) {
-          double x = FormatUtils.formatTimeAsDouble(entry['Time']);
-          double y = entry['Prediction'].toDouble();
-          return FlSpot(x, y);
-        }).toList();
-
-        setState(() {
-          spots = fetchedSpots;
-        });
-      }
-    } catch (e) {
-      // logger.e("Error fetching logs: $e");
     }
   }
 

@@ -4,9 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:glutara_mobile/utils/format_utils.dart';
 import 'package:glutara_mobile/utils/validators.dart';
-import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:intl/intl.dart';
 
 class AddMedicationPage extends StatefulWidget {
@@ -33,10 +31,6 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
   DateTime? selectedStartDate;
   String? selectedInjectionType;
 
-  var logger = Logger(
-    printer: PrettyPrinter(),
-  );
-
   OutlineInputBorder _border(Color color) {
     return OutlineInputBorder(
       borderSide: BorderSide(color: color, width: 2.0),
@@ -58,20 +52,6 @@ class _AddMedicationPageState extends State<AddMedicationPage> {
     String dose = medicationType == 0
         ? doseUnitController.text
         : doseMgControllerPill.text;
-
-    logger.d(jsonEncode(<String, dynamic>{
-      "UserID": userID,
-      "MedicationID": 1,
-      "Type": medicationType,
-      "Category": category,
-      "Dose": int.tryParse(dose) ?? 0,
-      "Date": DateFormat('yyyy-MM-dd')
-              .format(DateFormat('dd-MM-yyyy').parseLoose(saveFormattedDate)) +
-          "T00:00:00Z",
-      "Time": FormatUtils.combineDateWithTime(
-          DateFormat('dd-MM-yyyy').parseLoose(saveFormattedDate),
-          TimeOfDay.fromDateTime(selectedStartDate!)),
-    }));
 
     try {
       var response = await http.post(

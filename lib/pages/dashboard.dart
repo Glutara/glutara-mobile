@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:glutara_mobile/utils/format_utils.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../color_schemes.g.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,7 +19,6 @@ class _DashboardPageState extends State<DashboardPage> {
   DateTime selectedDate = DateTime.now();
   int selectedSegment = 0; // 0: Today, 1: This Week, 2: This Month
   List<FlSpot> spots = [];
-  final logger = Logger();
 
   @override
   void initState() {
@@ -38,28 +36,24 @@ class _DashboardPageState extends State<DashboardPage> {
     final int? userID = prefs.getInt('userID');
     String? token = prefs.getString('jwtToken');
 
-    try {
-      var response = await http.get(
-        Uri.parse(
-            'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/glucoses/info/average'),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token', // Use the token for authorization
-        },
-      );
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        setState(() {
-          // Update the insights data directly with fetched averages.
-          insightsData['today']['averageGlucose'] = '110 mg/dL';
-          insightsData['thisWeek']['averageGlucose'] =
-              '${data['Week'].toStringAsFixed(2)} mg/dL';
-          insightsData['thisMonth']['averageGlucose'] =
-              '${data['Month'].toStringAsFixed(2)} mg/dL';
-        });
-      }
-    } catch (e) {
-      logger.e("Error fetching averages: $e");
+    var response = await http.get(
+      Uri.parse(
+          'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/glucoses/info/average'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token', // Use the token for authorization
+      },
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      setState(() {
+        // Update the insights data directly with fetched averages.
+        insightsData['today']['averageGlucose'] = '110 mg/dL';
+        insightsData['thisWeek']['averageGlucose'] =
+            '${data['Week'].toStringAsFixed(2)} mg/dL';
+        insightsData['thisMonth']['averageGlucose'] =
+            '${data['Month'].toStringAsFixed(2)} mg/dL';
+      });
     }
   }
 
@@ -68,50 +62,26 @@ class _DashboardPageState extends State<DashboardPage> {
     final int? userID = prefs.getInt('userID');
     String? token = prefs.getString('jwtToken');
 
-    try {
-      logger.f("MASUKK");
-      logger.f("MASUKK");
-      logger.f("MASUKK");
-      Uri uri = Uri.parse(
-          'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/glucoses/info/graphic?date=${FormatUtils.formatToIsoDateTime(selectedDate)}');
-      logger.f("YESS");
-      logger.f("YESS");
-      logger.f("YESS");
-      var response = await http.get(
-        uri,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-      );
-      logger.f(response.body);
-      logger.f(response.body);
-      logger.f(response.body);
-      if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body);
-        logger.f(data);
-        logger.f(data);
-        logger.f(data);
+    Uri uri = Uri.parse(
+        'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/glucoses/info/graphic?date=${FormatUtils.formatToIsoDateTime(selectedDate)}');
+    var response = await http.get(
+      uri,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
+      List<FlSpot> fetchedSpots = data.map((entry) {
+        double x = FormatUtils.formatTimeAsDouble(entry['Time']);
+        double y = entry['Prediction'].toDouble();
+        return FlSpot(x, y);
+      }).toList();
 
-        List<FlSpot> fetchedSpots = data.map((entry) {
-          double x = FormatUtils.formatTimeAsDouble(entry['Time']);
-          double y = entry['Prediction'].toDouble();
-          return FlSpot(x, y);
-        }).toList();
-
-        logger.f(fetchedSpots);
-        logger.f(fetchedSpots);
-        logger.f(fetchedSpots);
-
-        setState(() {
-          spots = fetchedSpots;
-        });
-
-        logger.f(selectedDate);
-        logger.f(data);
-      }
-    } catch (e) {
-      logger.e("Error fetching logs: $e");
+      setState(() {
+        spots = fetchedSpots;
+      });
     }
   }
 
@@ -153,7 +123,6 @@ class _DashboardPageState extends State<DashboardPage> {
       }
 
       _fetchGlucose();
-      logger.f(selectedDate);
     });
   }
 
