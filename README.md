@@ -81,10 +81,10 @@ Make sure you already do these things before running the code
     <col width="24%">
     <col width="24%">
     <tr>
-        <td width="1%" align="center"><img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FRegister.gif?alt=media&token=972e4a0a-e54f-4a71-8f46-aa43d46f2368"/></td>
-        <td width="1%" align="center"><img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FLogin.gif?alt=media&token=a790e58f-6e8f-4529-8bbc-b822024bab8e"/></td>
-        <td width="1%" align="center"><img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FDashboard%20%26%20Notification.gif?alt=media&token=c05180b2-a3fc-4ce2-9ae4-8990079d520d"/></td>
-        <td width="1%" align="center"><img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FReminder.gif?alt=media&token=dedf6d20-073b-4638-8e79-08e1ca4eaf5e"/></td>
+        <td width="1%" align="center"><img src="./demo/Register.gif"/></td>
+        <td width="1%" align="center"><img src="./demo/Login.gif"/></td>
+        <td width="1%" align="center"><img src="./demo/Dashboard & Notification.gif"/></td>
+        <td width="1%" align="center"><img src="./demo/Reminder.gif"/></td>
     </tr>
     <tr>
         <td width="1%" align="center">Register</td>
@@ -93,10 +93,10 @@ Make sure you already do these things before running the code
         <td width="1%" align="center">Reminder</td>
     </tr>
     <tr>
-        <td width="1%" align="center"><img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FLog%20Sleep.gif?alt=media&token=a0b9531d-9c14-4698-9bc0-8e34c05b60d9"/></td>
-        <td width="1%" align="center"><img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FLog%20Meal.gif?alt=media&token=29d5b4bf-0f17-4a2d-bd5a-359fb4ed3115"/></td>
-        <td width="1%" align="center"><img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FLog%20Exercise.gif?alt=media&token=f6deb451-9773-4e6c-9332-e6a8c8941263"/></td>
-        <td width="1%" align="center"><img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FLog%20Medication.gif?alt=media&token=266e7e89-d815-4c20-9783-9ed364550248"/></td>
+        <td width="1%" align="center"><img src="./demo/Log Sleep.gif"/></td>
+        <td width="1%" align="center"><img src="./demo/Log Meal.gif"/></td>
+        <<td width="1%" align="center"><img src="./demo/Log Exercise.gif"/></td>
+        <td width="1%" align="center"><img src="./demo/Log Medication.gif"/></td>
     </tr>
     <tr>
         <td width="1%" align="center">Log Sleep</td>
@@ -105,9 +105,9 @@ Make sure you already do these things before running the code
         <td width="1%" align="center">Log Medication</td>
     </tr>
     <tr>
-        <td width="1%" align="center"><img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FRelation.gif?alt=media&token=bd0a33f8-cdf9-4eac-8383-f97114c673ab"/></td>
-        <td width="1%" align="center"><img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FAdd%20Relation.gif?alt=media&token=68639614-3599-42ae-8143-08fca5507900"/></td>
-        <td width="1%" align="center"><img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FScan%20Food.gif?alt=media&token=7e07d52c-5dce-4990-af31-5cc02f51220b"/></td>
+        <td width="1%" align="center"><img src="./demo/Relation.gif"/></td>
+        <td width="1%" align="center"><img src="./demo/Add Relation.gif"/></td>
+        <<td width="1%" align="center"><img src="./demo/Scan Food.gif"/></td>
     </tr>
     <tr>
         <td width="1%" align="center">Relation</td>
