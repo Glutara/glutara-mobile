@@ -16,24 +16,6 @@ class DashboardPage extends StatefulWidget {
   _DashboardPageState createState() => _DashboardPageState();
 }
 
-final dummyData = [
-  {'x': 00.00, 'y': 99},
-  {'x': 02.59, 'y': 119},
-  {'x': 04.39, 'y': 148},
-  {'x': 06.48, 'y': 116},
-  {'x': 08.00, 'y': 104},
-  {'x': 09.58, 'y': 96},
-  {'x': 11.40, 'y': 126},
-  {'x': 13.50, 'y': 124},
-  {'x': 15.20, 'y': 96},
-  {'x': 16.38, 'y': 125},
-  {'x': 18.10, 'y': 102},
-  {'x': 19.45, 'y': 116},
-  {'x': 21.20, 'y': 96},
-  {'x': 22.45, 'y': 149},
-  {'x': 23.24, 'y': 149},
-];
-
 class _DashboardPageState extends State<DashboardPage> {
   DateTime selectedDate = DateTime.now();
   int selectedSegment = 0; // 0: Today, 1: This Week, 2: This Month
@@ -48,9 +30,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   List<FlSpot> getSpots() {
-    return dummyData
-        .map((data) => FlSpot(data['x']!.toDouble(), data['y']!.toDouble()))
-        .toList();
+    return spots;
   }
 
   Future<void> _fetchAverage() async {
@@ -93,10 +73,7 @@ class _DashboardPageState extends State<DashboardPage> {
       logger.f("MASUKK");
       logger.f("MASUKK");
       Uri uri = Uri.parse(
-              'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/glucoses/info/graphic')
-          .replace(queryParameters: {
-        "Date": FormatUtils.formatToIsoDateTime(selectedDate),
-      });
+          'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/glucoses/info/graphic?date=${FormatUtils.formatToIsoDateTime(selectedDate)}');
       logger.f("YESS");
       logger.f("YESS");
       logger.f("YESS");
