@@ -14,7 +14,7 @@
 
 |                               Patient                                |                           Relation                            |
  :------------------------------------------------------------: | :---------------------------------------------: |
-| <img height="500" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FPatient%20Page.jpg?alt=media&token=1ff249bd-f214-4df6-bd14-efde46612013"> | <img height="500" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FRelation%20Page.jpg?alt=media&token=e3e733dc-dda3-46a6-ab19-f4fd10ca5bfd">
+| <img height="400" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FPatient%20Page.jpg?alt=media&token=1ff249bd-f214-4df6-bd14-efde46612013"> | <img height="400" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FRelation%20Page.jpg?alt=media&token=e3e733dc-dda3-46a6-ab19-f4fd10ca5bfd">
 
 </div>
 Your pocket-sized companion: Glutara's mobile app is your intuitive dashboard, displaying real-time data, personalized insights, and a vibrant community right at your fingertips. It's your health cheerleader, empowering you to take control, one tap at a time.
@@ -75,16 +75,16 @@ Make sure you already do these things before running the code
    ```
 
 ## 📸 &nbsp;App Preview
-<table style="width:100%; text-align:center;">
+<table style="width:100%; text-align:center">
     <col width="24%">
     <col width="24%">
     <col width="24%">
     <col width="24%">
     <tr>
-        <td width="1%" align="center"><img src="./demo/Register.gif"/></td>
-        <td width="1%" align="center"><img src="./demo/Login.gif"/></td>
-        <td width="1%" align="center"><img src="./demo/Dashboard & Notification.gif"/></td>
-        <td width="1%" align="center"><img src="./demo/Reminder.gif"/></td>
+        <td width="1%" align="center"><img height="400" src="./demo/Register.gif"/></td>
+        <td width="1%" align="center"><img height="400" src="./demo/Login.gif"/></td>
+        <td width="1%" align="center"><img height="400" src="./demo/Dashboard & Notification.gif"/></td>
+        <td width="1%" align="center"><img height="400" src="./demo/Reminder.gif"/></td>
     </tr>
     <tr>
         <td width="1%" align="center">Register</td>
@@ -93,10 +93,10 @@ Make sure you already do these things before running the code
         <td width="1%" align="center">Reminder</td>
     </tr>
     <tr>
-        <td width="1%" align="center"><img src="./demo/Log Sleep.gif"/></td>
-        <td width="1%" align="center"><img src="./demo/Log Meal.gif"/></td>
-        <<td width="1%" align="center"><img src="./demo/Log Exercise.gif"/></td>
-        <td width="1%" align="center"><img src="./demo/Log Medication.gif"/></td>
+        <td width="1%" align="center"><img height="400" src="./demo/Log Sleep.gif"/></td>
+        <td width="1%" align="center"><img height="400" src="./demo/Log Meal.gif"/></td>
+        <td width="1%" align="center"><img height="400" src="./demo/Log Exercise.gif"/></td>
+        <td width="1%" align="center"><img height="400" src="./demo/Log Medication.gif"/></td>
     </tr>
     <tr>
         <td width="1%" align="center">Log Sleep</td>
@@ -105,9 +105,9 @@ Make sure you already do these things before running the code
         <td width="1%" align="center">Log Medication</td>
     </tr>
     <tr>
-        <td width="1%" align="center"><img src="./demo/Relation.gif"/></td>
-        <td width="1%" align="center"><img src="./demo/Add Relation.gif"/></td>
-        <<td width="1%" align="center"><img src="./demo/Scan Food.gif"/></td>
+        <td width="1%" align="center"><img height="400" src="./demo/Relation.gif"/></td>
+        <td width="1%" align="center"><img height="400" src="./demo/Add Relation.gif"/></td>
+        <td width="1%" align="center"><img height="400" src="./demo/Scan Food.gif"/></td>
     </tr>
     <tr>
         <td width="1%" align="center">Relation</td>
