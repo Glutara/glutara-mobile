@@ -89,8 +89,8 @@ Make sure you already do these things before running the code
     <tr>
         <td width="1%" align="center">Register</td>
         <td width="1%" align="center">Login</td>
-        <td width="1%" align="center">Dashboard & Notification</td>
-        <td width="1%" align="center">Reminder</td>
+        <td width="1%" align="center">Dashboard & Notification (Patient)</td>
+        <td width="1%" align="center">Reminder (Patient)</td>
     </tr>
     <tr>
         <td width="1%" align="center"><img height="400" src="./demo/Log Sleep.gif"/></td>
@@ -99,20 +99,22 @@ Make sure you already do these things before running the code
         <td width="1%" align="center"><img height="400" src="./demo/Log Medication.gif"/></td>
     </tr>
     <tr>
-        <td width="1%" align="center">Log Sleep</td>
-        <td width="1%" align="center">Log Meal</td>
-        <td width="1%" align="center">Log Excercise</td>
-        <td width="1%" align="center">Log Medication</td>
+        <td width="1%" align="center">Log Sleep (Patient)</td>
+        <td width="1%" align="center">Log Meal (Patient)</td>
+        <td width="1%" align="center">Log Excercise (Patient)</td>
+        <td width="1%" align="center">Log Medication (Patient)</td>
     </tr>
     <tr>
         <td width="1%" align="center"><img height="400" src="./demo/Relation.gif"/></td>
-        <td width="1%" align="center"><img height="400" src="./demo/Add Relation.gif"/></td>
         <td width="1%" align="center"><img height="400" src="./demo/Scan Food.gif"/></td>
+        <td width="1%" align="center"><img height="400" src="./demo/Dashboard - Relation.gif"/></td>
+        <td width="1%" align="center"><img height="400" src="./demo/Add Relation.gif"/></td>
     </tr>
     <tr>
-        <td width="1%" align="center">Relation</td>
-        <td width="1%" align="center">Add Relation</td>
-        <td width="1%" align="center">Scan Food</td>
+        <td width="1%" align="center">Patient's Relation (Patient)</td>
+        <td width="1%" align="center">Scan Food (Patient)</td>
+        <td width="1%" align="center">Dashboard (Relation)</td>
+        <td width="1%" align="center">Add Patient (Relation)</td>
     </tr>
 </table>
 
