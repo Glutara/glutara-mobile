@@ -14,7 +14,7 @@
 
 |                               Patient                                |                           Relation                            |
  :------------------------------------------------------------: | :---------------------------------------------: |
-| <img height="400" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FPatient%20Page.jpg?alt=media&token=1ff249bd-f214-4df6-bd14-efde46612013"> | <img height="400" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FRelation%20Page.jpg?alt=media&token=e3e733dc-dda3-46a6-ab19-f4fd10ca5bfd">
+| <img height="400" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FPatient%20Page.jpg?alt=media&token=1ff249bd-f214-4df6-bd14-efde46612013"> | <img height="400" src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Fscreen%2FRelation%20Page.jpg?alt=media&token=3b0d8ac1-fcdd-41ed-bd9a-bcf1fcc0fb95">
 
 </div>
 Your pocket-sized companion: Glutara's mobile app is your intuitive dashboard, displaying real-time data, personalized insights, and a vibrant community right at your fingertips. It's your health cheerleader, empowering you to take control, one tap at a time.
