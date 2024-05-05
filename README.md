@@ -45,15 +45,9 @@ Your pocket-sized companion: Glutara's mobile app is your intuitive dashboard, d
 <img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Ficons%2FFirebase.png?alt=media&token=da3b3135-dec1-4f6c-b0db-0051541754b6" height="60" />
 </kbd>
 </a>
-
-<a href="https://www.bluetooth.com/">
-<kbd>
-<img src="https://firebasestorage.googleapis.com/v0/b/upheld-acumen-420202.appspot.com/o/readme-assets%2Ficons%2FBluetooth.png?alt=media&token=2634a992-eee1-44cf-bce7-13fe5f15e3ec" height="60" />
-</kbd>
-</a>
 </div>
 <div align="center">
-<h4>Flutter | Dart | Firebase | Google Maps Platform | Bluetooth</h4>
+<h4>Flutter | Dart  | Google Maps Platform | Firebase</h4>
 </div>
 
 ## Getting Started
