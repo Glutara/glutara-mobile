@@ -66,10 +66,16 @@ class _AddReminderPageState extends State<AddReminderPage> {
       },
     );
     if (response.statusCode == 200) {
-      List<dynamic> jsonData = jsonDecode(response.body);
-      setState(() {
-        reminders = jsonData;
-      });
+      if (response.body.isNotEmpty && response.body != 'null') {
+        List<dynamic> jsonData = jsonDecode(response.body);
+        setState(() {
+          reminders = jsonData;
+        });
+      } else {
+        setState(() {
+          reminders = [];
+        });
+      }
     }
   }
 
@@ -151,7 +157,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
   }
 
   Future<void> _confirmAndDeleteReminder(int reminderID) async {
-    final bool? deleteConfirmed = await showDialog(
+    final bool? deleteConfirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -171,11 +177,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                   child: const Text("Cancel"),
                 ),
                 TextButton(
-                  onPressed: () async {
-                    Navigator.of(context).pop(true);
-                    await _deleteReminder(reminderID);
-                    _fetchReminders();
-                  },
+                  onPressed: () => Navigator.of(context).pop(true),
                   child: Text(
                     "Delete",
                     style:
@@ -191,7 +193,12 @@ class _AddReminderPageState extends State<AddReminderPage> {
 
     if (deleteConfirmed == true) {
       await _deleteReminder(reminderID);
-      _fetchReminders();
+      _fetchReminders(); // Refresh reminders list after deleting
+
+      if (reminders.length == 1) {
+        // Check if this was the last reminder
+        Navigator.of(context).pop(); // Close the page if it's the last reminder
+      }
     }
   }
 
@@ -245,46 +252,82 @@ class _AddReminderPageState extends State<AddReminderPage> {
             } else if (snapshot.hasError) {
               return const Center(child: Text('Error loading logs'));
             } else {
-              return SafeArea(
-                child: Padding(
+              if (reminders.isEmpty) {
+                return SafeArea(
+                    child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: ListView(
-                    children: <Widget>[
-                      const Center(
-                        child: Text(
-                          'Add Reminder',
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                          ),
+                  child: ListView(children: <Widget>[
+                    const Center(
+                      child: Text(
+                        'Add Reminder',
+                        style: TextStyle(
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 8.0),
-                      const Center(
-                        child: Text(
-                          'Elevate your well-being effortlessly with timely reminder and notifications for a healthier you.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.grey,
-                          ),
+                    ),
+                    const SizedBox(height: 8.0),
+                    const Center(
+                      child: Text(
+                        'Elevate your well-being effortlessly with timely reminder and notifications for a healthier you.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.grey,
                         ),
                       ),
-                      const SizedBox(height: 24.0),
-                      ...reminders.map<Widget>((reminder) {
-                        DateTime dateTime = DateTime.parse(reminder['Time']);
-                        String formattedTime =
-                            DateFormat('HH:mm').format(dateTime);
-                        return _buildReminderItem(
-                            reminder['ReminderID'],
-                            reminder['Name'],
-                            formattedTime,
-                            reminder['Description']);
-                      }),
-                    ],
+                    ),
+                    const SizedBox(height: 24.0),
+                    const Center(
+                      child: Text(
+                        'No reminder to display.',
+                        style: TextStyle(fontSize: 16.0, color: Colors.black54),
+                      ),
+                    ),
+                  ]),
+                ));
+              } else {
+                return SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: ListView(
+                      children: <Widget>[
+                        const Center(
+                          child: Text(
+                            'Add Reminder',
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8.0),
+                        const Center(
+                          child: Text(
+                            'Elevate your well-being effortlessly with timely reminder and notifications for a healthier you.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24.0),
+                        ...reminders.map<Widget>((reminder) {
+                          DateTime dateTime = DateTime.parse(reminder['Time']);
+                          String formattedTime =
+                              DateFormat('HH:mm').format(dateTime);
+                          return _buildReminderItem(
+                              reminder['ReminderID'],
+                              reminder['Name'],
+                              formattedTime,
+                              reminder['Description']);
+                        }),
+                      ],
+                    ),
                   ),
-                ),
-              );
+                );
+              }
             }
           }),
       floatingActionButton: FloatingActionButton(
@@ -435,9 +478,13 @@ class _AddReminderPageState extends State<AddReminderPage> {
                           child: const Text('Cancel'),
                         ),
                         ElevatedButton(
-                          onPressed: () => {
-                            _createReminder(),
+                          onPressed: () async => {
+                            await _createReminder(),
                             // scheduleNotification();
+                            setState(() {
+                              // This will cause the widget to rebuild with updated data.
+                              _isLoading = false;
+                            })
                           },
                           child: const Text('Ok'),
                         ),
