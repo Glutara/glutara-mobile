@@ -31,26 +31,30 @@ class _LogbookPageState extends State<LogbookPage> {
       },
     );
     if (response.statusCode == 200) {
-      List<dynamic> data = jsonDecode(response.body);
+      if (response.body.isNotEmpty && response.body != 'null') {
+        List<dynamic> data = jsonDecode(response.body);
 
-      for (var log in data) {
-        final date = log['Date'];
-        String formattedDate =
-            FormatUtils.formatDateToReadable(date) ?? 'Invalid date';
-        formattedLogs.add({
-          'date': formattedDate,
-          'logs': log['Logs'].map((log) {
-            return {
-              'type': log['Type'],
-              'Data': log['Data'],
-            };
-          }).toList(),
+        for (var log in data) {
+          final date = log['Date'];
+          String formattedDate =
+              FormatUtils.formatDateToReadable(date) ?? 'Invalid date';
+          formattedLogs.add({
+            'date': formattedDate,
+            'logs': log['Logs'].map((log) {
+              return {
+                'type': log['Type'],
+                'Data': log['Data'],
+              };
+            }).toList(),
+          });
+        }
+        setState(() {
+          _logs = formattedLogs;
         });
+      } else {
+        List<dynamic> data = [];
       }
-      setState(() {
-        _logs = formattedLogs;
-      });
-    };
+    }
   }
 
   IconData getIconForType(String type) {
@@ -146,6 +150,18 @@ class _LogbookPageState extends State<LogbookPage> {
             } else if (snapshot.hasError) {
               return const Center(child: Text('Error loading logs'));
             } else {
+              if (_logs.isEmpty) {
+                return Padding(
+                  padding:
+                      const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
+                  child: Center(
+                    child: Text(
+                      'No log to display.',
+                      style: TextStyle(fontSize: 16.0, color: Colors.black54),
+                    ),
+                  ),
+                );
+              }
               return Padding(
                 padding:
                     const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
