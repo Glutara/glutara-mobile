@@ -57,15 +57,15 @@ Make sure you already do these things before running the code
 ## ⚙️ &nbsp;How to Run
 1. Clone this repository from terminal using this following command
    ```bash
-   git clone https://github.com/Glutara/glutara-mobile.git
+   $ git clone https://github.com/Glutara/glutara-mobile.git
    ```
 2. Install all the required dependencies using this following command in the project root directory
    ```bash
-   flutter pub get
+   $ flutter pub get
    ```
 3. Run the mobile using this following command
    ```bash
-   flutter run
+   $ flutter run
    ```
 
 ## 📸 &nbsp;App Preview
