@@ -48,7 +48,7 @@ class _DashboardPageState extends State<DashboardPage> {
       var data = jsonDecode(response.body);
       setState(() {
         // Update the insights data directly with fetched averages.
-        insightsData['today']['averageGlucose'] = '110 mg/dL';
+        insightsData['today']['averageGlucose'] = '${data['Today']} mg/dL';
         insightsData['thisWeek']['averageGlucose'] =
             '${data['Week'].toStringAsFixed(2)} mg/dL';
         insightsData['thisMonth']['averageGlucose'] =
