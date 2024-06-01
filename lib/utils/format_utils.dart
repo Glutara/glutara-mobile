@@ -22,9 +22,10 @@ class FormatUtils {
     if (dateTime == null) return null;
 
     // Convert the `DateTime` object to UTC before formatting.
-    DateTime utcDateTime = dateTime.toUtc();
+    DateTime utcDateTime =
+        DateTime.utc(dateTime.year, dateTime.month, dateTime.day);
 
-    return '${utcDateTime.toIso8601String()}';
+    return '${DateFormat("yyyy-MM-dd'T'00:00:00'Z").format(utcDateTime)}Z';
   }
 
   /// Combines a date and time into a single DateTime object and formats it as an ISO 8601 string.

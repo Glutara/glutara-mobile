@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../color_schemes.g.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -19,6 +20,10 @@ class _DashboardPageState extends State<DashboardPage> {
   DateTime selectedDate = DateTime.now();
   int selectedSegment = 0; // 0: Today, 1: This Week, 2: This Month
   List<FlSpot> spots = [];
+
+  var logger = Logger(
+    printer: PrettyPrinter(),
+  );
 
   @override
   void initState() {
@@ -48,9 +53,8 @@ class _DashboardPageState extends State<DashboardPage> {
       var data = jsonDecode(response.body);
       setState(() {
         // Update the insights data directly with fetched averages.
-        insightsData['today']['averageGlucose'] = '${data['Today']} mg/dL';
-        insightsData['thisWeek']['averageGlucose'] =
-            '${data['Week'].toStringAsFixed(2)} mg/dL';
+        insightsData['today']['averageGlucose'] = '110 mg/dL';
+        insightsData['thisWeek']['averageGlucose'] = '111 mg/dL';
         insightsData['thisMonth']['averageGlucose'] =
             '${data['Month'].toStringAsFixed(2)} mg/dL';
       });
@@ -61,6 +65,8 @@ class _DashboardPageState extends State<DashboardPage> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? userID = prefs.getInt('userID');
     String? token = prefs.getString('jwtToken');
+    logger.f("masuk");
+    logger.f(FormatUtils.formatToIsoDateTime(selectedDate));
 
     Uri uri = Uri.parse(
         'https://glutara-rest-api-reyoeq7kea-uc.a.run.app/api/$userID/glucoses/info/graphic?date=${FormatUtils.formatToIsoDateTime(selectedDate)}');
@@ -73,11 +79,16 @@ class _DashboardPageState extends State<DashboardPage> {
     );
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
+      logger.f("data");
+      logger.f(FormatUtils.formatToIsoDateTime(selectedDate));
+      logger.f(data);
       List<FlSpot> fetchedSpots = data.map((entry) {
         double x = FormatUtils.formatTimeAsDouble(entry['Time']);
         double y = entry['Prediction'].toDouble();
         return FlSpot(x, y);
       }).toList();
+
+      logger.f(fetchedSpots);
 
       setState(() {
         spots = fetchedSpots;
